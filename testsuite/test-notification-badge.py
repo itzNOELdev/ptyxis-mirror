@@ -14,7 +14,8 @@ Part 1 mimics the old close path (no withdraw) and asserts the
 notification is still in ~/.local/share/gnome-shell/notifications.
 Part 2 mimics the new close path (withdraw) and asserts it is gone.
 
-Requires a GNOME session. Skips if org.gtk.Notifications is missing.
+Requires a GNOME Shell session (not headless mutter). Skips if
+org.gtk.Notifications is missing. Not run by `meson test` / GNOME CI.
 """
 
 from __future__ import annotations

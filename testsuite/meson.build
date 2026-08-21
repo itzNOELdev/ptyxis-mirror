@@ -34,15 +34,7 @@ foreach test, params: testsuite
   endif
 endforeach
 
-# Session-bus reproduction of the GNOME dock-badge leak. Not part of the
-# default suite: it needs a running GNOME Shell. Run with:
+# Manual GNOME-session reproduction of the dock-badge leak. Do not register
+# this with `test()`: GNOME OS CI runs `meson test` under headless mutter
+# (no org.gtk.Notifications), which fails the job.
 #   python3 testsuite/test-notification-badge.py
-python3 = find_program('python3', required: false)
-if python3.found()
-  test('notification-badge',
-    python3,
-    args: files('test-notification-badge.py'),
-    suite: ['gnome-session'],
-    is_parallel: false,
-  )
-endif
