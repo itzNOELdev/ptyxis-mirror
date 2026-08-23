@@ -218,7 +218,7 @@ msgstr "Campana visible"
 
 #: src/org.gnome.Ptyxis.gschema.xml.in:126
 msgid "If a visual bell should be used"
-msgstr "Si s'ha d'usar la campana visible"
+msgstr "Si s'ha d'usar la campana visual"
 
 #: src/org.gnome.Ptyxis.gschema.xml.in:131
 msgid "Visual Process Leader"
@@ -271,12 +271,12 @@ msgid ""
 "By default, when doing word-wise selection, most punctuation breaks up word boundaries. This list of "
 "exceptions will instead be treated as part of the word."
 msgstr ""
-"De manera predeterminada, quan es fa la selecció en funció de la paraula, la majoria de les puntuacions "
+"De manera predeterminada, quan es fa la selecció en funció de la paraula, la majoria de caràcters de puntuació "
 "trenquen els límits de les paraules. Aquesta llista d'excepcions serà tractada com a part de la paraula."
 
 #: src/org.gnome.Ptyxis.gschema.xml.in:167
 msgid "Scrollbar Policy"
-msgstr "La política de la barra de desplaçament"
+msgstr "Política de la barra de desplaçament"
 
 #: src/org.gnome.Ptyxis.gschema.xml.in:168
 msgid "If scrollbars should be displayed"
@@ -304,7 +304,7 @@ msgstr "Restaura la sessió"
 
 #: src/org.gnome.Ptyxis.gschema.xml.in:190
 msgid "Restore tabs from previous session when starting Ptyxis"
-msgstr "Restauració de les pestanyes d'una sessió anterior quan s'inicia el Ptyxis"
+msgstr "Restaura les pestanyes de la sessió anterior en iniciar el Ptyxis"
 
 #: src/org.gnome.Ptyxis.gschema.xml.in:195 src/ptyxis-preferences-window.ui:357
 msgid "Restore Window Size"
@@ -312,7 +312,7 @@ msgstr "Restaura la mida de la finestra"
 
 #: src/org.gnome.Ptyxis.gschema.xml.in:196
 msgid "Restore the previous window size when creating new windows"
-msgstr "Restauració de la mida de finestra prèvia quan es creen noves finestres"
+msgstr "Restaura la mida de la finestra anterior quan es creen finestres noves"
 
 #: src/org.gnome.Ptyxis.gschema.xml.in:206
 msgid "Default Column Size"
@@ -430,7 +430,7 @@ msgstr "Desplaçament en haver-hi sortida"
 
 #: src/org.gnome.Ptyxis.gschema.xml.in:292
 msgid "Scroll to the bottom upon new output"
-msgstr "Desplaçar al capdavall quan hi ha nova sortida"
+msgstr "Desplaça al capdavall quan hi ha sortida nova"
 
 #: src/org.gnome.Ptyxis.gschema.xml.in:297 src/ptyxis-preferences-window.ui:466
 #: src/ptyxis-profile-editor.ui:317
@@ -439,7 +439,7 @@ msgstr "Desplaçament en prémer una tecla"
 
 #: src/org.gnome.Ptyxis.gschema.xml.in:298
 msgid "Scroll to the bottom upon user keystroke"
-msgstr "Desplaçar al capdavall quan es prem alguna tecla"
+msgstr "Desplaça al capdavall quan es prem alguna tecla"
 
 #: src/org.gnome.Ptyxis.gschema.xml.in:303 src/ptyxis-profile-editor.ui:187
 msgid "Use Custom Command"
@@ -479,7 +479,7 @@ msgstr "Mantenir el contenidor"
 
 #: src/org.gnome.Ptyxis.gschema.xml.in:328
 msgid "Preserve the active container when creating new tabs and windows"
-msgstr "Preservar el contenidor actiu quan es creen noves pestanyes i finestres"
+msgstr "Preserva el contenidor actiu quan es creen pestanyes i finestres noves"
 
 #: src/org.gnome.Ptyxis.gschema.xml.in:333 src/ptyxis-preferences-window.ui:551
 #: src/ptyxis-profile-editor.ui:281
@@ -496,7 +496,7 @@ msgstr "Mantenir el directori"
 
 #: src/org.gnome.Ptyxis.gschema.xml.in:340
 msgid "If the directory should be preserved for new terminals"
-msgstr "Si s'hauria de mantenir el directori en nous terminals"
+msgstr "Si s'ha de mantenir el directori en els terminals nous"
 
 #: src/org.gnome.Ptyxis.gschema.xml.in:345 src/ptyxis-inspector.ui:102 src/ptyxis-preferences-window.ui:40
 #: src/ptyxis-profile-editor.ui:65
@@ -522,7 +522,7 @@ msgstr "La negreta és també brillant"
 #: src/org.gnome.Ptyxis.gschema.xml.in:359
 msgid "Setting bold on one of the lower 8 colors in the palette will use bright variant (upper 8 colors)"
 msgstr ""
-"Establir la negreta amb un dels 8 colors de baix de la paleta usarà la variant brillant (8 colors de dalt)"
+"Si s'estableix la negreta en un dels 8 colors inferiors de la paleta, s'utilitzarà la variant brillant (els 8 colors superiors)"
 
 #: src/org.gnome.Ptyxis.gschema.xml.in:365 src/ptyxis-preferences-window.ui:175
 #: src/ptyxis-profile-editor.ui:143
@@ -717,7 +717,7 @@ msgstr "Drecera per a mostrar el menú de nova pestanya"
 #. Translators: in this context, "Move" means to switch tabs
 #: src/org.gnome.Ptyxis.gschema.xml.in:522 src/ptyxis-preferences-window.ui:818
 msgid "Move to Previous Tab"
-msgstr "Vés a la pestanya anterior"
+msgstr "Ves a la pestanya anterior"
 
 #. Translators: in this context, "Move" means to switch tabs
 #: src/org.gnome.Ptyxis.gschema.xml.in:524
@@ -727,7 +727,7 @@ msgstr "Drecera per a canviar a la pestanya anterior"
 #. Translators: in this context, "Move" means to switch tabs
 #: src/org.gnome.Ptyxis.gschema.xml.in:530 src/ptyxis-preferences-window.ui:824
 msgid "Move to Next Tab"
-msgstr "Mou a la pestanya següent"
+msgstr "Ves a la pestanya següent"
 
 #. Translators: in this context, "Move" means to switch tabs
 #: src/org.gnome.Ptyxis.gschema.xml.in:532
@@ -1312,11 +1312,11 @@ msgstr "Darrer"
 
 #: src/ptyxis-preferences-window.ui:352
 msgid "Attempt to restore previous tabs when Ptyxis starts"
-msgstr "Mira de restaurar les pestanyes prèvies quan s'inicia el Ptyxis"
+msgstr "Intenta restaurar les pestanyes anteriors en iniciar el Ptyxis"
 
 #: src/ptyxis-preferences-window.ui:358
 msgid "Restore the previous window size when creating a new window"
-msgstr "Restaura la mida de finestra prèvia quan es creen una nova finestra"
+msgstr "Restaura la mida de la finestra anterior quan es crea una finestra nova"
 
 #: src/ptyxis-preferences-window.ui:368
 msgid "Columns"
@@ -1354,7 +1354,7 @@ msgstr "Campana visual"
 
 #: src/ptyxis-preferences-window.ui:421
 msgid "Emit a visual bell when requested by active tab"
-msgstr "Emet un toc de campana visible quan ho requereixi la pestanya activa"
+msgstr "Emet un toc de campana visual quan ho requereixi la pestanya activa"
 
 #: src/ptyxis-preferences-window.ui:428 src/ptyxis-profile-editor.ui:314
 msgid "Scrolling"
@@ -1676,7 +1676,7 @@ msgstr "El contenidor predeterminat per usar amb aquest perfil"
 
 #: src/ptyxis-profile-editor.ui:221
 msgid "Preserve the current container when opening new tabs and windows"
-msgstr "Preserva el contenidor actiu quan es creen noves pestanyes i finestres"
+msgstr "Preserva el contenidor actiu en obrir pestanyes i finestres noves"
 
 #: src/ptyxis-profile-editor.ui:427
 msgid "Remove Profile"
