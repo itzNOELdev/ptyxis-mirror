@@ -1,0 +1,30 @@
+name: Mirror main from GitLab
+
+on:
+  schedule:
+    - cron: '23 */3 * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: mirror-sync
+  cancel-in-progress: false
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch GitLab main, push to GitHub main only
+        run: |
+          git clone --bare --branch main --single-branch https://gitlab.gnome.org/chergert/ptyxis.git repo
+          cd repo
+          git push https://x-access-token:${{ secrets.MIRROR_PAT }}@github.com/${{ github.repository }}.git \
+            refs/heads/main:refs/heads/main --force
+
+      - name: Keep-alive commit (appends to existing keepalive branch)
+        run: |
+          git clone --branch keepalive --single-branch https://x-access-token:${{ secrets.MIRROR_PAT }}@github.com/${{ github.repository }}.git keepalive-repo
+          cd keepalive-repo
+          git config user.name "mirror-bot"
+          git config user.email "actions@github.com"
+          git commit --allow-empty -m "keepalive: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          git push origin keepalive
