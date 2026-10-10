@@ -907,11 +907,11 @@ msgstr "Snarveg for å fokusere på fane 10"
 
 #: src/org.gnome.Ptyxis.gschema.xml.in:639
 msgid "Focus Last Tab"
-msgstr "Fokuser på førre fane"
+msgstr "Fokuser på siste fane"
 
 #: src/org.gnome.Ptyxis.gschema.xml.in:640
 msgid "Shortcut to focus the last tab"
-msgstr "Snarveg for å fokusere på førre fane"
+msgstr "Snarveg for å fokusere på siste fane"
 
 #: src/org.gnome.Ptyxis.gschema.xml.in:645 src/ptyxis-preferences-window.ui:807
 msgid "Undo Close Tab"
@@ -1591,7 +1591,7 @@ msgstr "Byt til fane 10"
 
 #: src/ptyxis-preferences-window.ui:919
 msgid "Switch to Last Tab"
-msgstr "Byt til førre fane"
+msgstr "Byt til siste fane"
 
 #: src/ptyxis-preferences-window.ui:927
 msgid "Zoom"
