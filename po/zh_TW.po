@@ -5,56 +5,58 @@
 # lumingzh <lumingzh@qq.com>, 2024.
 # Shihfu Juan <xlion@xlion.tw>, 2024.
 #
+# SPDX-FileCopyrightText: 2026 Kisaragi Hiu <mail@kisaragi-hiu.com>
 msgid ""
 msgstr ""
 "Project-Id-Version: ptyxis main\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/chergert/ptyxis/issues\n"
-"POT-Creation-Date: 2025-03-20 06:12+0000\n"
-"PO-Revision-Date: 2025-03-22 21:56+0800\n"
-"Last-Translator: Shihfu Juan <xlion@xlion.tw>\n"
-"Language-Team: \n"
+"POT-Creation-Date: 2026-07-31 22:53+0000\n"
+"PO-Revision-Date: 2026-09-20 05:13+0900\n"
+"Last-Translator: Kisaragi Hiu <mail@kisaragi-hiu.com>\n"
+"Language-Team: Chinese (Traditional) <zh-l10n@lists.slat.org>\n"
 "Language: zh_TW\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Poedit 3.5\n"
+"X-Generator: Lokalize 26.11.70\n"
 
-#: data/org.gnome.Ptyxis.desktop.in.in:3
+#: data/org.gnome.Ptyxis.desktop.in.in:2
 #: data/org.gnome.Ptyxis.metainfo.xml.in.in:6
 msgid "@APP_NAME@"
 msgstr "@APP_NAME@"
 
-#: data/org.gnome.Ptyxis.desktop.in.in:4
+#: data/org.gnome.Ptyxis.desktop.in.in:3
 msgid "A container-oriented terminal for GNOME"
 msgstr "容器導向式 GNOME 終端機"
 
-#: data/org.gnome.Ptyxis.desktop.in.in:13 src/ptyxis-preferences-window.ui:651
-#: src/ptyxis-tab.c:1440 src/ptyxis-util.c:312
+#: data/org.gnome.Ptyxis.desktop.in.in:12 src/ptyxis-preferences-window.ui:669
+#: src/ptyxis-tab.c:1647 src/ptyxis-util.c:328
 msgid "Terminal"
 msgstr "終端機"
 
 #. Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
-#: data/org.gnome.Ptyxis.desktop.in.in:15
+#: data/org.gnome.Ptyxis.desktop.in.in:14
 msgid ""
-"terminal;prompt;ptyxis;shell;command;commandline;cmd;cli;console;container;"
-"podman;toolbox;distrobox;"
+"terminal;prompt;ptyxis;shell;command;commandline;cmd;cli;console;container;pod"
+"man;toolbox;distrobox;"
 msgstr ""
-"terminal;prompt;ptyxis;shell;command;commandline;cmd;cli;console;container;"
-"podman;toolbox;distrobox;終端機;提示字元;命令;命令行;指令;控制台;容器;"
+"terminal;prompt;ptyxis;shell;command;commandline;cmd;cli;console;container;pod"
+"man;toolbox;distrobox;"
+"終端機;提示字元;命令;命令行;指令;控制台;容器;"
 
-#: data/org.gnome.Ptyxis.desktop.in.in:21
-#: src/org.gnome.Ptyxis.gschema.xml.in:398 src/ptyxis-preferences-window.ui:716
+#: data/org.gnome.Ptyxis.desktop.in.in:23
+#: src/org.gnome.Ptyxis.gschema.xml.in:424 src/ptyxis-preferences-window.ui:742
 msgid "New Window"
 msgstr "開新視窗"
 
-#: data/org.gnome.Ptyxis.desktop.in.in:25
-#: src/org.gnome.Ptyxis.gschema.xml.in:392 src/ptyxis-preferences-window.ui:742
+#: data/org.gnome.Ptyxis.desktop.in.in:27
+#: src/org.gnome.Ptyxis.gschema.xml.in:418 src/ptyxis-preferences-window.ui:771
 msgid "New Tab"
 msgstr "新增分頁"
 
-#: data/org.gnome.Ptyxis.desktop.in.in:29
-#: src/org.gnome.Ptyxis.gschema.xml.in:410 src/ptyxis-preferences-window.ui:917
+#: data/org.gnome.Ptyxis.desktop.in.in:31
+#: src/org.gnome.Ptyxis.gschema.xml.in:436 src/ptyxis-preferences-window.ui:978
 msgid "Preferences"
 msgstr "偏好設定"
 
@@ -66,8 +68,7 @@ msgstr "容器導向式終端機"
 msgid ""
 "Ptyxis is a terminal for GNOME that focuses on ease-of-use in a world of "
 "containers."
-msgstr ""
-"Ptyxis 是個專為 GNOME 設計的終端機，主要專注於提升容器化世界中的便利性。"
+msgstr "Ptyxis 是個專為 GNOME 設計的終端機，主要專注於提升容器化世界中的便利性。"
 
 #: data/org.gnome.Ptyxis.metainfo.xml.in.in:13
 msgid "Features:"
@@ -77,8 +78,7 @@ msgstr "功能特色："
 msgid ""
 "Remembers current container when opening a new tab with support for podman, "
 "toolbox, distrobox, and more"
-msgstr ""
-"開啟新分頁時會記住目前的容器，支援 podman、toolbox、distrobox 等管理工具"
+msgstr "開啟新分頁時會記住目前的容器，支援 podman、toolbox、distrobox 等管理工具"
 
 #: data/org.gnome.Ptyxis.metainfo.xml.in.in:16
 msgid "Configurable keyboard shortcuts"
@@ -128,55 +128,63 @@ msgstr "終端機分頁在獨立的 cgroup 中執行"
 msgid "Terminal inspector to help when writing terminal-based applications"
 msgstr "有終端機檢查器，可協助編寫以終端機作基底的應用程式"
 
-#. developer_name tag deprecated with Appstream 1.0
-#: data/org.gnome.Ptyxis.metainfo.xml.in.in:32
-msgid "Christian Hergert"
-msgstr "Christian Hergert"
-
-#: data/org.gnome.Ptyxis.metainfo.xml.in.in:62
+#: data/org.gnome.Ptyxis.metainfo.xml.in.in:54
 msgid "A column and row size indicator is displayed when resizing the window"
 msgstr "調整視窗大小時，會顯示欄和列大小的指示器"
 
-#: data/org.gnome.Ptyxis.metainfo.xml.in.in:67
+#: data/org.gnome.Ptyxis.metainfo.xml.in.in:59
 msgid "Containers are automatically discovered and displayed"
 msgstr "會自動探索並顯示容器"
 
-#: data/org.gnome.Ptyxis.metainfo.xml.in.in:72
+#: data/org.gnome.Ptyxis.metainfo.xml.in.in:64
 msgid "Many behaviors of the terminal may be tweaked to user preference"
 msgstr "終端機的許多行為，都可以根據使用者的偏好設定作調整"
 
-#: data/org.gnome.Ptyxis.metainfo.xml.in.in:77
+#: data/org.gnome.Ptyxis.metainfo.xml.in.in:69
 msgid "You may rename a tab by providing a prefix to the title"
 msgstr "您可以為標題加前綴來重新命名分頁"
 
-#: data/org.gnome.Ptyxis.metainfo.xml.in.in:82
+#: data/org.gnome.Ptyxis.metainfo.xml.in.in:74
 msgid "Palettes provide an integrated dark mode"
 msgstr "調色盤提供整合的暗色模式"
 
-#: data/org.gnome.Ptyxis.metainfo.xml.in.in:87
+#: data/org.gnome.Ptyxis.metainfo.xml.in.in:79
 msgid "You can see an overview of your tabs at any time"
 msgstr "您可以在任何時候查看所有分頁的活動概覽"
 
-#: data/org.gnome.Ptyxis.metainfo.xml.in.in:92
+#: data/org.gnome.Ptyxis.metainfo.xml.in.in:84
 msgid "Many shortcuts may be remapped to user preference"
 msgstr "許多快捷鍵可根據使用者偏好設定重新對應"
 
-#: data/org.gnome.Ptyxis.metainfo.xml.in.in:97
+#: data/org.gnome.Ptyxis.metainfo.xml.in.in:89
 msgid "Built-in color palettes provide both dark and light mode variants"
 msgstr "內建的調色盤同時提供暗色與亮色模式的風格變化"
 
-#: data/org.gnome.Ptyxis.metainfo.xml.in.in:102
+#: data/org.gnome.Ptyxis.metainfo.xml.in.in:94
 msgid ""
 "Profiles allow for overriding a number of features such as default container"
 msgstr "設定檔能允許凌駕多項功能，例如預設容器"
 
-#: data/org.gnome.Ptyxis.metainfo.xml.in.in:107
+#: data/org.gnome.Ptyxis.metainfo.xml.in.in:99
 msgid "The terminal will remind you when you're root on the local system"
 msgstr "當您是本機系統的 root 使用者時，終端機會提醒您"
 
-#: data/org.gnome.Ptyxis.metainfo.xml.in.in:112
+#: data/org.gnome.Ptyxis.metainfo.xml.in.in:104
 msgid "The terminal will remind you when you're on a remote system"
 msgstr "當您位於遠端系統中時，終端機會提醒您"
+
+#: src/main.c:142 src/main.c:149 src/main.c:161
+msgid "Error"
+msgstr "錯誤"
+
+#: src/main.c:155
+#, c-format
+msgid ""
+"Error: %s already exists.\n"
+"Please remove it first.\n"
+msgstr ""
+"錯誤：%s 已經存在。\n"
+"請先將它移除。\n"
 
 #: src/org.gnome.Ptyxis.gschema.xml.in:101
 msgid "Default Profile UUID"
@@ -194,7 +202,7 @@ msgstr "所有預設設定檔 UUID"
 msgid "A list of UUID for every profile"
 msgstr "含有各個設定檔的 UUID 列表"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:113 src/ptyxis-preferences-window.ui:317
+#: src/org.gnome.Ptyxis.gschema.xml.in:113 src/ptyxis-preferences-window.ui:322
 msgid "New Tab Position"
 msgstr "新分頁位置"
 
@@ -202,7 +210,7 @@ msgstr "新分頁位置"
 msgid "Where to place new tabs"
 msgstr "新分頁標籤的放置位置"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:119 src/ptyxis-preferences-window.ui:409
+#: src/org.gnome.Ptyxis.gschema.xml.in:119 src/ptyxis-preferences-window.ui:414
 msgid "Audible Bell"
 msgstr "聽覺響鈴"
 
@@ -244,7 +252,7 @@ msgstr "字型名稱"
 msgid "The font description to use if use-system-font is set to False"
 msgstr "如果 use-system-font 設定為 False 時，所要使用的字型描述說明"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:149 src/ptyxis-preferences-window.ui:244
+#: src/org.gnome.Ptyxis.gschema.xml.in:149 src/ptyxis-preferences-window.ui:249
 msgid "Cursor Shape"
 msgstr "游標外型"
 
@@ -297,7 +305,7 @@ msgstr "介面風格"
 msgid "If light or dark interface style should be used"
 msgstr "是否應使用亮色或暗色介面風格"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:189 src/ptyxis-preferences-window.ui:346
+#: src/org.gnome.Ptyxis.gschema.xml.in:189 src/ptyxis-preferences-window.ui:351
 msgid "Restore Session"
 msgstr "復原作業階段"
 
@@ -305,7 +313,7 @@ msgstr "復原作業階段"
 msgid "Restore tabs from previous session when starting Ptyxis"
 msgstr "啟動 Ptyxis 時，從上次作業階段中復原分頁"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:195 src/ptyxis-preferences-window.ui:352
+#: src/org.gnome.Ptyxis.gschema.xml.in:195 src/ptyxis-preferences-window.ui:357
 msgid "Restore Window Size"
 msgstr "復原視窗大小"
 
@@ -345,526 +353,590 @@ msgid ""
 msgstr "目前的實驗性功能，用來將無障礙資訊傳送給螢幕閱讀器。"
 
 #: src/org.gnome.Ptyxis.gschema.xml.in:231
-msgid "Disable Padding around Terminal Emulator"
-msgstr "停用終端模擬器周圍的補入邊距"
+msgid "Enable zoom on scroll holding the control key"
+msgstr "啟用 Ctrl + 捲動縮放"
 
 #: src/org.gnome.Ptyxis.gschema.xml.in:232
 msgid ""
-"Do not pad around the terminal emulator widget. Setting to true may have "
-"significant performance impacts."
-msgstr ""
-"不要在終端模擬器元件周圍補入邊距。 設定為 true 時，可能對效能產生顯著影響。"
+"Enable to adjust the zoom level on scroll scroll while holding the control "
+"key."
+msgstr "啟用來用 Ctrl + 滾輪捲動來調整縮放程度。"
 
 #: src/org.gnome.Ptyxis.gschema.xml.in:237
-msgid "Prompt when active tab is closed"
-msgstr "在關閉作用中分頁時發出提示"
+msgid "Disable Padding around Terminal Emulator"
+msgstr "停用終端模擬器周圍的補入邊距"
 
 #: src/org.gnome.Ptyxis.gschema.xml.in:238
 msgid ""
-"If a tab (or window) is closed with active foreground processes, prompt the "
-"user for confirmation."
-msgstr ""
-"如果要關閉的分頁標籤（或視窗）仍有運作中的前景程序，則提示使用者再確認。"
+"Do not pad around the terminal emulator widget. Setting to true may have "
+"significant performance impacts."
+msgstr "不要在終端模擬器元件周圍補入邊距。 設定為 true 時，可能對效能產生顯著影響。"
 
 #: src/org.gnome.Ptyxis.gschema.xml.in:243
+msgid "Prompt when active tab is closed"
+msgstr "在關閉作用中分頁時發出提示"
+
+#: src/org.gnome.Ptyxis.gschema.xml.in:244
+msgid ""
+"If a tab (or window) is closed with active foreground processes, prompt the "
+"user for confirmation."
+msgstr "如果要關閉的分頁標籤（或視窗）仍有運作中的前景程序，則提示使用者再確認。"
+
+#. Translators: OSC stands for "Operating System Command" and is referencing in-band escape sequences from the child process to set the title
+#: src/org.gnome.Ptyxis.gschema.xml.in:250
 msgid "Ignore OSC Title"
 msgstr "忽略 OSC 標題"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:244
+#: src/org.gnome.Ptyxis.gschema.xml.in:251
 msgid "If OSC title should be ignored in tab titles."
 msgstr "是否應忽略分頁標籤標題中的 OSC 標題。"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:253
+#: src/org.gnome.Ptyxis.gschema.xml.in:256
+msgid "Inhibit Logout"
+msgstr "阻止登出"
+
+#: src/org.gnome.Ptyxis.gschema.xml.in:257
+msgid "Inhibit desktop logout when a foreground process is running in a tab."
+msgstr "分頁中有前景程序時阻止桌面登出。"
+
+#: src/org.gnome.Ptyxis.gschema.xml.in:266
 msgid "Label"
 msgstr "標籤"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:254
+#: src/org.gnome.Ptyxis.gschema.xml.in:267
 msgid "The label for the profile"
 msgstr "設定檔的標籤"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:259
+#: src/org.gnome.Ptyxis.gschema.xml.in:272
 msgid "Login Shell"
 msgstr "登入用 Shell"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:260
+#: src/org.gnome.Ptyxis.gschema.xml.in:273
 msgid "Use a login shell"
 msgstr "使用登入用 Shell"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:265 src/ptyxis-preferences-window.ui:477
-#: src/ptyxis-profile-editor.ui:319
+#: src/org.gnome.Ptyxis.gschema.xml.in:278 src/ptyxis-preferences-window.ui:482
+#: src/ptyxis-profile-editor.ui:333
 msgid "Limit Scrollback"
 msgstr "限制回捲"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:266
+#: src/org.gnome.Ptyxis.gschema.xml.in:279
 msgid "Limit the number of lines to keep for scrollback"
 msgstr "為回捲保留的列數"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:272 src/ptyxis-preferences-window.ui:486
-#: src/ptyxis-profile-editor.ui:328
+#: src/org.gnome.Ptyxis.gschema.xml.in:285 src/ptyxis-preferences-window.ui:491
+#: src/ptyxis-profile-editor.ui:342
 msgid "Scrollback Lines"
 msgstr "回捲列數"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:273
+#: src/org.gnome.Ptyxis.gschema.xml.in:286
 msgid "The number of lines to keep in the scrollback, zero for no scrollback"
 msgstr "為回捲作保留的列數，設為 0 表示不保留回捲內容"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:278 src/ptyxis-preferences-window.ui:467
-#: src/ptyxis-profile-editor.ui:309
+#: src/org.gnome.Ptyxis.gschema.xml.in:291 src/ptyxis-preferences-window.ui:472
+#: src/ptyxis-profile-editor.ui:323
 msgid "Scroll on Output"
 msgstr "輸出時作捲動"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:279
+#: src/org.gnome.Ptyxis.gschema.xml.in:292
 msgid "Scroll to the bottom upon new output"
 msgstr "有新輸出時跟著捲動到底部"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:284 src/ptyxis-preferences-window.ui:461
-#: src/ptyxis-profile-editor.ui:303
+#: src/org.gnome.Ptyxis.gschema.xml.in:297 src/ptyxis-preferences-window.ui:466
+#: src/ptyxis-profile-editor.ui:317
 msgid "Scroll on Keystroke"
 msgstr "鍵擊時作捲動"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:285
+#: src/org.gnome.Ptyxis.gschema.xml.in:298
 msgid "Scroll to the bottom upon user keystroke"
 msgstr "使用者觸擊按鍵時跟著捲動到底部"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:290 src/ptyxis-profile-editor.ui:173
+#: src/org.gnome.Ptyxis.gschema.xml.in:303 src/ptyxis-profile-editor.ui:187
 msgid "Use Custom Command"
 msgstr "使用自訂命令"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:291
+#: src/org.gnome.Ptyxis.gschema.xml.in:304
 msgid "If a custom command should be used"
 msgstr "是否應使用自訂命令"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:296
+#: src/org.gnome.Ptyxis.gschema.xml.in:309
 msgid "Use Proxy"
 msgstr "使用網路代理"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:297
+#: src/org.gnome.Ptyxis.gschema.xml.in:310
 msgid "Apply proxy settings from the host in the container"
 msgstr "在容器中套用本機的網路代理設定"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:302 src/ptyxis-profile-editor.ui:178
+#: src/org.gnome.Ptyxis.gschema.xml.in:315 src/ptyxis-profile-editor.ui:192
 msgid "Custom Command"
 msgstr "自訂命令"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:303
+#: src/org.gnome.Ptyxis.gschema.xml.in:316
 msgid "A custom command for the shell"
 msgstr "Shell 的自訂命令"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:308 src/ptyxis-profile-editor.ui:197
+#: src/org.gnome.Ptyxis.gschema.xml.in:321 src/ptyxis-profile-editor.ui:211
 msgid "Default Container"
 msgstr "預設容器"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:309
+#: src/org.gnome.Ptyxis.gschema.xml.in:322
 msgid "The default container to run the command in"
 msgstr "要執行命令的預設容器"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:314 src/ptyxis-profile-editor.ui:206
+#: src/org.gnome.Ptyxis.gschema.xml.in:327 src/ptyxis-profile-editor.ui:220
 msgid "Preserve Container"
 msgstr "保持容器"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:315
+#: src/org.gnome.Ptyxis.gschema.xml.in:328
 msgid "Preserve the active container when creating new tabs and windows"
 msgstr "在建立新分頁與開新視窗時，保持作用中的容器"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:320 src/ptyxis-preferences-window.ui:546
-#: src/ptyxis-profile-editor.ui:267
+#: src/org.gnome.Ptyxis.gschema.xml.in:333 src/ptyxis-preferences-window.ui:551
+#: src/ptyxis-profile-editor.ui:281
 msgid "Exit Action"
 msgstr "退出時動作"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:321
+#: src/org.gnome.Ptyxis.gschema.xml.in:334
 msgid "The action to take when the shell exits"
 msgstr "Shell 退出時所要執行的動作"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:326
+#: src/org.gnome.Ptyxis.gschema.xml.in:339
 msgid "Preserve Directory"
 msgstr "保持目錄"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:327
+#: src/org.gnome.Ptyxis.gschema.xml.in:340
 msgid "If the directory should be preserved for new terminals"
 msgstr "是否應為新的終端機保持目前的目錄"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:332 src/ptyxis-inspector.ui:102
+#: src/org.gnome.Ptyxis.gschema.xml.in:345 src/ptyxis-inspector.ui:102
 #: src/ptyxis-preferences-window.ui:40 src/ptyxis-profile-editor.ui:65
 msgid "Palette"
 msgstr "調色盤"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:333
+#: src/org.gnome.Ptyxis.gschema.xml.in:346
 msgid "The color palette to use for the profile, by name"
 msgstr "設定檔使用的調色盤名稱，依名稱區分"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:339
+#: src/org.gnome.Ptyxis.gschema.xml.in:352
 msgid "Opacity"
 msgstr "不透明度"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:340
+#: src/org.gnome.Ptyxis.gschema.xml.in:353
 msgid "The opacity of the palette background"
 msgstr "調色盤背景的不透明度"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:345
+#: src/org.gnome.Ptyxis.gschema.xml.in:358
 msgid "Bold is Bright"
 msgstr "粗體顯示為亮色"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:346
+#: src/org.gnome.Ptyxis.gschema.xml.in:359
 msgid ""
 "Setting bold on one of the lower 8 colors in the palette will use bright "
 "variant (upper 8 colors)"
 msgstr "在調色盤中對前 8 種顏色設定粗體時，將使用亮色變體（後 8 種顏色）"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:352 src/ptyxis-preferences-window.ui:175
+#: src/org.gnome.Ptyxis.gschema.xml.in:365 src/ptyxis-preferences-window.ui:175
 #: src/ptyxis-profile-editor.ui:143
 msgid "Line Spacing"
 msgstr "列距"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:353
+#: src/org.gnome.Ptyxis.gschema.xml.in:366
 msgid "The terminal’s cell height scale"
 msgstr "終端機的單元格高度比例"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:358
+#: src/org.gnome.Ptyxis.gschema.xml.in:372 src/ptyxis-preferences-window.ui:189
+#: src/ptyxis-profile-editor.ui:157
+#| msgid "Line Spacing"
+msgid "Column Spacing"
+msgstr "欄距"
+
+#: src/org.gnome.Ptyxis.gschema.xml.in:373
+#| msgid "The terminal’s cell height scale"
+msgid "The terminal’s cell width scale"
+msgstr "終端機的單元格寬度比例"
+
+#: src/org.gnome.Ptyxis.gschema.xml.in:378
 msgid "CJK Ambiguous Width"
 msgstr "中日韓模糊寬度"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:359
+#: src/org.gnome.Ptyxis.gschema.xml.in:379
 msgid "The size to apply to ambiguous width characters"
 msgstr "適用模糊寬度字元的大小"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:364
-#: src/org.gnome.Ptyxis.gschema.xml.in:370
+#: src/org.gnome.Ptyxis.gschema.xml.in:384
+#: src/org.gnome.Ptyxis.gschema.xml.in:390
 msgid "Backspace Binding"
 msgstr "Backspace 綁定"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:365
-#: src/org.gnome.Ptyxis.gschema.xml.in:371
+#: src/org.gnome.Ptyxis.gschema.xml.in:385
+#: src/org.gnome.Ptyxis.gschema.xml.in:391
 msgid "What to send to the PTY when a backspace is entered"
 msgstr "當按下 Backspace 時，發送到 PTY 偽終端的事件"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:380 src/ptyxis-preferences-window.ui:654
+#: src/org.gnome.Ptyxis.gschema.xml.in:396 src/ptyxis-preferences-window.ui:634
+#: src/ptyxis-profile-editor.ui:409
+#| msgid "Custom Font"
+msgid "Custom Links"
+msgstr "自訂連結"
+
+#: src/org.gnome.Ptyxis.gschema.xml.in:397
+msgid ""
+"A list of custom hyperlinks, each defined by a regular expression matching "
+"the text, and a replacement pattern"
+msgstr "自訂超連結，每一種連結包含符合文字的正則表達式與取代樣式"
+
+#: src/org.gnome.Ptyxis.gschema.xml.in:406 src/ptyxis-preferences-window.ui:672
 msgid "Copy to Clipboard"
 msgstr "複製到剪貼簿"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:381
+#: src/org.gnome.Ptyxis.gschema.xml.in:407
 msgid "The shortcut to copy to clipboard"
 msgstr "複製到剪貼簿的快捷鍵"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:386 src/ptyxis-preferences-window.ui:659
+#: src/org.gnome.Ptyxis.gschema.xml.in:412 src/ptyxis-preferences-window.ui:678
 msgid "Paste from Clipboard"
 msgstr "從剪貼簿貼上"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:387
+#: src/org.gnome.Ptyxis.gschema.xml.in:413
 msgid "The shortcut to paste from the clipboard"
 msgstr "從剪貼簿貼上的快捷鍵"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:393
+#: src/org.gnome.Ptyxis.gschema.xml.in:419
 msgid "The shortcut to create a new tab in the current window"
 msgstr "在目前視窗中建立新分頁的快捷鍵"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:399
+#: src/org.gnome.Ptyxis.gschema.xml.in:425
 msgid "The shortcut to create a new tab in a new window"
 msgstr "在新視窗中建立新分頁的快捷鍵"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:404
+#: src/org.gnome.Ptyxis.gschema.xml.in:430
 msgid "Tab Overview"
 msgstr "分頁概覽"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:405
+#: src/org.gnome.Ptyxis.gschema.xml.in:431
 msgid "The shortcut to show the tab overview"
 msgstr "顯示分頁概覽的快捷鍵"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:411
+#: src/org.gnome.Ptyxis.gschema.xml.in:437
 msgid "The shortcut to show application preferences"
 msgstr "顯示應用程式偏好設定的快捷鍵"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:416 src/ptyxis-preferences-window.ui:880
-#: src/ptyxis-window.c:1412 src/ptyxis-window.c:1420
+#: src/org.gnome.Ptyxis.gschema.xml.in:442 src/ptyxis-preferences-window.ui:985
+#| msgid "_Keyboard Shortcuts"
+msgid "Keyboard Shortcuts"
+msgstr "鍵盤快捷鍵"
+
+#: src/org.gnome.Ptyxis.gschema.xml.in:443
+#| msgid "The shortcut to show the tab overview"
+msgid "The shortcut to show the keyboard shortcuts configuration"
+msgstr "用來顯示快捷鍵設定的快捷鍵"
+
+#: src/org.gnome.Ptyxis.gschema.xml.in:448 src/ptyxis-preferences-window.ui:936
+#: src/ptyxis-window.c:1522 src/ptyxis-window.c:1530
 msgid "Zoom Out"
 msgstr "拉遠"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:417
+#: src/org.gnome.Ptyxis.gschema.xml.in:449
 msgid "The shortcut to zoom out"
 msgstr "拉遠縮小畫面的快捷鍵"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:422 src/ptyxis-preferences-window.ui:885
-#: src/ptyxis-window.c:1429
+#: src/org.gnome.Ptyxis.gschema.xml.in:454 src/ptyxis-preferences-window.ui:942
+#: src/ptyxis-window.c:1539
 msgid "Reset Zoom"
 msgstr "重設遠近縮放"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:423
+#: src/org.gnome.Ptyxis.gschema.xml.in:455
 msgid "The shortcut to reset zoom"
 msgstr "重設遠近縮放的快捷鍵"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:428 src/ptyxis-preferences-window.ui:875
-#: src/ptyxis-window.c:1397 src/ptyxis-window.c:1405
+#: src/org.gnome.Ptyxis.gschema.xml.in:460 src/ptyxis-preferences-window.ui:930
+#: src/ptyxis-window.c:1507 src/ptyxis-window.c:1515
 msgid "Zoom In"
 msgstr "拉近"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:429
+#: src/org.gnome.Ptyxis.gschema.xml.in:461
 msgid "The shortcut to zoom in"
 msgstr "拉近放大畫面的快捷鍵"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:434 src/ptyxis-preferences-window.ui:895
+#: src/org.gnome.Ptyxis.gschema.xml.in:466 src/ptyxis-preferences-window.ui:953
 msgid "Toggle Fullscreen"
 msgstr "切換全螢幕"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:435
+#: src/org.gnome.Ptyxis.gschema.xml.in:467
 msgid "The shortcut to toggle fullscreen"
 msgstr "切換全螢幕的快捷鍵"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:440
+#: src/org.gnome.Ptyxis.gschema.xml.in:472
 msgid "Reset Terminal"
 msgstr "重設終端機"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:441
+#: src/org.gnome.Ptyxis.gschema.xml.in:473
 msgid "Reset the terminal state for misbehaving clients"
 msgstr "為行為失常的客戶端重設終端機狀態"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:446
+#: src/org.gnome.Ptyxis.gschema.xml.in:478
 msgid "Reset Terminal and Clear History"
 msgstr "重設終端機並清除歷史"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:447
+#: src/org.gnome.Ptyxis.gschema.xml.in:479
 msgid "Reset the terminal state and clear history for misbehaving clients"
 msgstr "為行為失常的客戶端重設終端機狀態，並清除歷史"
 
 #. Translators: Refers to searching the terminal scrollback
-#: src/org.gnome.Ptyxis.gschema.xml.in:453 src/ptyxis-find-bar.ui:39
-#: src/ptyxis-preferences-window.ui:697
+#: src/org.gnome.Ptyxis.gschema.xml.in:485 src/ptyxis-find-bar.ui:39
+#: src/ptyxis-preferences-window.ui:721
 msgid "Search History"
 msgstr "搜尋歷史"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:454
+#: src/org.gnome.Ptyxis.gschema.xml.in:486
 msgid "Shortcut to begin searching the terminal history"
 msgstr "展開終端機歷史紀錄搜尋的快捷鍵"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:459 src/ptyxis-preferences-window.ui:668
+#: src/org.gnome.Ptyxis.gschema.xml.in:491 src/ptyxis-preferences-window.ui:688
 msgid "Select All"
 msgstr "全選"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:460
+#: src/org.gnome.Ptyxis.gschema.xml.in:492
 msgid "Shortcut to select all the entire terminal scrollback"
 msgstr "選取整份終端機回捲內容的快捷鍵"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:465
+#: src/org.gnome.Ptyxis.gschema.xml.in:497
 msgid "Select None"
 msgstr "全不選"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:466
+#: src/org.gnome.Ptyxis.gschema.xml.in:498
 msgid "Shortcut to clear the terminal selection"
 msgstr "清除終端機選取的快捷鍵"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:471
+#: src/org.gnome.Ptyxis.gschema.xml.in:503
 msgid "Popup Menu"
 msgstr "彈出式選單"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:472
+#: src/org.gnome.Ptyxis.gschema.xml.in:504
 msgid "Shortcut to show the popup menu for the terminal"
 msgstr "顯示終端機彈出式選單的快捷鍵"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:477
+#: src/org.gnome.Ptyxis.gschema.xml.in:509
 msgid "Primary Menu"
 msgstr "主選單"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:478
+#: src/org.gnome.Ptyxis.gschema.xml.in:510
 msgid "Shortcut to show the primary menu for the window"
 msgstr "顯示視窗主選單的快捷鍵"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:483
+#: src/org.gnome.Ptyxis.gschema.xml.in:515
 msgid "Tab Menu"
 msgstr "分頁選單"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:484
+#: src/org.gnome.Ptyxis.gschema.xml.in:516
 msgid "Shortcut to show the new tab menu"
 msgstr "顯示新分頁選單的快捷鍵"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:489 src/ptyxis-preferences-window.ui:784
+#. Translators: in this context, "Move" means to switch tabs
+#: src/org.gnome.Ptyxis.gschema.xml.in:522 src/ptyxis-preferences-window.ui:818
 msgid "Move to Previous Tab"
 msgstr "移至上個分頁"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:490
+#. Translators: in this context, "Move" means to switch tabs
+#: src/org.gnome.Ptyxis.gschema.xml.in:524
 msgid "Shortcut to move to the previous tab"
 msgstr "移至上個分頁的快捷鍵"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:495 src/ptyxis-preferences-window.ui:789
+#. Translators: in this context, "Move" means to switch tabs
+#: src/org.gnome.Ptyxis.gschema.xml.in:530 src/ptyxis-preferences-window.ui:824
 msgid "Move to Next Tab"
 msgstr "移至下個分頁"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:496
+#. Translators: in this context, "Move" means to switch tabs
+#: src/org.gnome.Ptyxis.gschema.xml.in:532
 msgid "Shortcut to move to the next tab"
 msgstr "移至下個分頁的快捷鍵"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:501 src/ptyxis-preferences-window.ui:798
+#: src/org.gnome.Ptyxis.gschema.xml.in:537 src/ptyxis-preferences-window.ui:834
 msgid "Move Tab Left"
 msgstr "將分頁左移"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:502
+#: src/org.gnome.Ptyxis.gschema.xml.in:538
 msgid "Shortcut to move the current tab to the left one position"
 msgstr "將目前分頁左移的快捷鍵"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:507 src/ptyxis-preferences-window.ui:804
+#: src/org.gnome.Ptyxis.gschema.xml.in:543 src/ptyxis-preferences-window.ui:841
 msgid "Move Tab Right"
 msgstr "將分頁右移"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:508
+#: src/org.gnome.Ptyxis.gschema.xml.in:544
 msgid "Shortcut to move the current tab to the right one position"
 msgstr "將目前分頁右移的快捷鍵"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:513 src/ptyxis-preferences-window.ui:810
+#: src/org.gnome.Ptyxis.gschema.xml.in:549 src/ptyxis-preferences-window.ui:848
 msgid "Move Tab to New Window"
 msgstr "移動分頁至新視窗"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:514
+#: src/org.gnome.Ptyxis.gschema.xml.in:550
 msgid "Shortcut to move the current tab into a new window"
 msgstr "將目前分頁移動到新視窗的快捷鍵"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:519 src/ptyxis-preferences-window.ui:762
+#: src/org.gnome.Ptyxis.gschema.xml.in:555 src/ptyxis-preferences-window.ui:793
 msgid "Close Tab"
 msgstr "關閉分頁"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:520
+#: src/org.gnome.Ptyxis.gschema.xml.in:556
 msgid "Shortcut to close the current tab"
 msgstr "關閉目前分頁的快捷鍵"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:525 src/ptyxis-preferences-window.ui:768
+#: src/org.gnome.Ptyxis.gschema.xml.in:561 src/ptyxis-preferences-window.ui:800
 msgid "Close Other Tabs"
 msgstr "關閉其他分頁"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:526
+#: src/org.gnome.Ptyxis.gschema.xml.in:562
 msgid "Shortcut to close all tabs in the window but the current one"
 msgstr "關閉視窗中除目前分頁外所有其他分頁的快捷鍵"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:531 src/ptyxis-preferences-window.ui:722
+#: src/org.gnome.Ptyxis.gschema.xml.in:567 src/ptyxis-preferences-window.ui:749
 msgid "Close Window"
 msgstr "關閉視窗"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:532
+#: src/org.gnome.Ptyxis.gschema.xml.in:568
 msgid "Shortcut to close the current window"
 msgstr "關閉目前視窗的快捷鍵"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:537 src/ptyxis-preferences-window.ui:732
-#: src/ptyxis-terminal.ui:244 src/ptyxis-window.c:1139 src/ptyxis-window.ui:602
+#: src/org.gnome.Ptyxis.gschema.xml.in:573 src/ptyxis-preferences-window.ui:760
+#: src/ptyxis-terminal.ui:244 src/ptyxis-window.c:1210 src/ptyxis-window.ui:846
 msgid "Set Title"
 msgstr "設定標題"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:538
+#: src/org.gnome.Ptyxis.gschema.xml.in:574
 msgid "The shortcut to show set title"
 msgstr "顯示設定標題的快捷鍵"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:543
+#: src/org.gnome.Ptyxis.gschema.xml.in:579
 msgid "Focus Tab 1"
 msgstr "聚焦分頁 1"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:544
+#: src/org.gnome.Ptyxis.gschema.xml.in:580
 msgid "Shortcut to focus tab 1"
 msgstr "聚焦分頁 1 的快捷鍵"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:549
+#: src/org.gnome.Ptyxis.gschema.xml.in:585
 msgid "Focus Tab 2"
 msgstr "聚焦分頁 2"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:550
+#: src/org.gnome.Ptyxis.gschema.xml.in:586
 msgid "Shortcut to focus tab 2"
 msgstr "聚焦分頁 2 的快捷鍵"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:555
+#: src/org.gnome.Ptyxis.gschema.xml.in:591
 msgid "Focus Tab 3"
 msgstr "聚焦分頁 3"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:556
+#: src/org.gnome.Ptyxis.gschema.xml.in:592
 msgid "Shortcut to focus tab 3"
 msgstr "聚焦分頁 3 的快捷鍵"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:561
+#: src/org.gnome.Ptyxis.gschema.xml.in:597
 msgid "Focus Tab 4"
 msgstr "聚焦分頁 4"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:562
+#: src/org.gnome.Ptyxis.gschema.xml.in:598
 msgid "Shortcut to focus tab 4"
 msgstr "聚焦分頁 4 的快捷鍵"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:567
+#: src/org.gnome.Ptyxis.gschema.xml.in:603
 msgid "Focus Tab 5"
 msgstr "聚焦分頁 5"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:568
+#: src/org.gnome.Ptyxis.gschema.xml.in:604
 msgid "Shortcut to focus tab 5"
 msgstr "聚焦分頁 5 的快捷鍵"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:573
+#: src/org.gnome.Ptyxis.gschema.xml.in:609
 msgid "Focus Tab 6"
 msgstr "聚焦分頁 6"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:574
+#: src/org.gnome.Ptyxis.gschema.xml.in:610
 msgid "Shortcut to focus tab 6"
 msgstr "聚焦分頁 6 的快捷鍵"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:579
+#: src/org.gnome.Ptyxis.gschema.xml.in:615
 msgid "Focus Tab 7"
 msgstr "聚焦分頁 7"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:580
+#: src/org.gnome.Ptyxis.gschema.xml.in:616
 msgid "Shortcut to focus tab 7"
 msgstr "聚焦分頁 7 的快捷鍵"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:585
+#: src/org.gnome.Ptyxis.gschema.xml.in:621
 msgid "Focus Tab 8"
 msgstr "聚焦分頁 8"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:586
+#: src/org.gnome.Ptyxis.gschema.xml.in:622
 msgid "Shortcut to focus tab 8"
 msgstr "聚焦分頁 8 的快捷鍵"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:591
+#: src/org.gnome.Ptyxis.gschema.xml.in:627
 msgid "Focus Tab 9"
 msgstr "聚焦分頁 9"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:592
+#: src/org.gnome.Ptyxis.gschema.xml.in:628
 msgid "Shortcut to focus tab 9"
 msgstr "聚焦分頁 9 的快捷鍵"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:597
+#: src/org.gnome.Ptyxis.gschema.xml.in:633
 msgid "Focus Tab 10"
 msgstr "聚焦分頁 10"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:598
+#: src/org.gnome.Ptyxis.gschema.xml.in:634
 msgid "Shortcut to focus tab 10"
 msgstr "聚焦分頁 10 的快捷鍵"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:603 src/ptyxis-preferences-window.ui:774
+#: src/org.gnome.Ptyxis.gschema.xml.in:639
+#| msgid "Focus Tab 1"
+msgid "Focus Last Tab"
+msgstr "聚焦最後一個分頁"
+
+#: src/org.gnome.Ptyxis.gschema.xml.in:640
+#| msgid "Shortcut to focus tab 1"
+msgid "Shortcut to focus the last tab"
+msgstr "聚焦最後一個分頁的快捷鍵"
+
+#: src/org.gnome.Ptyxis.gschema.xml.in:645 src/ptyxis-preferences-window.ui:807
 msgid "Undo Close Tab"
 msgstr "取消關閉分頁"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:604
+#: src/org.gnome.Ptyxis.gschema.xml.in:646
 msgid "Undo closing of last tab"
 msgstr "取消上個分頁的關閉動作"
 
-#: src/ptyxis-application.c:450
+#: src/ptyxis-application.c:462
 msgid "--tab, --tab-with-profile, or --new-window may not be used together"
 msgstr "--tab、--tab-with-profile 或 --new-window 可能無法同時使用"
 
-#: src/ptyxis-application.c:496
+#: src/ptyxis-application.c:508
 #, c-format
 msgid "Cannot parse command: %s"
 msgstr "無法解析命令：%s"
 
-#: src/ptyxis-application.c:1109
+#: src/ptyxis-application.c:1142
 msgid "Examples:"
 msgstr "範例："
 
-#: src/ptyxis-application.c:1111
+#: src/ptyxis-application.c:1144
 msgid "Show the application preferences"
 msgstr "顯示應用程式偏好設定"
 
 #. Used for new tabs/windows/etc when specified
-#: src/ptyxis-application.c:1114
+#: src/ptyxis-application.c:1147
 msgid "Use DIR for --tab, --tab-with-profile, --new-window, or -x"
 msgstr "為 --tab、--tab-with-profile、--new-window 或 -x 使用 DIR 目錄"
 
-#: src/ptyxis-application.c:1114
+#: src/ptyxis-application.c:1147
 msgid "DIR"
 msgstr "DIR"
 
 #. By default, this implies a new ptyxis instance unless the options
 #. * below are provided to override that.
 #.
-#: src/ptyxis-application.c:1119
+#: src/ptyxis-application.c:1152
 msgid "Command to execute in new window"
 msgstr "新增視窗中要執行的命令"
 
@@ -872,52 +944,76 @@ msgstr "新增視窗中要執行的命令"
 #. * short command options for these to make it easier to sniff them in early args
 #. * checking from `main.c`.
 #.
-#: src/ptyxis-application.c:1125
+#: src/ptyxis-application.c:1158
 msgid "New terminal window"
 msgstr "新增終端機視窗"
 
-#: src/ptyxis-application.c:1126
+#: src/ptyxis-application.c:1159
 msgid "New terminal tab in active window"
 msgstr "在作用中視窗中新增終端機分頁"
 
-#: src/ptyxis-application.c:1127
+#: src/ptyxis-application.c:1160
 msgid "New terminal tab in active window using the profile UUID"
 msgstr "使用設定檔 UUID 在作用中視窗新增終端機分頁"
 
-#: src/ptyxis-application.c:1127
+#: src/ptyxis-application.c:1160
 msgid "PROFILE_UUID"
 msgstr "PROFILE_UUID"
 
-#: src/ptyxis-application.c:1129
+#. Standalone (single instance mode)
+#: src/ptyxis-application.c:1163
+msgid "Start a new instance, ignoring existing instances"
+msgstr "開啟新實體並忽略既有實體"
+
+#: src/ptyxis-application.c:1165
 msgid "Set title for new tab"
 msgstr "為新分頁設定標題"
 
-#: src/ptyxis-application.c:1130
+#: src/ptyxis-application.c:1166
 msgid "Maximize a newly created window"
-msgstr "最大化新開的視窗"
+msgstr "最大化新開啟的視窗"
 
-#: src/ptyxis-application.c:1137
+#: src/ptyxis-application.c:1167
+#| msgid "Maximize a newly created window"
+msgid "Fullscreen a newly created window"
+msgstr "全螢幕顯示新開啟的視窗"
+
+#. Import a custom .palette file. This works like dragging the file onto preferences
+#: src/ptyxis-application.c:1170
+msgid "Import a Ptyxis palette file"
+msgstr "匯入 Ptyxis 調色盤檔案"
+
+#: src/ptyxis-application.c:1170
+msgid "FILE"
+msgstr "FILE"
+
+#: src/ptyxis-application.c:1177
 msgid "Run Separate Instance"
 msgstr "執行獨立實例"
 
-#: src/ptyxis-application.c:1141
+#: src/ptyxis-application.c:1181
 msgid "Open Preferences"
 msgstr "開啟偏好設定"
 
-#: src/ptyxis-application.c:1145
+#: src/ptyxis-application.c:1185
 msgid "Run Custom Command in New Window"
 msgstr "在新視窗中執行自訂命令"
 
-#: src/ptyxis-application.c:1149
+#: src/ptyxis-application.c:1190
+msgid "Import a custom palette"
+msgstr "匯入自訂調色盤"
+
+#: src/ptyxis-application.c:1193
 msgid "[-- COMMAND ARGUMENTS]"
 msgstr "[-- 命令引數]"
 
-#: src/ptyxis-application.c:1387
+#: src/ptyxis-application.c:1434
 msgid "translator-credits"
 msgstr ""
 "Shihfu Juan <xlion@xlion.tw>, 2024.\n"
 "Taijuin Lee <taijuin@gmail.com>, 2025.\n"
-"Cheng-Chia Tseng <zerngjia@gmail.com>, 2025."
+"Cheng-Chia Tseng <zerngjia@gmail.com>, 2025.\n"
+"Kisaragi Hiu <mail@kisaragi-hiu.com>, 2026."
 
 #: src/ptyxis-close-dialog.c:109
 msgid "_Close"
@@ -944,9 +1040,52 @@ msgstr "取消(_C)"
 msgid "Process %d"
 msgstr "程序 %d"
 
-#: src/ptyxis-container-menu.c:101
-msgid "Unknown Container"
-msgstr "未知容器"
+#: src/ptyxis-custom-link-editor.ui:20
+msgid "Edit Custom Link"
+msgstr "編輯自訂連結"
+
+#: src/ptyxis-custom-link-editor.ui:29
+#| msgid "Custom Font"
+msgid "Custom Link"
+msgstr "自訂連結"
+
+#: src/ptyxis-custom-link-editor.ui:30
+msgid ""
+"A clickable link in the terminal that matches text patterns and opens custom "
+"URLs. Uses regex capture groups to build the final URL (e.g., $1 becomes the "
+"first matched group)."
+msgstr "終端機當中符合文字樣式以開啟自訂網址的可點擊連結。用正則表達式的抓取群組來建構最終的網址（例如：網址樣式中的 $1 會變成第一個符合的群組）"
+
+#: src/ptyxis-custom-link-editor.ui:35
+msgid "Regex Pattern"
+msgstr "正則表達式"
+
+#: src/ptyxis-custom-link-editor.ui:40
+msgid "Target URL"
+msgstr "目標網址"
+
+#: src/ptyxis-custom-link-row.c:131
+#, c-format
+#| msgid "Removed profile “%s”"
+msgid "Removed custom link “%s”"
+msgstr "自訂連結「%s」已移除"
+
+#: src/ptyxis-custom-link-row.c:133 src/ptyxis-profile-editor.c:186
+#: src/ptyxis-profile-row.c:106
+msgid "Undo"
+msgstr "取消動作"
+
+#: src/ptyxis-custom-link-row.ui:26 src/ptyxis-profile-row.ui:33
+msgid "View More"
+msgstr "檢視更多"
+
+#: src/ptyxis-custom-link-row.ui:36 src/ptyxis-profile-row.ui:53
+msgid "_Edit…"
+msgstr "編輯(_E)…"
+
+#: src/ptyxis-custom-link-row.ui:42 src/ptyxis-profile-row.ui:59
+msgid "_Remove"
+msgstr "移除(_R)"
 
 #: src/ptyxis-find-bar.ui:69
 msgid "Search Up"
@@ -972,8 +1111,8 @@ msgstr "比對整個單字(_W)"
 msgid "Use _Regular Expressions"
 msgstr "使用常規表達式(_R)"
 
-#: src/ptyxis-find-bar.ui:128 src/ptyxis-preferences-window.ui:567
-#: src/ptyxis-profile-editor.ui:288
+#: src/ptyxis-find-bar.ui:128 src/ptyxis-preferences-window.ui:572
+#: src/ptyxis-profile-editor.ui:302
 msgid "Close"
 msgstr "關閉"
 
@@ -1002,7 +1141,7 @@ msgstr "欄"
 #. * show the proper `tcgetpgrp()` foreground.
 #.
 #: src/ptyxis-inspector.c:177 src/ptyxis-inspector.c:197
-#: src/ptyxis-preferences-window.ui:503 src/ptyxis-profile-editor.ui:170
+#: src/ptyxis-preferences-window.ui:508 src/ptyxis-profile-editor.ui:184
 msgid "Shell"
 msgstr "Shell"
 
@@ -1071,7 +1210,7 @@ msgstr "單元格大小"
 msgid "Input"
 msgstr "輸入"
 
-#: src/ptyxis-inspector.ui:246 src/ptyxis-preferences-window.ui:241
+#: src/ptyxis-inspector.ui:246 src/ptyxis-preferences-window.ui:246
 msgid "Cursor"
 msgstr "游標"
 
@@ -1087,21 +1226,35 @@ msgstr "滑鼠"
 msgid "Hyperlink"
 msgstr "超連結"
 
-#: src/ptyxis-palette-preview.ui:12
+#: src/ptyxis-menu-row.c:166 src/ptyxis-profile-editor.c:217
+#: src/ptyxis-window.c:1761
+msgid "My Computer"
+msgstr "我的電腦"
+
+#: src/ptyxis-palette-preview.ui:32
 msgid "The quick brown fox jumps over the lazy dog"
 msgstr "The quick brown fox jumps over the lazy dog 南去經三國，東來過五湖"
 
-#: src/ptyxis-preferences-window.c:269
+#: src/ptyxis-preferences-window.c:277
 msgid "Select Font"
 msgstr "選取字型"
 
-#: src/ptyxis-preferences-window.c:344
+#: src/ptyxis-preferences-window.c:352
 msgid "Show Fewer Palettes"
 msgstr "顯示較少的調色盤"
 
-#: src/ptyxis-preferences-window.c:349 src/ptyxis-preferences-window.ui:46
+#: src/ptyxis-preferences-window.c:357 src/ptyxis-preferences-window.ui:46
 msgid "Show All Palettes"
 msgstr "顯示所有調色盤"
+
+#: src/ptyxis-preferences-window.c:382
+#| msgid "_Add Profile"
+msgid "Add Profile"
+msgstr "新增設定檔"
+
+#: src/ptyxis-preferences-window.c:484 src/ptyxis-profile-editor.c:270
+msgid "Add Link"
+msgstr "新增連結"
 
 #: src/ptyxis-preferences-window.ui:72 src/ptyxis-profile-editor.ui:74
 msgid "Transparency"
@@ -1119,405 +1272,408 @@ msgstr "使用系統字型(_F)"
 msgid "Custom Font"
 msgstr "自訂字型"
 
-#: src/ptyxis-preferences-window.ui:193 src/ptyxis-profile-editor.ui:134
-msgid "Use Bright Colors for Bold"
-msgstr "為粗體使用亮色"
-
-#: src/ptyxis-preferences-window.ui:202
+#: src/ptyxis-preferences-window.ui:207
 msgid "Blinking Text"
 msgstr "閃爍文字"
 
-#: src/ptyxis-preferences-window.ui:211 src/ptyxis-preferences-window.ui:435
-#: src/ptyxis-preferences-window.ui:524 src/ptyxis-profile-editor.ui:216
-#: src/ptyxis-profile-editor.ui:245
+#: src/ptyxis-preferences-window.ui:216 src/ptyxis-preferences-window.ui:440
+#: src/ptyxis-preferences-window.ui:529 src/ptyxis-profile-editor.ui:230
+#: src/ptyxis-profile-editor.ui:259
 msgid "Never"
 msgstr "永不"
 
-#: src/ptyxis-preferences-window.ui:217
+#: src/ptyxis-preferences-window.ui:222
 msgid "Focused"
 msgstr "已聚焦"
 
-#: src/ptyxis-preferences-window.ui:223
+#: src/ptyxis-preferences-window.ui:228
 msgid "Unfocused"
 msgstr "未聚焦"
 
-#: src/ptyxis-preferences-window.ui:229 src/ptyxis-preferences-window.ui:447
-#: src/ptyxis-preferences-window.ui:536 src/ptyxis-profile-editor.ui:222
-#: src/ptyxis-profile-editor.ui:257
+#: src/ptyxis-preferences-window.ui:234 src/ptyxis-preferences-window.ui:452
+#: src/ptyxis-preferences-window.ui:541 src/ptyxis-profile-editor.ui:236
+#: src/ptyxis-profile-editor.ui:271
 msgid "Always"
 msgstr "總是"
 
-#: src/ptyxis-preferences-window.ui:253
+#: src/ptyxis-preferences-window.ui:258
 msgid "Block"
 msgstr "方塊"
 
-#: src/ptyxis-preferences-window.ui:259
+#: src/ptyxis-preferences-window.ui:264
 msgid "I-Beam"
 msgstr "工字柱"
 
-#: src/ptyxis-preferences-window.ui:265
+#: src/ptyxis-preferences-window.ui:270
 msgid "Underline"
 msgstr "底線"
 
-#: src/ptyxis-preferences-window.ui:275
+#: src/ptyxis-preferences-window.ui:280
 msgid "Cursor Blinking"
 msgstr "游標閃爍"
 
-#: src/ptyxis-preferences-window.ui:284 src/ptyxis-preferences-window.ui:441
+#: src/ptyxis-preferences-window.ui:289 src/ptyxis-preferences-window.ui:446
 msgid "Follow System"
 msgstr "跟隨系統"
 
-#: src/ptyxis-preferences-window.ui:290
+#: src/ptyxis-preferences-window.ui:295
 msgid "Enabled"
 msgstr "已啟用"
 
-#: src/ptyxis-preferences-window.ui:296
+#: src/ptyxis-preferences-window.ui:301
 msgid "Disabled"
 msgstr "已停用"
 
-#: src/ptyxis-preferences-window.ui:310
+#: src/ptyxis-preferences-window.ui:315
 msgid "Behavior"
 msgstr "行為"
 
-#: src/ptyxis-preferences-window.ui:314
+#: src/ptyxis-preferences-window.ui:319
 msgid "Interface"
 msgstr "介面"
 
-#: src/ptyxis-preferences-window.ui:326
+#: src/ptyxis-preferences-window.ui:331
 msgid "Next"
 msgstr "下一個"
 
-#: src/ptyxis-preferences-window.ui:332
+#: src/ptyxis-preferences-window.ui:337
 msgid "Last"
 msgstr "上一個"
 
-#: src/ptyxis-preferences-window.ui:347
+#: src/ptyxis-preferences-window.ui:352
 msgid "Attempt to restore previous tabs when Ptyxis starts"
 msgstr "在 Ptyxis 啟動時，嘗試復原先前的分頁"
 
-#: src/ptyxis-preferences-window.ui:353
+#: src/ptyxis-preferences-window.ui:358
 msgid "Restore the previous window size when creating a new window"
 msgstr "在開新視窗時，復原先前的視窗大小"
 
-#: src/ptyxis-preferences-window.ui:363
+#: src/ptyxis-preferences-window.ui:368
 msgid "Columns"
 msgstr "欄"
 
-#: src/ptyxis-preferences-window.ui:377
+#: src/ptyxis-preferences-window.ui:382
 msgid "Rows"
 msgstr "列"
 
-#: src/ptyxis-preferences-window.ui:395
+#: src/ptyxis-preferences-window.ui:400
 msgid "Accessibility"
 msgstr "無障礙"
 
-#: src/ptyxis-preferences-window.ui:398
+#: src/ptyxis-preferences-window.ui:403
 msgid "Allow Screen Readers"
 msgstr "允許螢幕閱讀器"
 
-#: src/ptyxis-preferences-window.ui:399
+#: src/ptyxis-preferences-window.ui:404
 msgid ""
 "Permit screen readers such as Orca to read terminal content and typed text"
 msgstr "允許螢幕閱讀器（如 Orca）讀取終端機內容與輸入的文字"
 
-#: src/ptyxis-preferences-window.ui:406
+#: src/ptyxis-preferences-window.ui:411
 msgid "Bell"
 msgstr "響鈴"
 
-#: src/ptyxis-preferences-window.ui:410
+#: src/ptyxis-preferences-window.ui:415
 msgid "Emit an audible bell when requested by active tab"
 msgstr "當作用中分頁作請求時，發出聽覺響鈴"
 
-#: src/ptyxis-preferences-window.ui:415
+#: src/ptyxis-preferences-window.ui:420
 msgid "Visual Bell"
 msgstr "視覺響鈴"
 
-#: src/ptyxis-preferences-window.ui:416
+#: src/ptyxis-preferences-window.ui:421
 msgid "Emit a visual bell when requested by active tab"
 msgstr "當作用中分頁作請求時，發出聽覺響鈴"
 
-#: src/ptyxis-preferences-window.ui:423 src/ptyxis-profile-editor.ui:300
+#: src/ptyxis-preferences-window.ui:428 src/ptyxis-profile-editor.ui:314
 msgid "Scrolling"
 msgstr "捲動"
 
-#: src/ptyxis-preferences-window.ui:426
+#: src/ptyxis-preferences-window.ui:431
 msgid "Use Scrollbars"
 msgstr "使用捲動軸"
 
-#: src/ptyxis-preferences-window.ui:462 src/ptyxis-profile-editor.ui:304
+#: src/ptyxis-preferences-window.ui:467 src/ptyxis-profile-editor.ui:318
 msgid "Scroll to the bottom upon input keystroke"
 msgstr "按鍵輸入時，捲動到底部"
 
-#: src/ptyxis-preferences-window.ui:468 src/ptyxis-profile-editor.ui:310
+#: src/ptyxis-preferences-window.ui:473 src/ptyxis-profile-editor.ui:324
 msgid "Scroll to the bottom when new content is available"
 msgstr "當有新内容時，捲動到底部"
 
-#: src/ptyxis-preferences-window.ui:478 src/ptyxis-profile-editor.ui:320
+#: src/ptyxis-preferences-window.ui:483 src/ptyxis-profile-editor.ui:334
 msgid "Restrict the number of lines saved for scrollback"
 msgstr "限制回捲儲存的列數"
 
-#: src/ptyxis-preferences-window.ui:487 src/ptyxis-profile-editor.ui:329
+#: src/ptyxis-preferences-window.ui:492 src/ptyxis-profile-editor.ui:343
 msgid "The number of lines to keep for scrollback"
 msgstr "為回捲保留的列數"
 
-#: src/ptyxis-preferences-window.ui:506 src/ptyxis-profile-editor.ui:188
+#: src/ptyxis-preferences-window.ui:511 src/ptyxis-profile-editor.ui:202
 msgid "Use Login Shell"
 msgstr "使用登入用 Shell"
 
-#: src/ptyxis-preferences-window.ui:515 src/ptyxis-profile-editor.ui:236
+#: src/ptyxis-preferences-window.ui:520 src/ptyxis-profile-editor.ui:250
 msgid "Preserve Working Directory"
 msgstr "保持工作目錄"
 
-#: src/ptyxis-preferences-window.ui:530 src/ptyxis-profile-editor.ui:251
+#: src/ptyxis-preferences-window.ui:535 src/ptyxis-profile-editor.ui:265
 msgid "Safe"
 msgstr "安全"
 
-#: src/ptyxis-preferences-window.ui:555 src/ptyxis-profile-editor.ui:276
+#: src/ptyxis-preferences-window.ui:560 src/ptyxis-profile-editor.ui:290
 msgid "No Action"
 msgstr "無動作"
 
-#: src/ptyxis-preferences-window.ui:561 src/ptyxis-profile-editor.ui:282
+#: src/ptyxis-preferences-window.ui:566 src/ptyxis-profile-editor.ui:296
 msgid "Restart"
 msgstr "重新啟動"
 
-#: src/ptyxis-preferences-window.ui:579 src/ptyxis-profile-editor.ui:345
+#: src/ptyxis-preferences-window.ui:584 src/ptyxis-profile-editor.ui:359
 msgid "Compatibility"
 msgstr "相容性"
 
-#: src/ptyxis-preferences-window.ui:582 src/ptyxis-profile-editor.ui:348
+#: src/ptyxis-preferences-window.ui:587 src/ptyxis-profile-editor.ui:362
 msgid "Backspace Key"
 msgstr "Backspace 鍵"
 
-#: src/ptyxis-preferences-window.ui:583 src/ptyxis-profile-editor.ui:349
+#: src/ptyxis-preferences-window.ui:588 src/ptyxis-profile-editor.ui:363
 msgid "Sequence to send for Backspace key"
 msgstr "Backspace 鍵的發送序列"
 
-#: src/ptyxis-preferences-window.ui:592 src/ptyxis-profile-editor.ui:358
+#: src/ptyxis-preferences-window.ui:597 src/ptyxis-profile-editor.ui:372
 msgid "Delete Key"
 msgstr "Delete 鍵"
 
-#: src/ptyxis-preferences-window.ui:593 src/ptyxis-profile-editor.ui:359
+#: src/ptyxis-preferences-window.ui:598 src/ptyxis-profile-editor.ui:373
 msgid "Sequence to send for Delete key"
 msgstr "Delete 鍵的發送序列"
 
-#: src/ptyxis-preferences-window.ui:602 src/ptyxis-profile-editor.ui:368
+#: src/ptyxis-preferences-window.ui:607 src/ptyxis-profile-editor.ui:382
 msgid "Ambiguous-width Characters"
 msgstr "模糊寬度字元"
 
-#: src/ptyxis-preferences-window.ui:611 src/ptyxis-profile-editor.ui:377
+#: src/ptyxis-preferences-window.ui:616 src/ptyxis-profile-editor.ui:391
 msgid "Narrow"
 msgstr "窄"
 
-#: src/ptyxis-preferences-window.ui:617 src/ptyxis-profile-editor.ui:383
+#: src/ptyxis-preferences-window.ui:622 src/ptyxis-profile-editor.ui:397
 msgid "Wide"
 msgstr "寬"
 
-#: src/ptyxis-preferences-window.ui:637
+#: src/ptyxis-preferences-window.ui:655
 msgid "Set as Default Terminal"
 msgstr "設定為預設終端機"
 
-#: src/ptyxis-preferences-window.ui:647
+#: src/ptyxis-preferences-window.ui:665
 msgid "Shortcuts"
 msgstr "快捷鍵"
 
-#: src/ptyxis-preferences-window.ui:673
+#: src/ptyxis-preferences-window.ui:694
 msgid "Clear Selection"
 msgstr "清除選取內容"
 
-#: src/ptyxis-preferences-window.ui:682 src/ptyxis-terminal.ui:230
+#: src/ptyxis-preferences-window.ui:704 src/ptyxis-shortcut-accel-dialog.ui:48
+#: src/ptyxis-terminal.ui:230
 msgid "Reset"
 msgstr "重設"
 
-#: src/ptyxis-preferences-window.ui:687 src/ptyxis-terminal.ui:236
+#: src/ptyxis-preferences-window.ui:710 src/ptyxis-terminal.ui:236
 msgid "Reset and Clear"
 msgstr "重設並清除"
 
-#: src/ptyxis-preferences-window.ui:706
+#: src/ptyxis-preferences-window.ui:731
 msgid "Show Context Menu"
 msgstr "顯示情境選單"
 
-#: src/ptyxis-preferences-window.ui:713
+#: src/ptyxis-preferences-window.ui:739
 msgid "Windows"
 msgstr "視窗"
 
-#: src/ptyxis-preferences-window.ui:717
+#: src/ptyxis-preferences-window.ui:743
 msgid "Open a new tab in a new window"
 msgstr "在新視窗中開啟新分頁"
 
-#: src/ptyxis-preferences-window.ui:723
+#: src/ptyxis-preferences-window.ui:750
 msgid "Close the current window"
 msgstr "關閉目前視窗"
 
-#: src/ptyxis-preferences-window.ui:739
+#: src/ptyxis-preferences-window.ui:768
 msgid "Tabs"
 msgstr "分頁"
 
-#: src/ptyxis-preferences-window.ui:743
+#: src/ptyxis-preferences-window.ui:772
 msgid "Open a new tab in the current window"
 msgstr "在目前視窗中開啟新分頁"
 
-#: src/ptyxis-preferences-window.ui:752
+#: src/ptyxis-preferences-window.ui:782
 msgid "View Tab Overview"
 msgstr "檢視分頁概覽"
 
-#: src/ptyxis-preferences-window.ui:753
+#: src/ptyxis-preferences-window.ui:783
 msgid "Show an overview of all tabs within the window"
 msgstr "在視窗中顯示所有分頁的活動概覽"
 
-#: src/ptyxis-preferences-window.ui:763
+#: src/ptyxis-preferences-window.ui:794
 msgid "Close the current tab"
 msgstr "關閉目前分頁"
 
-#: src/ptyxis-preferences-window.ui:769
+#: src/ptyxis-preferences-window.ui:801
 msgid "Close all tabs except the active tab"
 msgstr "關閉除了作用中分頁以外的其他所有分頁"
 
-#: src/ptyxis-preferences-window.ui:775
+#: src/ptyxis-preferences-window.ui:808
 msgid "Undo closing the last tab"
 msgstr "取消關閉上個分頁"
 
-#: src/ptyxis-preferences-window.ui:799
+#: src/ptyxis-preferences-window.ui:835
 msgid "Move the tab one position to the left"
 msgstr "將分頁左移一個位置"
 
-#: src/ptyxis-preferences-window.ui:805
+#: src/ptyxis-preferences-window.ui:842
 msgid "Move the tab one position to the right"
 msgstr "將分頁右移一個位置"
 
-#: src/ptyxis-preferences-window.ui:811
+#: src/ptyxis-preferences-window.ui:849
 msgid "Detach the current tab and move it to a new window"
 msgstr "將目前分頁卸離，並移到新視窗"
 
-#: src/ptyxis-preferences-window.ui:820
+#: src/ptyxis-preferences-window.ui:859
 msgid "Switch to Tab 1"
 msgstr "切換到分頁 1"
 
-#: src/ptyxis-preferences-window.ui:825
+#: src/ptyxis-preferences-window.ui:865
 msgid "Switch to Tab 2"
 msgstr "切換到分頁 2"
 
-#: src/ptyxis-preferences-window.ui:830
+#: src/ptyxis-preferences-window.ui:871
 msgid "Switch to Tab 3"
 msgstr "切換到分頁 3"
 
-#: src/ptyxis-preferences-window.ui:835
+#: src/ptyxis-preferences-window.ui:877
 msgid "Switch to Tab 4"
 msgstr "切換到分頁 4"
 
-#: src/ptyxis-preferences-window.ui:840
+#: src/ptyxis-preferences-window.ui:883
 msgid "Switch to Tab 5"
 msgstr "切換到分頁 5"
 
-#: src/ptyxis-preferences-window.ui:845
+#: src/ptyxis-preferences-window.ui:889
 msgid "Switch to Tab 6"
 msgstr "切換到分頁 6"
 
-#: src/ptyxis-preferences-window.ui:850
+#: src/ptyxis-preferences-window.ui:895
 msgid "Switch to Tab 7"
 msgstr "切換到分頁 7"
 
-#: src/ptyxis-preferences-window.ui:855
+#: src/ptyxis-preferences-window.ui:901
 msgid "Switch to Tab 8"
 msgstr "切換到分頁 8"
 
-#: src/ptyxis-preferences-window.ui:860
+#: src/ptyxis-preferences-window.ui:907
 msgid "Switch to Tab 9"
 msgstr "切換到分頁 9"
 
-#: src/ptyxis-preferences-window.ui:865
+#: src/ptyxis-preferences-window.ui:913
 msgid "Switch to Tab 10"
 msgstr "切換到分頁 10"
 
-#: src/ptyxis-preferences-window.ui:872
+#: src/ptyxis-preferences-window.ui:919
+#| msgid "Switch to Tab 1"
+msgid "Switch to Last Tab"
+msgstr "切換到最後一個分頁"
+
+#: src/ptyxis-preferences-window.ui:927
 msgid "Zoom"
 msgstr "遠近縮放"
 
-#: src/ptyxis-preferences-window.ui:892
+#: src/ptyxis-preferences-window.ui:950
 msgid "Application"
 msgstr "應用程式"
 
-#: src/ptyxis-preferences-window.ui:896
+#: src/ptyxis-preferences-window.ui:954
 msgid "Toggle in and out of fullscreen"
 msgstr "切換進入和退出全螢幕"
 
-#: src/ptyxis-preferences-window.ui:905
+#: src/ptyxis-preferences-window.ui:964
 msgid "Show Primary Menu"
 msgstr "顯示主選單"
 
-#: src/ptyxis-preferences-window.ui:906
+#: src/ptyxis-preferences-window.ui:965
 msgid "Displays the primary menu for the terminal window"
 msgstr "顯示終端機視窗的主選單"
 
-#: src/ptyxis-preferences-window.ui:911
+#: src/ptyxis-preferences-window.ui:971
 msgid "Show New Tab Menu"
 msgstr "顯示新增分頁的主選單"
 
-#: src/ptyxis-preferences-window.ui:912
+#: src/ptyxis-preferences-window.ui:972
 msgid "Displays the new tab menu for the terminal window"
 msgstr "顯示終端機視窗的新增分頁選單"
 
-#: src/ptyxis-preferences-window.ui:918
+#: src/ptyxis-preferences-window.ui:979
 msgid "Show this preferences window"
 msgstr "顯示這個偏好設定視窗"
 
-#: src/ptyxis-preferences-window.ui:927 src/ptyxis-preferences-window.ui:931
-#: src/ptyxis-window.c:1535
+#: src/ptyxis-preferences-window.ui:986
+msgid "Show the keyboard shortcuts configuration"
+msgstr "顯示鍵盤快捷鍵設定"
+
+#: src/ptyxis-preferences-window.ui:996 src/ptyxis-preferences-window.ui:1000
+#: src/ptyxis-window.c:1735 src/ptyxis-window.c:1897
 msgid "Profiles"
 msgstr "設定檔"
 
-#: src/ptyxis-preferences-window.ui:938
-msgid "_Add Profile"
-msgstr "新增設定檔(_A)"
-
-#: src/ptyxis-preferences-window.ui:965 src/ptyxis-profile-editor.ui:415
+#: src/ptyxis-preferences-window.ui:1019 src/ptyxis-profile-editor.ui:442
 msgid "Automatic"
 msgstr "自動"
 
-#: src/ptyxis-preferences-window.ui:971 src/ptyxis-profile-editor.ui:421
+#: src/ptyxis-preferences-window.ui:1025 src/ptyxis-profile-editor.ui:448
 msgid "Control-H"
 msgstr "Control-H"
 
-#: src/ptyxis-preferences-window.ui:977 src/ptyxis-profile-editor.ui:427
+#: src/ptyxis-preferences-window.ui:1031 src/ptyxis-profile-editor.ui:454
 msgid "ASCII DEL"
 msgstr "ASCII DEL"
 
-#: src/ptyxis-preferences-window.ui:983 src/ptyxis-profile-editor.ui:433
+#: src/ptyxis-preferences-window.ui:1037 src/ptyxis-profile-editor.ui:460
 msgid "Escape Sequence"
 msgstr "Esc 序列"
 
-#: src/ptyxis-preferences-window.ui:989 src/ptyxis-profile-editor.ui:439
+#: src/ptyxis-preferences-window.ui:1043 src/ptyxis-profile-editor.ui:466
 msgid "TTY Erase"
 msgstr "TTY 抹除"
 
-#: src/ptyxis-profile.c:577
+#: src/ptyxis-profile.c:729
 msgid "Untitled Profile"
 msgstr "無標題設定檔"
 
-#: src/ptyxis-profile-editor.c:149 src/ptyxis-terminal.c:423
-#: src/ptyxis-terminal.c:455
+#: src/ptyxis-profile-dialog.ui:29 src/ptyxis-terminal.ui:249
+#| msgid "Untitled Profile"
+msgid "Change Profile"
+msgstr "變更設定檔"
+
+#: src/ptyxis-profile-dialog.ui:42 src/ptyxis-profile-editor.ui:31
+msgid "Profile"
+msgstr "設定檔"
+
+#: src/ptyxis-profile-dialog.ui:43
+msgid "Select a profile to apply to this terminal"
+msgstr "選取要套用到此終端機的設定檔"
+
+#: src/ptyxis-profile-editor.c:155 src/ptyxis-terminal.c:440
+#: src/ptyxis-terminal.c:472
 msgid "Copied to clipboard"
 msgstr "已複製到剪貼簿"
 
-#: src/ptyxis-profile-editor.c:178 src/ptyxis-profile-row.c:104
+#: src/ptyxis-profile-editor.c:184 src/ptyxis-profile-row.c:104
 #, c-format
 msgid "Removed profile “%s”"
 msgstr "設定檔「%s」已移除"
 
-#: src/ptyxis-profile-editor.c:180 src/ptyxis-profile-row.c:106
-msgid "Undo"
-msgstr "取消動作"
-
-#: src/ptyxis-profile-editor.c:211
-msgid "My Computer"
-msgstr "我的電腦"
-
-#: src/ptyxis-profile-editor.ui:22 src/ptyxis-tab.c:393 src/ptyxis-tab.c:450
+#: src/ptyxis-profile-editor.ui:22 src/ptyxis-tab.c:504 src/ptyxis-tab.c:561
 msgid "Edit Profile"
 msgstr "編輯設定檔"
-
-#: src/ptyxis-profile-editor.ui:31
-msgid "Profile"
-msgstr "設定檔"
 
 #: src/ptyxis-profile-editor.ui:41
 msgid "Identifier"
@@ -1531,33 +1687,33 @@ msgstr "複製"
 msgid "Color"
 msgstr "顏色"
 
-#: src/ptyxis-profile-editor.ui:159
+#: src/ptyxis-profile-editor.ui:134
+msgid "Use Bright Colors for Bold"
+msgstr "為粗體使用亮色"
+
+#: src/ptyxis-profile-editor.ui:173
 msgid "Network"
 msgstr "網路"
 
-#: src/ptyxis-profile-editor.ui:162
+#: src/ptyxis-profile-editor.ui:176
 msgid "Proxy"
 msgstr "網路代理"
 
-#: src/ptyxis-profile-editor.ui:163
+#: src/ptyxis-profile-editor.ui:177
 msgid "Applies the network proxy settings to the container environment"
 msgstr "將網路代理設定套用到容器環境中"
 
-#: src/ptyxis-profile-editor.ui:198
+#: src/ptyxis-profile-editor.ui:212
 msgid "The default container to use with this profile"
 msgstr "這個設定檔要使用的預設容器"
 
-#: src/ptyxis-profile-editor.ui:207
+#: src/ptyxis-profile-editor.ui:221
 msgid "Preserve the current container when opening new tabs and windows"
 msgstr "打開新分頁和新視窗時，保持目前容器"
 
-#: src/ptyxis-profile-editor.ui:400
+#: src/ptyxis-profile-editor.ui:427
 msgid "Remove Profile"
 msgstr "移除設定檔"
-
-#: src/ptyxis-profile-row.ui:33
-msgid "View More"
-msgstr "檢視更多"
 
 #: src/ptyxis-profile-row.ui:43
 msgid "_Make Default"
@@ -1567,16 +1723,8 @@ msgstr "作為預設(_M)"
 msgid "_Duplicate…"
 msgstr "再製(_D)…"
 
-#: src/ptyxis-profile-row.ui:53
-msgid "_Edit…"
-msgstr "編輯(_E)…"
-
-#: src/ptyxis-profile-row.ui:59
-msgid "_Remove"
-msgstr "移除(_R)"
-
 #. Translators: <b>%s</b> is used to show the provided text in bold
-#: src/ptyxis-shortcut-accel-dialog.c:455
+#: src/ptyxis-shortcut-accel-dialog.c:538
 #, c-format
 msgid "Enter new shortcut to change <b>%s</b>."
 msgstr "輸入新的快捷鍵來變更 <b>%s</b>。"
@@ -1587,28 +1735,33 @@ msgid "Cancel"
 msgstr "取消"
 
 #. do not use underline as it prevents alt+s as an accelerator
-#: src/ptyxis-shortcut-accel-dialog.ui:49
+#: src/ptyxis-shortcut-accel-dialog.ui:56
 msgid "Set"
 msgstr "設定"
 
-#: src/ptyxis-shortcut-accel-dialog.ui:89
+#: src/ptyxis-shortcut-accel-dialog.ui:96
 msgid "Press Escape to cancel or Backspace to disable."
 msgstr "按 Esc 取消，或 Backspace 停用。"
 
-#: src/ptyxis-shortcut-row.c:74
+#: src/ptyxis-shortcut-row.c:84
 msgid "Set Shortcut"
 msgstr "設定快捷鍵"
 
-#: src/ptyxis-shortcut-row.c:194
+#: src/ptyxis-shortcut-row.ui:33
 msgid "disabled"
 msgstr "已停用"
 
-#: src/ptyxis-tab.c:303
+#: src/ptyxis-tab.c:355
+#| msgid "Foreground Process"
+msgid "A foreground process is running"
+msgstr "前景程序執行中"
+
+#: src/ptyxis-tab.c:412
 #, c-format
 msgid "Process Exited from Signal %d"
-msgstr "從訊號 %d 退出的程序"
+msgstr "程序已因訊號 %d 而退出"
 
-#: src/ptyxis-tab.c:306 src/ptyxis-tab.c:329
+#: src/ptyxis-tab.c:415 src/ptyxis-tab.c:438
 msgid "_Restart"
 msgstr "重新啟動(_R)"
 
@@ -1616,66 +1769,66 @@ msgstr "重新啟動(_R)"
 #. * display it again if the tab is removed from the parking lot and
 #. * restored into the window.
 #.
-#: src/ptyxis-tab.c:328
+#: src/ptyxis-tab.c:437
 msgid "Process Exited"
 msgstr "程序已退出"
 
-#: src/ptyxis-tab.c:392
+#: src/ptyxis-tab.c:503
 msgid "Failed to launch terminal"
 msgstr "終端機啟動失敗"
 
-#: src/ptyxis-tab.c:448
+#: src/ptyxis-tab.c:559
 #, c-format
 msgid "Cannot locate container “%s”"
 msgstr "無法定位「%s」容器"
 
-#: src/ptyxis-tab.c:472
+#: src/ptyxis-tab.c:583
 msgid "Failed to create pseudo terminal device"
 msgstr "建立偽終端裝置失敗"
 
-#: src/ptyxis-tab.c:1443
+#: src/ptyxis-tab.c:1650
 msgid "Exited"
 msgstr "已退出"
 
-#: src/ptyxis-tab.c:1445
+#: src/ptyxis-tab.c:1652
 msgid "Failed"
 msgstr "已失敗"
 
-#: src/ptyxis-tab.c:2010
+#: src/ptyxis-tab.c:2240
 msgid "Failed to open link"
 msgstr "開啟連結失敗"
 
-#: src/ptyxis-tab-notify.h:89
+#: src/ptyxis-tab-notify.h:93
 msgid "Command completed"
 msgstr "命令已完成"
 
-#: src/ptyxis-terminal.ui:170
-msgid "Search…"
-msgstr "搜尋…"
-
-#: src/ptyxis-terminal.ui:176
+#: src/ptyxis-terminal.ui:169
 msgid "_Open Link"
 msgstr "開啟連結(_O)"
 
-#: src/ptyxis-terminal.ui:184
+#: src/ptyxis-terminal.ui:174
+msgid "_Copy Link"
+msgstr "複製連結(_C)"
+
+#: src/ptyxis-terminal.ui:182
+msgid "Search…"
+msgstr "搜尋…"
+
+#: src/ptyxis-terminal.ui:189
 msgid "_Copy"
 msgstr "複製(_C)"
 
-#: src/ptyxis-terminal.ui:185
+#: src/ptyxis-terminal.ui:190
 msgid "Copy selection from terminal to clipboard"
 msgstr "從終端機複製選取內容到剪貼簿中"
 
-#: src/ptyxis-terminal.ui:189
+#: src/ptyxis-terminal.ui:194
 msgid "Copy as _HTML"
 msgstr "複製作為 _HTML"
 
-#: src/ptyxis-terminal.ui:190
+#: src/ptyxis-terminal.ui:195
 msgid "Copy selection from terminal to clipboard with HTML formatting"
 msgstr "將終端機中選取的內容，以 HTML 格式複製到剪貼簿中"
-
-#: src/ptyxis-terminal.ui:195
-msgid "_Copy Link"
-msgstr "複製連結(_C)"
 
 #: src/ptyxis-terminal.ui:201
 msgid "_Paste"
@@ -1701,11 +1854,11 @@ msgstr "全不選(_N)"
 msgid "Read-Only"
 msgstr "唯讀"
 
-#: src/ptyxis-terminal.ui:251 src/ptyxis-window.ui:385 src/ptyxis-window.ui:548
+#: src/ptyxis-terminal.ui:257 src/ptyxis-window.ui:409 src/ptyxis-window.ui:791
 msgid "Leave Fullscreen"
 msgstr "退出全螢幕"
 
-#: src/ptyxis-terminal.ui:257
+#: src/ptyxis-terminal.ui:263
 msgid "_Inspect Terminal"
 msgstr "檢查終端機(_I)"
 
@@ -1746,97 +1899,110 @@ msgid "Append title from Shell application"
 msgstr "附加從 Shell 應用程式來的標題"
 
 #. translators: Builder Terminal means this is a terminal bundled with GNOME Builder
-#: src/ptyxis-util.c:310
+#: src/ptyxis-util.c:326
 msgid "Builder Terminal"
 msgstr "Builder 終端機"
 
-#: src/ptyxis-util.c:314
+#: src/ptyxis-util.c:330
 msgid "Ptyxis"
 msgstr "Ptyxis"
 
-#: src/ptyxis-window.c:1408
+#: src/ptyxis-window.c:1518
 msgid "Zoom in"
 msgstr "拉近"
 
-#: src/ptyxis-window.c:1423
+#: src/ptyxis-window.c:1533
 msgid "Zoom out"
 msgstr "拉遠"
 
-#: src/ptyxis-window.c:1538
+#: src/ptyxis-window.c:1729 src/ptyxis-window.c:1901
 msgid "Containers"
 msgstr "容器"
 
-#: src/ptyxis-window.ui:400
+#: src/ptyxis-window.ui:424
 msgid "New Terminal"
 msgstr "新增終端機"
 
-#: src/ptyxis-window.ui:413
+#: src/ptyxis-window.ui:437
 msgid "Show Profiles and Containers"
 msgstr "顯示設定檔和容器"
 
-#: src/ptyxis-window.ui:440
+#: src/ptyxis-window.ui:457
+msgid "Filter…"
+msgstr "過濾…"
+
+#: src/ptyxis-window.ui:610
+msgid "No Matching Results"
+msgstr "無相符結果"
+
+#: src/ptyxis-window.ui:652
 msgid "Main Menu"
 msgstr "主選單"
 
-#: src/ptyxis-window.ui:448 src/ptyxis-window.ui:534
+#: src/ptyxis-window.ui:660 src/ptyxis-window.ui:777
 msgid "Show Open Tabs"
 msgstr "顯示開啟的分頁"
 
-#: src/ptyxis-window.ui:518
+#: src/ptyxis-window.ui:761
 msgid "New _Tab"
 msgstr "新增分頁(_T)"
 
-#: src/ptyxis-window.ui:525
+#: src/ptyxis-window.ui:768
 msgid "New _Window"
 msgstr "開新視窗(_W)"
 
-#: src/ptyxis-window.ui:542
+#: src/ptyxis-window.ui:785
 msgid "Fullscreen"
 msgstr "全螢幕"
 
-#: src/ptyxis-window.ui:556
+#: src/ptyxis-window.ui:799
 msgid "_Preferences"
 msgstr "偏好設定(_P)"
 
-#: src/ptyxis-window.ui:560
+#: src/ptyxis-window.ui:804
 msgid "_Keyboard Shortcuts"
 msgstr "鍵盤快捷鍵(_K)"
 
-#: src/ptyxis-window.ui:564
+#: src/ptyxis-window.ui:808
 msgid "_About"
 msgstr "關於(_A)"
 
-#: src/ptyxis-window.ui:573
+#: src/ptyxis-window.ui:817
 msgid "Move _Left"
 msgstr "左移(_L)"
 
-#: src/ptyxis-window.ui:578
+#: src/ptyxis-window.ui:822
 msgid "Move _Right"
 msgstr "右移(_R)"
 
-#: src/ptyxis-window.ui:583
+#: src/ptyxis-window.ui:827
 msgid "Move to New _Window"
 msgstr "移到新視窗(_W)"
 
-#: src/ptyxis-window.ui:589
+#: src/ptyxis-window.ui:833
 msgid "_Pin Tab"
 msgstr "固定分頁(_P)"
 
-#: src/ptyxis-window.ui:594
+#: src/ptyxis-window.ui:838
 msgid "Un_pin Tab"
 msgstr "取消分頁固定(_P)"
 
-#: src/ptyxis-window.ui:609
+#: src/ptyxis-window.ui:853
 msgid "Close _Other Tabs"
 msgstr "關閉其他分頁(_O)"
 
-#: src/ptyxis-window.ui:614
+#: src/ptyxis-window.ui:858
 msgid "_Close Tab"
 msgstr "關閉分頁(_C)"
 
-#: src/ptyxis-window.ui:621
-msgid "_My Computer"
-msgstr "我的電腦(_M)"
+#~ msgid "Christian Hergert"
+#~ msgstr "Christian Hergert"
+
+#~ msgid "Unknown Container"
+#~ msgstr "未知容器"
+
+#~ msgid "_My Computer"
+#~ msgstr "我的電腦(_M)"
 
 #~ msgid "Search up to next result"
 #~ msgstr "移至上個搜尋結果"
