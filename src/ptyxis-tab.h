@@ -145,5 +145,7 @@ void                ptyxis_tab_open_uri                           (PtyxisTab    
                                                                    const char           *uri);
 char               *ptyxis_tab_query_working_directory_from_agent (PtyxisTab            *self);
 void                ptyxis_tab_grab_focus                         (PtyxisTab            *self);
+void                ptyxis_tab_set_keep_terminal_open             (PtyxisTab            *self,
+                                                                   gboolean              keep_terminal_open);
 
 G_END_DECLS
