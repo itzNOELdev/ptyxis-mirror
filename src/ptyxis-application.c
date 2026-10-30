@@ -1742,6 +1742,7 @@ typedef struct _Spawn
   char *last_working_directory_uri;
   VtePty *pty;
   char **argv;
+  char **env;
 } Spawn;
 
 static void
@@ -1817,6 +1818,7 @@ ptyxis_application_check_shell_cb (GObject      *object,
                              spawn->last_working_directory_uri,
                              spawn->pty,
                              (const char * const *)spawn->argv,
+                             (const char * const *)spawn->env,
                              g_task_get_cancellable (task),
                              ptyxis_application_spawn_cb,
                              g_object_ref (task));
@@ -1870,6 +1872,7 @@ ptyxis_application_spawn_async (PtyxisApplication   *self,
                                 const char          *last_working_directory_uri,
                                 VtePty              *pty,
                                 const char * const  *argv,
+                                const char * const  *env,
                                 GCancellable        *cancellable,
                                 GAsyncReadyCallback  callback,
                                 gpointer             user_data)
@@ -1893,6 +1896,7 @@ ptyxis_application_spawn_async (PtyxisApplication   *self,
   g_set_object (&spawn->pty, pty);
   g_set_str (&spawn->last_working_directory_uri, last_working_directory_uri);
   spawn->argv = g_strdupv ((char **)argv);
+  spawn->env = g_strdupv ((char **)env);
   g_task_set_task_data (task, spawn, spawn_free);
 
   ptyxis_client_discover_shell_async (self->client,

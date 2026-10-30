@@ -93,6 +93,8 @@ const char         *ptyxis_tab_get_uuid                           (PtyxisTab    
 const char         *ptyxis_tab_get_command_line                   (PtyxisTab            *self);
 void                ptyxis_tab_set_command                        (PtyxisTab            *self,
                                                                    const char * const   *command);
+void                ptyxis_tab_set_environment                    (PtyxisTab            *self,
+                                                                   const char * const   *command);
 GIcon              *ptyxis_tab_dup_indicator_icon                 (PtyxisTab            *self);
 char               *ptyxis_tab_dup_subtitle                       (PtyxisTab            *self);
 char               *ptyxis_tab_dup_title                          (PtyxisTab            *self);

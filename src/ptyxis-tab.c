@@ -63,6 +63,7 @@ struct _PtyxisTab
   char                    *uuid;
   PtyxisIpcContainer      *container_at_creation;
   char                   **command;
+  char                   **environment;
   char                    *initial_title;
   GdkTexture              *cached_texture;
   AdwBanner               *banner;
@@ -603,6 +604,7 @@ ptyxis_tab_respawn (PtyxisTab *self)
                                   cwd_uri,
                                   pty,
                                   (const char * const *)self->command,
+                                  (const char * const *)self->environment,
                                   NULL,
                                   ptyxis_tab_spawn_cb,
                                   g_object_ref (self));
@@ -1207,6 +1209,7 @@ ptyxis_tab_dispose (GObject *object)
   g_clear_pointer (&self->title_prefix, g_free);
   g_clear_pointer (&self->initial_title, g_free);
   g_clear_pointer (&self->command, g_strfreev);
+  g_clear_pointer (&self->environment, g_strfreev);
   g_clear_pointer (&self->command_line, g_free);
   g_clear_pointer (&self->program_name, g_free);
 
@@ -2177,6 +2180,18 @@ ptyxis_tab_set_command (PtyxisTab          *self,
   copy = g_strdupv ((char **)command);
   g_strfreev (self->command);
   self->command = copy;
+}
+
+void
+ptyxis_tab_set_environment (PtyxisTab          *self,
+                            const char * const *environment)
+{
+  g_return_if_fail (PTYXIS_IS_TAB (self));
+
+  if (environment != NULL && environment[0] == NULL)
+    environment = NULL;
+
+  g_set_strv (&self->environment, environment);
 }
 
 const char *
