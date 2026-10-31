@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: ptyxis main\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/chergert/ptyxis/issues\n"
 "POT-Creation-Date: 2026-07-31 22:53+0000\n"
-"PO-Revision-Date: 2026-10-31 14:01+0100\n"
+"PO-Revision-Date: 2026-10-31 14:33+0100\n"
 "Last-Translator: Marcel Mrówka <micro.mail88@gmail.com>\n"
 "Language-Team: Polish <https://l10n.gnome.org/teams/pl/>\n"
 "Language: pl\n"
@@ -1256,7 +1256,7 @@ msgstr "Mój komputer"
 
 #: src/ptyxis-palette-preview.ui:32
 msgid "The quick brown fox jumps over the lazy dog"
-msgstr "Zażółć gęślą jaźń"
+msgstr "Pchnąć w tę łódź jeża lub ośm skrzyń fig"
 
 #: src/ptyxis-preferences-window.c:277
 msgid "Select Font"
