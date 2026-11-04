@@ -1,6 +1,6 @@
 /* ptyxis-close-dialog.c
  *
- * Copyright 2021 Christian Hergert <chergert@redhat.com>
+ * Copyright 2021 Christian Hergert <christian@sourceandstack.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

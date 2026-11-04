@@ -1,6 +1,6 @@
 /* ptyxis-action-group.h
  *
- * Copyright 2017-2023 Christian Hergert <chergert@redhat.com>
+ * Copyright 2017-2023 Christian Hergert <christian@sourceandstack.com>
  *
  * This file is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free

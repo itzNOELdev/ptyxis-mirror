@@ -1,6 +1,6 @@
 /* ptyxis-run-context.c
  *
- * Copyright 2022 Christian Hergert <chergert@redhat.com>
+ * Copyright 2022 Christian Hergert <christian@sourceandstack.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

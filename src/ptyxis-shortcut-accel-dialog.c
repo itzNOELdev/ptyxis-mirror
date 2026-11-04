@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  * Authors: Georges Basile Stavracas Neto <georges.stavracas@gmail.com>
- *          Christian Hergert <chergert@redhat.com>
+ *          Christian Hergert <christian@sourceandstack.com>
  */
 
 #include "config.h"
