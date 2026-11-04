@@ -1,0 +1,11 @@
+[Unit]
+Description=@app_name@
+PartOf=graphical-session.target
+
+[Service]
+Type=dbus
+BusName=@app_id@
+ExecStart=@bindir@/ptyxis --gapplication-service
+Slice=app.slice
+# Keep the UI available when oomd can reclaim a tab's separate scope instead.
+ManagedOOMPreference=avoid

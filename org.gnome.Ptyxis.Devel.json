@@ -101,7 +101,8 @@
             "buildsystem" : "meson",
             "config-opts" : [
                 "-Ddevelopment=true",
-                "-Dlibc-compat=true"
+                "-Dlibc-compat=true",
+                "-Dsystemd=false"
             ],
             "sources" : [
                 {

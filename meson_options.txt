@@ -5,6 +5,7 @@ option('generic', type: 'combo', value: 'ptyxis',
 option('app-id', type: 'string', value: '', description: 'An alternate app-id to use for the application')
 option('gschema-id', type: 'string', value: '', description: 'An alternative gschema identifier prefix')
 option('gschema-path', type: 'string', value: '', description: 'An alternative gschema path to use')
+option('systemd', type: 'boolean', value: true, description: 'Install a systemd user service for native D-Bus activation')
 
 # Building with libc-compat is generally just useful when building the Flatpak
 # since that is where we will want to build a binary that can run on the host

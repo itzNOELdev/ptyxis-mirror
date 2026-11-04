@@ -57,6 +57,25 @@ test('Validate schema file',
 dbusconf = configuration_data()
 dbusconf.set('app_id', app_id)
 dbusconf.set('bindir', join_paths(get_option('prefix'), get_option('bindir')))
+dbusconf.set('systemd_service', '')
+
+if host_machine.system() == 'linux' and get_option('systemd')
+  systemd_service = 'app-@0@.service'.format(app_id)
+  dbusconf.set('systemd_service', 'SystemdService=@0@'.format(systemd_service))
+
+  systemdconf = configuration_data()
+  systemdconf.set('app_id', app_id)
+  systemdconf.set('app_name', app_name)
+  systemdconf.set('bindir', get_option('prefix') / get_option('bindir'))
+  configure_file(
+            input: 'ptyxis.service.in',
+           output: systemd_service,
+    configuration: systemdconf,
+          install: true,
+      install_dir: get_option('prefix') / 'lib' / 'systemd' / 'user',
+  )
+endif
+
 configure_file(
           input: 'org.gnome.Ptyxis.service.in',
          output: '@0@.service'.format(app_id),
