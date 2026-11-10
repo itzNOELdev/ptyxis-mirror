@@ -11,6 +11,7 @@
             <child>
               <object class="AdwActionRow" id="command">
                 <property name="title" translatable="yes">Foreground Process</property>
+                <property name="use-markup">false</property>
                 <style>
                   <class name="property"/>
                 </style>
@@ -31,6 +32,7 @@
             <child>
               <object class="AdwActionRow" id="window_title">
                 <property name="title" translatable="yes">Window Title</property>
+                <property name="use-markup">false</property>
                 <style>
                   <class name="property"/>
                 </style>
@@ -43,6 +45,7 @@
             <child>
               <object class="AdwActionRow" id="current_directory">
                 <property name="title" translatable="yes">Current Directory</property>
+                <property name="use-markup">false</property>
                 <style>
                   <class name="property"/>
                 </style>
@@ -51,6 +54,7 @@
             <child>
               <object class="AdwActionRow" id="current_file">
                 <property name="title" translatable="yes">Current File</property>
+                <property name="use-markup">false</property>
                 <style>
                   <class name="property"/>
                 </style>
@@ -64,6 +68,7 @@
             <child>
               <object class="AdwActionRow" id="container_runtime">
                 <property name="title" translatable="yes">Runtime</property>
+                <property name="use-markup">false</property>
                 <style>
                   <class name="property"/>
                 </style>
@@ -72,6 +77,7 @@
             <child>
               <object class="AdwActionRow" id="container_name">
                 <property name="title" translatable="yes">Name</property>
+                <property name="use-markup">false</property>
                 <style>
                   <class name="property"/>
                 </style>
@@ -226,6 +232,7 @@
             <child>
               <object class="AdwActionRow" id="font_desc">
                 <property name="title" translatable="yes">Name</property>
+                <property name="use-markup">false</property>
               </object>
             </child>
             <child>
@@ -268,6 +275,7 @@
             <child>
               <object class="AdwActionRow" id="hyperlink_hover">
                 <property name="title" translatable="yes">Hyperlink</property>
+                <property name="use-markup">false</property>
               </object>
             </child>
           </object>
