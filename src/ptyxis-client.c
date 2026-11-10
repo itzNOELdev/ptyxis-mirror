@@ -388,6 +388,7 @@ ptyxis_client_new (gboolean   in_sandbox,
     }
 
   g_subprocess_launcher_take_fd (launcher, pair[1], 3);
+  g_subprocess_launcher_unsetenv (launcher, "SYSPROF_CONTROL_FD");
 
   pair[0] = -1;
   pair[1] = -1;
