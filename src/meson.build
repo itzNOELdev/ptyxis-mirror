@@ -105,13 +105,8 @@ endif
 
 ptyxis_c_args = [
   release_link_args,
+  deprecated_c_args,
   '-DG_LOG_DOMAIN="Ptyxis"',
-  '-DGLIB_VERSION_MIN_REQUIRED=GLIB_VERSION_@0@'.format(glib_req_version.replace('.', '_')),
-  '-DGLIB_VERSION_MAX_ALLOWED=GLIB_VERSION_@0@'.format(glib_req_version.replace('.', '_')),
-  '-DGDK_VERSION_MIN_REQUIRED=GDK_VERSION_@0@'.format(gtk_req_version.replace('.', '_')),
-  '-DGDK_VERSION_MAX_ALLOWED=GDK_VERSION_@0@'.format(gtk_req_version.replace('.', '_')),
-  '-DADW_VERSION_MIN_REQUIRED=ADW_VERSION_@0@'.format(adwaita_req_version.replace('.', '_')),
-  '-DADW_VERSION_MAX_ALLOWED=ADW_VERSION_@0@'.format(adwaita_req_version.replace('.', '_')),
 ]
 
 ptyxis_include_directories = [

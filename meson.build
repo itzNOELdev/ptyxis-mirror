@@ -50,6 +50,22 @@ adwaita_req_version = '1.8'
 json_glib_req_version = '1.6'
 vte_req_version = '0.79'
 
+gtk_major_version = gtk_req_version.split('.')[0].to_int()
+gtk_minor_version = gtk_req_version.split('.')[1].to_int()
+if gtk_minor_version % 2 == 1
+  gtk_minor_version = gtk_minor_version + 1
+endif
+
+deprecated_c_args = [
+  '-DG_DISABLE_DEPRECATED',
+  '-DGLIB_VERSION_MIN_REQUIRED=GLIB_VERSION_@0@'.format(glib_req_version.replace('.', '_')),
+  '-DGLIB_VERSION_MAX_ALLOWED=GLIB_VERSION_@0@'.format(glib_req_version.replace('.', '_')),
+  '-DGDK_VERSION_MIN_REQUIRED=GDK_VERSION_@0@_@1@'.format(gtk_major_version, gtk_minor_version),
+  '-DGDK_VERSION_MAX_ALLOWED=GDK_VERSION_@0@_@1@'.format(gtk_major_version, gtk_minor_version),
+  '-DADW_VERSION_MIN_REQUIRED=ADW_VERSION_@0@'.format(adwaita_req_version.replace('.', '_')),
+  '-DADW_VERSION_MAX_ALLOWED=ADW_VERSION_@0@'.format(adwaita_req_version.replace('.', '_')),
+]
+
 glib_req = '>= @0@'.format(glib_req_version)
 gtk_req = '>= @0@'.format(gtk_req_version)
 adwaita_req = '>= @0@'.format(adwaita_req_version)
