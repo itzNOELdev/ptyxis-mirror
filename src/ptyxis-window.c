@@ -1103,7 +1103,11 @@ ptyxis_window_notify_is_active_cb (PtyxisWindow *self,
         GdkSurface *surface = gtk_native_get_surface (GTK_NATIVE (self));
 
         if (GDK_IS_X11_SURFACE (surface))
-          gdk_x11_surface_set_urgency_hint (surface, FALSE);
+          {
+            G_GNUC_BEGIN_IGNORE_DEPRECATIONS
+            gdk_x11_surface_set_urgency_hint (surface, FALSE);
+            G_GNUC_END_IGNORE_DEPRECATIONS
+          }
       }
 #endif
     }
