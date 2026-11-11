@@ -26,6 +26,9 @@ Color15=#ffffff
 [Dark]
 Foreground=#aaaaaa
 Background=#000000
+SelectedTabBackground=rgba(255, 255, 255, 0.12)
+SelectedTabHoverBackground=rgba(255, 255, 255, 0.15)
+SelectedTabActiveBackground=rgba(255, 255, 255, 0.21)
 Cursor=#aaaaaa
 Color0=#000000
 Color1=#aa0000
