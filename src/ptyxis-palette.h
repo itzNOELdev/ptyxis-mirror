@@ -44,6 +44,9 @@ typedef struct _PtyxisPaletteFace
   GdkRGBA foreground;
   GdkRGBA titlebar_background;
   GdkRGBA titlebar_foreground;
+  GdkRGBA selected_tab_background;
+  GdkRGBA selected_tab_hover_background;
+  GdkRGBA selected_tab_active_background;
   GdkRGBA cursor_bg;
   GdkRGBA cursor_fg;
   GdkRGBA indexed[16];
@@ -55,6 +58,9 @@ typedef struct _PtyxisPaletteFace
       PtyxisPaletteScarf remote;
     };
   };
+  guint has_selected_tab_background : 1;
+  guint has_selected_tab_hover_background : 1;
+  guint has_selected_tab_active_background : 1;
 } PtyxisPaletteFace;
 
 G_DECLARE_FINAL_TYPE (PtyxisPalette, ptyxis_palette, PTYXIS, PALETTE, GObject)

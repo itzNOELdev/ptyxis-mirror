@@ -390,6 +390,27 @@ ptyxis_palette_load_face (const char         *path,
   if (!ptyxis_palette_load_color (path, &face->titlebar_background, key_file, scheme, "TitlebarBackground", NULL))
     face->titlebar_background = dark ? _gdk_rgba_shade (&face->background, 1.25) : face->background;
 
+  if (g_key_file_has_key (key_file, scheme, "SelectedTabBackground", NULL))
+    {
+      if (!ptyxis_palette_load_color (path, &face->selected_tab_background, key_file, scheme, "SelectedTabBackground", error))
+        return FALSE;
+      face->has_selected_tab_background = TRUE;
+    }
+
+  if (g_key_file_has_key (key_file, scheme, "SelectedTabHoverBackground", NULL))
+    {
+      if (!ptyxis_palette_load_color (path, &face->selected_tab_hover_background, key_file, scheme, "SelectedTabHoverBackground", error))
+        return FALSE;
+      face->has_selected_tab_hover_background = TRUE;
+    }
+
+  if (g_key_file_has_key (key_file, scheme, "SelectedTabActiveBackground", NULL))
+    {
+      if (!ptyxis_palette_load_color (path, &face->selected_tab_active_background, key_file, scheme, "SelectedTabActiveBackground", error))
+        return FALSE;
+      face->has_selected_tab_active_background = TRUE;
+    }
+
   if (!ptyxis_palette_load_color (path, &face->visual_bell.foreground, key_file, scheme, "BellForeground", NULL))
     face->visual_bell.foreground = face->titlebar_foreground;
   if (!ptyxis_palette_load_color (path, &face->visual_bell.background, key_file, scheme, "BellBackground", NULL))

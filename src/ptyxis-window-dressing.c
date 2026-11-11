@@ -162,6 +162,33 @@ ptyxis_window_dressing_update (PtyxisWindowDressing *self)
                               self->css_class, fg,
                               self->css_class, fg);
 
+      if (face->has_selected_tab_background)
+        {
+          g_autofree char *color = gdk_rgba_to_string (&face->selected_tab_background);
+
+          g_string_append_printf (string,
+                                  "window.%s tabbar tab:selected { background-color: %s; }\n",
+                                  self->css_class, color);
+        }
+
+      if (face->has_selected_tab_hover_background)
+        {
+          g_autofree char *color = gdk_rgba_to_string (&face->selected_tab_hover_background);
+
+          g_string_append_printf (string,
+                                  "window.%s tabbar tab:selected:hover { background-color: %s; }\n",
+                                  self->css_class, color);
+        }
+
+      if (face->has_selected_tab_active_background)
+        {
+          g_autofree char *color = gdk_rgba_to_string (&face->selected_tab_active_background);
+
+          g_string_append_printf (string,
+                                  "window.%s tabbar tab:selected:active { background-color: %s; }\n",
+                                  self->css_class, color);
+        }
+
       visual_process_leader = ptyxis_settings_get_visual_process_leader (settings);
 
       g_string_append_printf (string,
