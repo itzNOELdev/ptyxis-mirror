@@ -58,24 +58,22 @@ ptyxis_profile_row_duplicate (GtkWidget  *widget,
   profile = ptyxis_profile_duplicate (self->profile);
 }
 
-G_GNUC_BEGIN_IGNORE_DEPRECATIONS
-
 static void
 ptyxis_profile_row_edit (GtkWidget  *widget,
                          const char *action_name,
                          GVariant   *param)
 {
-  AdwPreferencesWindow *window;
+  AdwPreferencesDialog *window;
   PtyxisProfileEditor *editor;
   PtyxisProfileRow *self = (PtyxisProfileRow *)widget;
 
   g_assert (PTYXIS_IS_PROFILE_ROW (self));
 
-  window = ADW_PREFERENCES_WINDOW (gtk_widget_get_ancestor (widget, ADW_TYPE_PREFERENCES_WINDOW));
+  window = ADW_PREFERENCES_DIALOG (gtk_widget_get_ancestor (widget, ADW_TYPE_PREFERENCES_DIALOG));
   editor = ptyxis_profile_editor_new (self->profile);
 
-  adw_preferences_window_pop_subpage (ADW_PREFERENCES_WINDOW (window));
-  adw_preferences_window_push_subpage (ADW_PREFERENCES_WINDOW (window),
+  adw_preferences_dialog_pop_subpage (ADW_PREFERENCES_DIALOG (window));
+  adw_preferences_dialog_push_subpage (ADW_PREFERENCES_DIALOG (window),
                                        ADW_NAVIGATION_PAGE (editor));
 }
 
@@ -95,12 +93,12 @@ ptyxis_profile_row_remove (GtkWidget  *widget,
                            GVariant   *param)
 {
   PtyxisProfileRow *self = (PtyxisProfileRow *)widget;
-  AdwPreferencesWindow *window;
+  AdwPreferencesDialog *window;
   AdwToast *toast;
 
   g_assert (PTYXIS_IS_PROFILE_ROW (self));
 
-  window = ADW_PREFERENCES_WINDOW (gtk_widget_get_ancestor (widget, ADW_TYPE_PREFERENCES_WINDOW));
+  window = ADW_PREFERENCES_DIALOG (gtk_widget_get_ancestor (widget, ADW_TYPE_PREFERENCES_DIALOG));
   toast = adw_toast_new_format (_("Removed profile “%s”"),
                                 ptyxis_profile_dup_label (self->profile));
   adw_toast_set_button_label (toast, _("Undo"));
@@ -113,10 +111,8 @@ ptyxis_profile_row_remove (GtkWidget  *widget,
 
   ptyxis_application_remove_profile (PTYXIS_APPLICATION_DEFAULT, self->profile);
 
-  adw_preferences_window_add_toast (window, toast);
+  adw_preferences_dialog_add_toast (window, toast);
 }
-
-G_GNUC_END_IGNORE_DEPRECATIONS
 
 static void
 ptyxis_profile_row_make_default (GtkWidget  *widget,

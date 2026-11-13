@@ -1258,11 +1258,15 @@ ptyxis_application_edit_profile (GSimpleAction *action,
 
   profile_uuid = g_variant_get_string (param, NULL);
 
-  if ((ptyxis_application_dup_profile (self, profile_uuid)))
+  if ((profile = ptyxis_application_dup_profile (self, profile_uuid)))
     {
-      PtyxisPreferencesWindow *window = ptyxis_preferences_window_get_default ();
+      PtyxisWindow *parent = get_current_window (self);
+      PtyxisPreferencesWindow *dialog;
 
-      ptyxis_preferences_window_edit_profile (window, profile);
+      dialog = ptyxis_preferences_window_present (GTK_WIDGET (parent),
+                                                  parent != NULL &&
+                                                  gtk_widget_get_width (GTK_WIDGET (parent)) <= 400);
+      ptyxis_preferences_window_edit_profile (dialog, profile);
     }
 }
 
@@ -1488,14 +1492,15 @@ ptyxis_application_preferences (GSimpleAction *action,
                                 GVariant      *param,
                                 gpointer       user_data)
 {
-  PtyxisPreferencesWindow *window;
   PtyxisApplication *self = user_data;
+  PtyxisWindow *parent;
 
   g_assert (PTYXIS_IS_APPLICATION (self));
 
-  window = ptyxis_preferences_window_get_default ();
-  gtk_application_add_window (GTK_APPLICATION (self), GTK_WINDOW (window));
-  gtk_window_present (GTK_WINDOW (window));
+  parent = get_current_window (self);
+  ptyxis_preferences_window_present (GTK_WIDGET (parent),
+                                     parent != NULL &&
+                                     gtk_widget_get_width (GTK_WIDGET (parent)) <= 400);
 }
 
 static void

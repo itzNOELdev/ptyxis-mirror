@@ -77,23 +77,21 @@ removed_custom_link_undo_info_new (PtyxisProfile    *profile,
 
 /* Methods for PtyxisCustomLinkRow */
 
-G_GNUC_BEGIN_IGNORE_DEPRECATIONS
-
 static void
 ptyxis_custom_link_row_edit (GtkWidget  *widget,
                              const char *action_name,
                              GVariant   *param)
 {
-  AdwPreferencesWindow *window;
+  AdwPreferencesDialog *window;
   PtyxisCustomLinkEditor *editor;
   PtyxisCustomLinkRow *self = PTYXIS_CUSTOM_LINK_ROW (widget);
 
   g_assert (PTYXIS_IS_CUSTOM_LINK_ROW (self));
 
-  window = ADW_PREFERENCES_WINDOW (gtk_widget_get_ancestor (widget, ADW_TYPE_PREFERENCES_WINDOW));
+  window = ADW_PREFERENCES_DIALOG (gtk_widget_get_ancestor (widget, ADW_TYPE_PREFERENCES_DIALOG));
   editor = ptyxis_custom_link_editor_new (self->profile, self->custom_link);
 
-  adw_preferences_window_push_subpage (ADW_PREFERENCES_WINDOW (window),
+  adw_preferences_dialog_push_subpage (ADW_PREFERENCES_DIALOG (window),
                                        ADW_NAVIGATION_PAGE (editor));
 }
 
@@ -116,13 +114,13 @@ ptyxis_custom_link_row_remove (GtkWidget  *widget,
                                GVariant   *param)
 {
   PtyxisCustomLinkRow *self = (PtyxisCustomLinkRow *)widget;
-  AdwPreferencesWindow *window;
+  AdwPreferencesDialog *window;
   AdwToast *toast;
   guint index;
 
   g_assert (PTYXIS_IS_CUSTOM_LINK_ROW (self));
 
-  window = ADW_PREFERENCES_WINDOW (gtk_widget_get_ancestor (widget, ADW_TYPE_PREFERENCES_WINDOW));
+  window = ADW_PREFERENCES_DIALOG (gtk_widget_get_ancestor (widget, ADW_TYPE_PREFERENCES_DIALOG));
 
   if (ptyxis_profile_remove_custom_link (self->profile, self->custom_link, &index))
     {
@@ -141,11 +139,9 @@ ptyxis_custom_link_row_remove (GtkWidget  *widget,
                              (GClosureNotify)removed_custom_link_undo_info_free,
                              0);
 
-      adw_preferences_window_add_toast (window, toast);
+      adw_preferences_dialog_add_toast (window, toast);
     }
 }
-
-G_GNUC_END_IGNORE_DEPRECATIONS
 
 static void
 ptyxis_custom_link_row_constructed (GObject *object)

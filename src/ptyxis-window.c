@@ -1325,29 +1325,10 @@ ptyxis_window_preferences_action (GtkWidget  *widget,
                                   GVariant   *param)
 {
   PtyxisWindow *self = (PtyxisWindow *)widget;
-  PtyxisApplication *app;
-  const GList *windows;
-  GtkWindow *window;
-
   g_assert (PTYXIS_IS_WINDOW (self));
 
-  app = PTYXIS_APPLICATION_DEFAULT;
-  windows = gtk_application_get_windows (GTK_APPLICATION (app));
-
-  for (const GList *iter = windows; iter != NULL; iter = iter->next)
-    {
-      if (PTYXIS_IS_PREFERENCES_WINDOW (iter->data))
-        {
-          gtk_window_present (GTK_WINDOW (iter->data));
-          return;
-        }
-    }
-
-  window = ptyxis_preferences_window_new (GTK_APPLICATION (app));
-  gtk_application_add_window (GTK_APPLICATION (app), GTK_WINDOW (window));
-  gtk_window_set_transient_for (window, GTK_WINDOW (self));
-  gtk_window_set_modal (window, FALSE);
-  gtk_window_present (window);
+  ptyxis_preferences_window_present (GTK_WIDGET (self),
+                                     gtk_widget_get_width (GTK_WIDGET (self)) <= 400);
 }
 
 static void
@@ -1356,13 +1337,13 @@ ptyxis_window_show_keyboard_shortcuts_action (GtkWidget  *widget,
                                               GVariant   *param)
 {
   PtyxisWindow *self = (PtyxisWindow *)widget;
-  PtyxisPreferencesWindow *window;
+  PtyxisPreferencesWindow *dialog;
 
   g_assert (PTYXIS_IS_WINDOW (self));
 
-  window = ptyxis_preferences_window_get_default ();
-  ptyxis_preferences_window_edit_shortcuts (window);
-  gtk_window_present (GTK_WINDOW (window));
+  dialog = ptyxis_preferences_window_present (GTK_WIDGET (self),
+                                     gtk_widget_get_width (GTK_WIDGET (self)) <= 400);
+  ptyxis_preferences_window_edit_shortcuts (dialog);
 }
 
 static void

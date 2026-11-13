@@ -27,12 +27,12 @@ G_BEGIN_DECLS
 
 #define PTYXIS_TYPE_PREFERENCES_WINDOW (ptyxis_preferences_window_get_type())
 
-G_DECLARE_FINAL_TYPE (PtyxisPreferencesWindow, ptyxis_preferences_window, PTYXIS, PREFERENCES_WINDOW, AdwPreferencesWindow)
+G_DECLARE_FINAL_TYPE (PtyxisPreferencesWindow, ptyxis_preferences_window, PTYXIS, PREFERENCES_WINDOW, AdwPreferencesDialog)
 
-PtyxisPreferencesWindow *ptyxis_preferences_window_get_default    (void);
-GtkWindow               *ptyxis_preferences_window_new            (GtkApplication          *application);
 void                     ptyxis_preferences_window_edit_profile   (PtyxisPreferencesWindow *self,
                                                                    PtyxisProfile           *profile);
 void                     ptyxis_preferences_window_edit_shortcuts (PtyxisPreferencesWindow *self);
+PtyxisPreferencesWindow *ptyxis_preferences_window_present        (GtkWidget               *parent,
+                                                                   gboolean                 narrow);
 
 G_END_DECLS

@@ -170,17 +170,15 @@ ptyxis_profile_editor_profile_delete (GtkWidget  *widget,
                                       const char *action_name,
                                       GVariant   *param)
 {
-G_GNUC_BEGIN_IGNORE_DEPRECATIONS
-
   PtyxisProfileEditor *self = (PtyxisProfileEditor *)widget;
-  AdwPreferencesWindow *window;
+  AdwPreferencesDialog *window;
   AdwToast *toast;
 
   g_assert (PTYXIS_IS_PROFILE_EDITOR (self));
 
   g_object_ref (self);
 
-  window = ADW_PREFERENCES_WINDOW (gtk_widget_get_ancestor (widget, ADW_TYPE_PREFERENCES_WINDOW));
+  window = ADW_PREFERENCES_DIALOG (gtk_widget_get_ancestor (widget, ADW_TYPE_PREFERENCES_DIALOG));
   toast = adw_toast_new_format (_("Removed profile “%s”"),
                                 ptyxis_profile_dup_label (self->profile));
   adw_toast_set_button_label (toast, _("Undo"));
@@ -193,13 +191,11 @@ G_GNUC_BEGIN_IGNORE_DEPRECATIONS
 
   ptyxis_application_remove_profile (PTYXIS_APPLICATION_DEFAULT, self->profile);
 
-  adw_preferences_window_add_toast (window, toast);
+  adw_preferences_dialog_add_toast (window, toast);
 
-  adw_preferences_window_pop_subpage (window);
+  adw_preferences_dialog_pop_subpage (window);
 
   g_object_unref (self);
-
-G_GNUC_END_IGNORE_DEPRECATIONS
 }
 
 static char *
@@ -493,21 +489,18 @@ ptyxis_profile_editor_add_custom_link (GtkWidget  *widget,
 {
   PtyxisProfileEditor *self = (PtyxisProfileEditor *)widget;
   g_autoptr(PtyxisCustomLink) custom_link = NULL;
+  AdwPreferencesDialog *dialog;
+  PtyxisCustomLinkEditor *editor;
 
   g_assert (PTYXIS_IS_PROFILE_EDITOR (self));
 
   custom_link = ptyxis_custom_link_new ();
   ptyxis_profile_add_custom_link (self->profile, custom_link);
 
-  G_GNUC_BEGIN_IGNORE_DEPRECATIONS {
-    AdwPreferencesWindow *window;
-    PtyxisCustomLinkEditor *editor;
+  dialog = ADW_PREFERENCES_DIALOG (gtk_widget_get_ancestor (widget, ADW_TYPE_PREFERENCES_DIALOG));
+  editor = ptyxis_custom_link_editor_new (self->profile, custom_link);
 
-    window = ADW_PREFERENCES_WINDOW (gtk_widget_get_ancestor (widget, ADW_TYPE_PREFERENCES_WINDOW));
-    editor = ptyxis_custom_link_editor_new (self->profile, custom_link);
-
-    adw_preferences_window_push_subpage (window, ADW_NAVIGATION_PAGE (editor));
-  } G_GNUC_END_IGNORE_DEPRECATIONS
+  adw_preferences_dialog_push_subpage (dialog, ADW_NAVIGATION_PAGE (editor));
 }
 
 static void

@@ -39,15 +39,9 @@
 #include "ptyxis-util.h"
 
 
-/* This will not transition to AdwDialog until there is a way for
- * toplevel windows _with_ transient-for set to maintain window
- * group ordering.
- */
-G_GNUC_BEGIN_IGNORE_DEPRECATIONS
-
 struct _PtyxisPreferencesWindow
 {
-  AdwPreferencesWindow  parent_instance;
+  AdwPreferencesDialog  parent_instance;
 
   char                 *default_palette_id;
   GtkCustomFilter      *filter;
@@ -140,7 +134,7 @@ struct _PtyxisPreferencesWindow
   GtkListBox           *custom_links_list_box;
 };
 
-G_DEFINE_FINAL_TYPE (PtyxisPreferencesWindow, ptyxis_preferences_window, ADW_TYPE_PREFERENCES_WINDOW)
+G_DEFINE_FINAL_TYPE (PtyxisPreferencesWindow, ptyxis_preferences_window, ADW_TYPE_PREFERENCES_DIALOG)
 
 enum {
   PROP_0,
@@ -322,7 +316,17 @@ ptyxis_preferences_window_add_toast (GtkWidget  *widget,
                         "timeout", timeout,
                         NULL);
 
-  adw_preferences_window_add_toast (ADW_PREFERENCES_WINDOW (self), toast);
+  adw_preferences_dialog_add_toast (ADW_PREFERENCES_DIALOG (self), toast);
+}
+
+static void
+ptyxis_preferences_window_close (GtkWidget  *widget,
+                                 const char *action_name,
+                                 GVariant   *param)
+{
+  g_assert (PTYXIS_IS_PREFERENCES_WINDOW (widget));
+
+  adw_dialog_close (ADW_DIALOG (widget));
 }
 
 static void
@@ -744,45 +748,17 @@ ptyxis_preferences_window_add_custom_link (GtkWidget  *widget,
   ptyxis_profile_add_custom_link (default_profile, custom_link);
 
   editor = ptyxis_custom_link_editor_new (default_profile, custom_link);
-  adw_preferences_window_push_subpage (ADW_PREFERENCES_WINDOW (self),
+  adw_preferences_dialog_push_subpage (ADW_PREFERENCES_DIALOG (self),
                                        ADW_NAVIGATION_PAGE (editor));
 }
 
-static gboolean
-dispose_in_idle (gpointer data)
+static void
+ptyxis_preferences_window_closed (PtyxisPreferencesWindow *self)
 {
-  g_object_run_dispose (data);
-  return G_SOURCE_REMOVE;
-}
+  g_assert (PTYXIS_IS_PREFERENCES_WINDOW (self));
 
-static gboolean
-ptyxis_preferences_window_close_request (GtkWindow *window)
-{
-  GtkWindowGroup *group;
-
-  g_assert (PTYXIS_IS_PREFERENCES_WINDOW (window));
-
-  if (instance == PTYXIS_PREFERENCES_WINDOW (window))
-    {
-      instance = NULL;
-
-      /* We use a single window group for the preferences window
-       * so that it can stack appropriately above other windows.
-       * Clear it so that we release the group too.
-       */
-      if ((group = gtk_window_get_group (window)))
-        gtk_window_group_remove_window (group, window);
-
-      /* Dispose in idle to force cleanup. This wasn't seeming to
-       * happen automatically on close-request.
-       */
-      g_idle_add_full (G_PRIORITY_LOW,
-                       dispose_in_idle,
-                       g_object_ref (window),
-                       g_object_unref);
-    }
-
-  return GTK_WINDOW_CLASS (ptyxis_preferences_window_parent_class)->close_request (window);
+  if (instance == self)
+    instance = NULL;
 }
 
 static void
@@ -1063,6 +1039,9 @@ ptyxis_preferences_window_dispose (GObject *object)
 {
   PtyxisPreferencesWindow *self = (PtyxisPreferencesWindow *)object;
 
+  if (instance == self)
+    instance = NULL;
+
   gtk_widget_dispose_template (GTK_WIDGET (self), PTYXIS_TYPE_PREFERENCES_WINDOW);
 
   g_clear_pointer (&self->default_palette_id, g_free);
@@ -1119,14 +1098,11 @@ ptyxis_preferences_window_class_init (PtyxisPreferencesWindowClass *klass)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
   GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
-  GtkWindowClass *window_class = GTK_WINDOW_CLASS (klass);
 
   object_class->constructed = ptyxis_preferences_window_constructed;
   object_class->dispose = ptyxis_preferences_window_dispose;
   object_class->get_property = ptyxis_preferences_window_get_property;
   object_class->set_property = ptyxis_preferences_window_set_property;
-
-  window_class->close_request = ptyxis_preferences_window_close_request;
 
   properties[PROP_DEFAULT_PALETTE_ID] =
     g_param_spec_string ("default-palette-id", NULL, NULL,
@@ -1244,6 +1220,10 @@ ptyxis_preferences_window_class_init (PtyxisPreferencesWindowClass *klass)
                                    "toast.add",
                                    NULL,
                                    ptyxis_preferences_window_add_toast);
+  gtk_widget_class_install_action (widget_class,
+                                   "dialog.close",
+                                   NULL,
+                                   ptyxis_preferences_window_close);
 
   g_type_ensure (PTYXIS_TYPE_PREFERENCES_LIST_ITEM);
   g_type_ensure (PTYXIS_TYPE_PROFILE_EDITOR);
@@ -1268,13 +1248,6 @@ ptyxis_preferences_window_init (PtyxisPreferencesWindow *self)
                              GTK_EVENT_CONTROLLER (drop_target));
 }
 
-GtkWindow *
-ptyxis_preferences_window_new (GtkApplication* application)
-{
-  return g_object_new (PTYXIS_TYPE_PREFERENCES_WINDOW,
-                       NULL);
-}
-
 void
 ptyxis_preferences_window_edit_profile (PtyxisPreferencesWindow *self,
                                         PtyxisProfile           *profile)
@@ -1286,29 +1259,55 @@ ptyxis_preferences_window_edit_profile (PtyxisPreferencesWindow *self,
 
   editor = ptyxis_profile_editor_new (profile);
 
-  adw_preferences_window_pop_subpage (ADW_PREFERENCES_WINDOW (self));
-  adw_preferences_window_push_subpage (ADW_PREFERENCES_WINDOW (self),
+  adw_preferences_dialog_pop_subpage (ADW_PREFERENCES_DIALOG (self));
+  adw_preferences_dialog_push_subpage (ADW_PREFERENCES_DIALOG (self),
                                        ADW_NAVIGATION_PAGE (editor));
 }
 
-/**
- * ptyxis_preferences_window_get_default:
- *
- * Gets the default preferences window for the process.
- *
- * Returns: (transfer none): a #PtyxisPreferencesWindow
- */
 PtyxisPreferencesWindow *
-ptyxis_preferences_window_get_default (void)
+ptyxis_preferences_window_present (GtkWidget *parent,
+                                   gboolean   narrow)
 {
-  if (instance == NULL)
-    {
-      g_autoptr(GtkWindowGroup) sole_group = gtk_window_group_new ();
+  GtkWindow *window;
 
-      instance = g_object_new (PTYXIS_TYPE_PREFERENCES_WINDOW,
-                               "modal", FALSE,
-                               NULL);
-      gtk_window_group_add_window (sole_group, GTK_WINDOW (instance));
+  g_return_val_if_fail (parent == NULL || GTK_IS_WIDGET (parent), NULL);
+
+  if (instance != NULL)
+    {
+      window = GTK_WINDOW (gtk_widget_get_root (GTK_WIDGET (instance)));
+
+      if (gtk_widget_get_parent (GTK_WIDGET (instance)) == GTK_WIDGET (window))
+        {
+          gtk_window_present (window);
+        }
+      else
+        {
+          gtk_window_present (window);
+          adw_dialog_present (ADW_DIALOG (instance), GTK_WIDGET (window));
+        }
+
+      return instance;
+    }
+
+  instance = g_object_new (PTYXIS_TYPE_PREFERENCES_WINDOW, NULL);
+  g_signal_connect (instance, "closed",
+                    G_CALLBACK (ptyxis_preferences_window_closed), NULL);
+
+  if (parent != NULL && narrow)
+    {
+      adw_dialog_set_presentation_mode (ADW_DIALOG (instance), ADW_DIALOG_BOTTOM_SHEET);
+      adw_dialog_present (ADW_DIALOG (instance), parent);
+    }
+  else
+    {
+      adw_dialog_present (ADW_DIALOG (instance), NULL);
+      window = GTK_WINDOW (gtk_widget_get_root (GTK_WIDGET (instance)));
+      gtk_window_set_modal (window, FALSE);
+
+      if (parent != NULL)
+        gtk_window_set_transient_for (window, GTK_WINDOW (gtk_widget_get_root (parent)));
+
+      gtk_application_add_window (GTK_APPLICATION (PTYXIS_APPLICATION_DEFAULT), window);
     }
 
   return instance;
@@ -1319,8 +1318,6 @@ ptyxis_preferences_window_edit_shortcuts (PtyxisPreferencesWindow *self)
 {
   g_return_if_fail (PTYXIS_IS_PREFERENCES_WINDOW (self));
 
-  adw_preferences_window_pop_subpage (ADW_PREFERENCES_WINDOW (self));
-  adw_preferences_window_set_visible_page_name (ADW_PREFERENCES_WINDOW (self), "shortcuts");
+  adw_preferences_dialog_pop_subpage (ADW_PREFERENCES_DIALOG (self));
+  adw_preferences_dialog_set_visible_page_name (ADW_PREFERENCES_DIALOG (self), "shortcuts");
 }
-
-G_GNUC_END_IGNORE_DEPRECATIONS
