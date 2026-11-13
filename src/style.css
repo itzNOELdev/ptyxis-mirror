@@ -161,32 +161,40 @@ preferencesgroup flowboxchild button.palette:not(.selected) {
 popover.tab-menu contents {
   padding: 0;
 }
-popover.tab-menu listview {
+.tab-menu listview {
   background: transparent;
   padding: 6px;
 }
-popover.tab-menu listview row {
+.tab-menu listview row {
   border-radius: 9px;
   min-height: 32px;
   padding: 0;
   margin: 0;
 }
-popover.tab-menu listview row:hover {
+.tab-menu listview row:hover {
   background: alpha(currentColor, .13);
 }
-popover.tab-menu listview row:active {
+.tab-menu listview row:active {
   background: alpha(currentColor, .19);
 }
-popover.tab-menu listview header {
+.tab-menu listview header {
   padding: 0;
   margin: 0;
   min-height: 0;
 }
-popover.tab-menu listview header > * {
+.tab-menu listview header > * {
   padding: 12px 6px 6px 12px;
 }
-popover.tab-menu listview row > * {
+.tab-menu listview row > * {
   padding: 0 12px;
+}
+
+.bottom-sheet-menu listview {
+  padding: 12px;
+}
+
+.bottom-sheet-menu listview row {
+  min-height: 44px;
 }
 
 /* Keep padding within visual bell area, not outside it */

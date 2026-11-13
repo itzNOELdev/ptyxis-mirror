@@ -31,6 +31,7 @@ ptyxis_sources = [
   'ptyxis-preferences-list-item.c',
   'ptyxis-preferences-window.c',
   'ptyxis-profile-editor.c',
+  'ptyxis-profiles-menu.c',
   'ptyxis-profile-row.c',
   'ptyxis-profile.c',
   'ptyxis-session.c',
