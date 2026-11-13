@@ -514,6 +514,18 @@ ptyxis_window_set_narrow (PtyxisWindow *self,
 }
 
 static void
+ptyxis_window_profiles_bottom_sheet_notify_open_cb (PtyxisWindow   *self,
+                                                    GParamSpec     *pspec,
+                                                    AdwBottomSheet *sheet)
+{
+  g_assert (PTYXIS_IS_WINDOW (self));
+  g_assert (ADW_IS_BOTTOM_SHEET (sheet));
+
+  if (adw_bottom_sheet_get_open (sheet))
+    gtk_widget_grab_focus (GTK_WIDGET (self->menu_search));
+}
+
+static void
 ptyxis_window_close_profiles_menu (PtyxisWindow *self)
 {
   g_assert (PTYXIS_IS_WINDOW (self));
@@ -2342,6 +2354,7 @@ ptyxis_window_class_init (PtyxisWindowClass *klass)
   gtk_widget_class_bind_template_callback (widget_class, ptyxis_window_menu_search_activate_cb);
   gtk_widget_class_bind_template_callback (widget_class, ptyxis_window_menu_stop_search);
   gtk_widget_class_bind_template_callback (widget_class, ptyxis_window_notify_menu_n_items_cb);
+  gtk_widget_class_bind_template_callback (widget_class, ptyxis_window_profiles_bottom_sheet_notify_open_cb);
   gtk_widget_class_bind_template_callback (widget_class, ptyxis_window_narrow_apply_cb);
   gtk_widget_class_bind_template_callback (widget_class, ptyxis_window_narrow_unapply_cb);
   gtk_widget_class_bind_template_callback (widget_class, ptyxis_window_page_attached_cb);

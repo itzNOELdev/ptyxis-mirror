@@ -405,6 +405,7 @@
         <property name="child">
           <object class="AdwBottomSheet" id="profiles_bottom_sheet">
             <property name="open" bind-source="narrow_profiles_button" bind-property="active" bind-flags="sync-create|bidirectional"/>
+            <signal name="notify::open" handler="ptyxis_window_profiles_bottom_sheet_notify_open_cb" swapped="true" after="true"/>
             <property name="full-width">true</property>
             <property name="content">
           <object class="AdwBottomSheet" id="primary_menu_bottom_sheet">
