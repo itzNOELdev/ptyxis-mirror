@@ -345,7 +345,9 @@ ptyxis_terminal_capture_click_pressed_cb (PtyxisTerminal  *self,
                 handled = ptyxis_terminal_match_clicked (self, x, y, button, state, subst);
             }
           else
-            handled = ptyxis_terminal_match_clicked (self, x, y, button, state, match);
+            {
+              handled = ptyxis_terminal_match_clicked (self, x, y, button, state, match);
+            }
         }
     }
 
@@ -511,7 +513,9 @@ ptyxis_terminal_update_hover_uri (PtyxisTerminal *self)
       gtk_widget_queue_allocate (GTK_WIDGET (self));
     }
   else
-    gtk_revealer_set_reveal_child (self->hover_uri_revealer, FALSE);
+    {
+      gtk_revealer_set_reveal_child (self->hover_uri_revealer, FALSE);
+    }
 }
 
 static void

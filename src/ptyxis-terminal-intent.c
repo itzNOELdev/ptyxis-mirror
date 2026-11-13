@@ -240,7 +240,9 @@ ptyxis_terminal_intent_handle_launch_command (FdoTerminal1          *intent,
         ptyxis_tab_set_keep_terminal_open (tab, TRUE);
     }
   else
-    window = ptyxis_window_new_empty ();
+    {
+      window = ptyxis_window_new_empty ();
+    }
 
   for (size_t i = 0; i < argvs->len; i++)
     {

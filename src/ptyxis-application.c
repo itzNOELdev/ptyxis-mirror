@@ -485,7 +485,9 @@ ptyxis_application_command_line (GApplication            *app,
             cwd_uri = g_file_get_uri (canonicalize);
         }
       else
-        cwd_uri = g_strdup_printf ("file://%s", working_directory);
+        {
+          cwd_uri = g_strdup_printf ("file://%s", working_directory);
+        }
     }
 
   /* First restore our session state so it won't be lost when closing the
