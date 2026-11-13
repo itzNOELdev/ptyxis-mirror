@@ -51,6 +51,28 @@ popover button.pill.flat
   padding: 0;
 }
 
+ptyxismenuview button.pill.flat
+{
+  padding: 0;
+}
+
+checkbutton.ptyxis-menu-check check
+{
+  min-width: 16px;
+  min-height: 16px;
+  padding: 0;
+  border: none;
+  background: none;
+  box-shadow: none;
+  -gtk-icon-source: none;
+}
+
+checkbutton.ptyxis-menu-check:checked check,
+checkbutton.ptyxis-menu-check check:checked
+{
+  -gtk-icon-source: -gtk-icontheme("object-select-symbolic");
+}
+
 themeselector {
   margin: 9px;
 }

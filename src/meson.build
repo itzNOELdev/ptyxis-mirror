@@ -23,6 +23,7 @@ ptyxis_sources = [
   'ptyxis-gated-list-model.c',
   'ptyxis-inspector.c',
   'ptyxis-menu-row.c',
+  'ptyxis-menu-view.c',
   'ptyxis-palette.c',
   'ptyxis-palette-preview.c',
   'ptyxis-palette-preview-color.c',
