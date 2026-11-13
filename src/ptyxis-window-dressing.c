@@ -141,6 +141,12 @@ ptyxis_window_dressing_update (PtyxisWindowDressing *self)
                               "window.%s .window-contents toolbarview.overview { background-color: %s; color: %s; }\n",
                               self->css_class, titlebar_bg, titlebar_fg);
       g_string_append_printf (string,
+                              "window.%s.transparent-background .window-contents toolbarview.overview { background-color: transparent; }\n",
+                              self->css_class);
+      g_string_append_printf (string,
+                              "window.%s.transparent-background taboverview.window-contents > .background { background-color: transparent; }\n",
+                              self->css_class);
+      g_string_append_printf (string,
                               "window.%s .window-contents revealer.raised.top-bar { background-color: %s; color: %s; }\n",
                               self->css_class, titlebar_bg, titlebar_fg);
       g_string_append_printf (string,
@@ -197,6 +203,9 @@ ptyxis_window_dressing_update (PtyxisWindowDressing *self)
       g_string_append_printf (string,
                               "window.%s:backdrop .window-contents revealer > windowhandle { color: mix(%s,%s,.025); background-color: mix(%s,%s,.99); }\n",
                               self->css_class, fg, bg, fg, bg);
+      g_string_append_printf (string,
+                              "window.%s.transparent-background:backdrop taboverview.window-contents toolbarview.overview > revealer.top-bar > windowhandle { background-color: transparent; }\n",
+                              self->css_class);
 
       if (visual_process_leader)
         {

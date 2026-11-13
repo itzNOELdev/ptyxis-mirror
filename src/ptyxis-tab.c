@@ -40,6 +40,7 @@
 #include "ptyxis-terminal.h"
 #include "ptyxis-util.h"
 #include "ptyxis-window.h"
+#include "ptyxis-window-private.h"
 
 typedef enum _PtyxisTabState
 {
@@ -1035,7 +1036,6 @@ ptyxis_tab_snapshot (GtkWidget   *widget,
   if (animating &&
       ptyxis_window_get_active_tab (window) == self)
     {
-
       if (self->cached_texture == NULL)
         {
           GtkSnapshot *sub_snapshot = gtk_snapshot_new ();
@@ -1045,9 +1045,6 @@ ptyxis_tab_snapshot (GtkWidget   *widget,
           GskRenderer *renderer;
 
           gtk_snapshot_scale (sub_snapshot, scale_factor, scale_factor);
-          gtk_snapshot_append_color (sub_snapshot,
-                                     &bg,
-                                     &GRAPHENE_RECT_INIT (0, 0, width, height));
 
           if (gtk_widget_compute_transform (GTK_WIDGET (self->terminal),
                                             GTK_WIDGET (self),
@@ -1058,19 +1055,30 @@ ptyxis_tab_snapshot (GtkWidget   *widget,
             }
 
           node = gtk_snapshot_free_to_node (sub_snapshot);
-          renderer = gtk_native_get_renderer (GTK_NATIVE (window));
+          if (node != NULL)
+            {
+              renderer = gtk_native_get_renderer (GTK_NATIVE (window));
 
-          self->cached_texture = gsk_renderer_render_texture (renderer,
-                                                              node,
-                                                              &GRAPHENE_RECT_INIT (0,
-                                                                                   0,
-                                                                                   width * scale_factor,
-                                                                                   height * scale_factor));
+              self->cached_texture = gsk_renderer_render_texture (renderer,
+                                                                  node,
+                                                                  &GRAPHENE_RECT_INIT (0,
+                                                                                       0,
+                                                                                       width * scale_factor,
+                                                                                       height * scale_factor));
+            }
         }
 
-      gtk_snapshot_append_texture (snapshot,
-                                   self->cached_texture,
-                                   &GRAPHENE_RECT_INIT (0, 0, width, height));
+      if (gtk_widget_has_css_class (GTK_WIDGET (window), "transparent-background"))
+        bg.alpha *= _ptyxis_window_get_overview_background_opacity (window);
+
+      gtk_snapshot_append_color (snapshot,
+                                 &bg,
+                                 &GRAPHENE_RECT_INIT (0, 0, width, height));
+
+      if (self->cached_texture != NULL)
+        gtk_snapshot_append_texture (snapshot,
+                                     self->cached_texture,
+                                     &GRAPHENE_RECT_INIT (0, 0, width, height));
     }
   else
     {

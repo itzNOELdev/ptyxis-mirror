@@ -126,6 +126,12 @@
       <description>If a visual bell should be used</description>
     </key>
 
+    <key name="blur-background" type="b">
+      <default>false</default>
+      <summary>Blur Background</summary>
+      <description>Blur the background visible through transparent windows</description>
+    </key>
+
     <key name="visual-process-leader" type="b">
       <default>true</default>
       <summary>Visual Process Leader</summary>

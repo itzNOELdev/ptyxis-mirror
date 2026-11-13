@@ -27,6 +27,7 @@
 G_BEGIN_DECLS
 
 #define PTYXIS_SETTING_KEY_AUDIBLE_BELL            "audible-bell"
+#define PTYXIS_SETTING_KEY_BLUR_BACKGROUND         "blur-background"
 #define PTYXIS_SETTING_KEY_CURSOR_BLINK_MODE       "cursor-blink-mode"
 #define PTYXIS_SETTING_KEY_CURSOR_SHAPE            "cursor-shape"
 #define PTYXIS_SETTING_KEY_DEFAULT_PROFILE_UUID    "default-profile-uuid"

@@ -56,6 +56,7 @@ struct _PtyxisPreferencesWindow
 
   AdwSwitchRow         *audible_bell;
   AdwComboRow          *backspace_binding;
+  AdwSwitchRow         *blur_background;
   AdwSpinRow           *cell_height_scale;
   AdwSpinRow           *cell_width_scale;
   AdwComboRow          *cjk_ambiguous_width;
@@ -75,7 +76,6 @@ struct _PtyxisPreferencesWindow
   AdwSwitchRow         *limit_scrollback;
   AdwSwitchRow         *login_shell;
   GtkAdjustment        *opacity_adjustment;
-  AdwPreferencesGroup  *opacity_group;
   GtkLabel             *opacity_label;
   GtkFlowBox           *palette_previews;
   AdwComboRow          *preserve_directory;
@@ -512,13 +512,6 @@ ptyxis_preferences_window_notify_default_profile_cb (PtyxisPreferencesWindow *se
                            self,
                            G_CONNECT_SWAPPED);
 
-  /* If the user changed things in gsettings, show the toggle. This
-   * also helps on installations where the distributor may have changed
-   * the default value for the opacity gsetting.
-   */
-  gtk_widget_set_visible (GTK_WIDGET (self->opacity_group),
-                          ptyxis_profile_get_opacity (profile) < 1.);
-
   invalidate_filter (self);
 
   for (GtkWidget *child = gtk_widget_get_first_child (GTK_WIDGET (self->palette_previews));
@@ -805,6 +798,12 @@ ptyxis_preferences_window_constructed (GObject *object)
   g_autoptr(PtyxisAddButtonListModel) profiles_list_model = NULL;
 
   G_OBJECT_CLASS (ptyxis_preferences_window_parent_class)->constructed (object);
+
+  g_settings_bind (gsettings,
+                   PTYXIS_SETTING_KEY_BLUR_BACKGROUND,
+                   self->blur_background,
+                   "active",
+                   G_SETTINGS_BIND_DEFAULT);
 
   self->filter = gtk_custom_filter_new (do_filter_palettes, self, NULL);
   self->filter_palettes = gtk_filter_list_model_new (g_object_ref (ptyxis_palette_get_all ()),
@@ -1142,6 +1141,7 @@ ptyxis_preferences_window_class_init (PtyxisPreferencesWindowClass *klass)
 
   gtk_widget_class_bind_template_child (widget_class, PtyxisPreferencesWindow, audible_bell);
   gtk_widget_class_bind_template_child (widget_class, PtyxisPreferencesWindow, backspace_binding);
+  gtk_widget_class_bind_template_child (widget_class, PtyxisPreferencesWindow, blur_background);
   gtk_widget_class_bind_template_child (widget_class, PtyxisPreferencesWindow, cell_height_scale);
   gtk_widget_class_bind_template_child (widget_class, PtyxisPreferencesWindow, cell_width_scale);
   gtk_widget_class_bind_template_child (widget_class, PtyxisPreferencesWindow, cjk_ambiguous_width);
@@ -1162,7 +1162,6 @@ ptyxis_preferences_window_class_init (PtyxisPreferencesWindowClass *klass)
   gtk_widget_class_bind_template_child (widget_class, PtyxisPreferencesWindow, limit_scrollback);
   gtk_widget_class_bind_template_child (widget_class, PtyxisPreferencesWindow, login_shell);
   gtk_widget_class_bind_template_child (widget_class, PtyxisPreferencesWindow, opacity_adjustment);
-  gtk_widget_class_bind_template_child (widget_class, PtyxisPreferencesWindow, opacity_group);
   gtk_widget_class_bind_template_child (widget_class, PtyxisPreferencesWindow, opacity_label);
   gtk_widget_class_bind_template_child (widget_class, PtyxisPreferencesWindow, palette_previews);
   gtk_widget_class_bind_template_child (widget_class, PtyxisPreferencesWindow, preserve_directories);

@@ -39,6 +39,7 @@
 #include "ptyxis-profile-dialog.h"
 #include "ptyxis-util.h"
 #include "ptyxis-window.h"
+#include "ptyxis-window-private.h"
 #include "ptyxis-window-dressing.h"
 
 #ifdef GDK_WINDOWING_X11
@@ -80,6 +81,8 @@ struct _PtyxisWindow
   GBindingGroup         *active_tab_bindings;
   GSignalGroup          *active_tab_signals;
   GSignalGroup          *selected_page_signals;
+  AdwAnimation          *overview_transition_animation;
+  GtkCssProvider        *overview_shade_provider;
   PtyxisWindowDressing  *dressing;
   GtkBox                *visual_bell;
   GPropertyAction       *interface_style_action;
@@ -299,6 +302,43 @@ ptyxis_window_focus_active_tab_cb (gpointer data)
 }
 
 static void
+ptyxis_window_set_overview_opacity (PtyxisWindow *self,
+                                    double        opacity)
+{
+  GtkWidget *child;
+
+  g_assert (PTYXIS_IS_WINDOW (self));
+
+  for (child = gtk_widget_get_first_child (GTK_WIDGET (self->tab_overview));
+       child != NULL;
+       child = gtk_widget_get_next_sibling (child))
+    {
+      if (gtk_widget_has_css_class (child, "overview"))
+        {
+          gtk_widget_set_opacity (child, opacity);
+          return;
+        }
+    }
+}
+
+static void
+ptyxis_window_overview_transition_animation_cb (double        value,
+                                                PtyxisWindow *self)
+{
+  PtyxisTab *active_tab;
+
+  g_assert (PTYXIS_IS_WINDOW (self));
+
+  if (!gtk_widget_has_css_class (GTK_WIDGET (self), "transparent-background"))
+    return;
+
+  ptyxis_window_set_overview_opacity (self, value);
+
+  if ((active_tab = ptyxis_window_get_active_tab (self)))
+    gtk_widget_queue_draw (GTK_WIDGET (active_tab));
+}
+
+static void
 ptyxis_window_tab_overview_notify_open_cb (PtyxisWindow   *self,
                                            GParamSpec     *pspec,
                                            AdwTabOverview *tab_overview)
@@ -315,6 +355,12 @@ ptyxis_window_tab_overview_notify_open_cb (PtyxisWindow   *self,
    */
 
   g_clear_handle_id (&self->focus_active_tab_source, g_source_remove);
+
+  adw_timed_animation_set_value_from (ADW_TIMED_ANIMATION (self->overview_transition_animation),
+                                      adw_animation_get_value (self->overview_transition_animation));
+  adw_timed_animation_set_value_to (ADW_TIMED_ANIMATION (self->overview_transition_animation),
+                                    adw_tab_overview_get_open (tab_overview) ? 1. : 0.);
+  adw_animation_play (self->overview_transition_animation);
 
   if (!adw_tab_overview_get_open (tab_overview))
     {
@@ -1625,15 +1671,90 @@ notify_decoration_layout_cb (PtyxisWindow *self,
 }
 
 static void
+ptyxis_window_opacity_changed_cb (PtyxisWindow         *self,
+                                  GParamSpec           *pspec,
+                                  PtyxisWindowDressing *dressing)
+{
+  PtyxisTab *active_tab;
+  gboolean transparent;
+
+  g_assert (PTYXIS_IS_WINDOW (self));
+  g_assert (PTYXIS_IS_WINDOW_DRESSING (dressing));
+
+  transparent = ptyxis_window_dressing_get_opacity (dressing) < 1.;
+
+  if (transparent == gtk_widget_has_css_class (GTK_WIDGET (self), "transparent-background"))
+    return;
+
+  if (transparent)
+    gtk_widget_add_css_class (GTK_WIDGET (self), "transparent-background");
+  else
+    gtk_widget_remove_css_class (GTK_WIDGET (self), "transparent-background");
+
+  gtk_css_provider_load_from_string (self->overview_shade_provider,
+                                     transparent
+                                       ? "@define-color shade_color transparent;"
+                                       : "");
+
+  ptyxis_window_set_overview_opacity (self,
+                                      transparent
+                                        ? adw_animation_get_value (self->overview_transition_animation)
+                                        : 1.);
+
+  if ((active_tab = ptyxis_window_get_active_tab (self)))
+    gtk_widget_queue_draw (GTK_WIDGET (active_tab));
+}
+
+static void
+ptyxis_window_blur_background_changed_cb (PtyxisWindow *self,
+                                          const char   *key,
+                                          GSettings    *gsettings)
+{
+  g_assert (PTYXIS_IS_WINDOW (self));
+  g_assert (G_IS_SETTINGS (gsettings));
+
+  if (g_settings_get_boolean (gsettings, PTYXIS_SETTING_KEY_BLUR_BACKGROUND))
+    gtk_widget_add_css_class (GTK_WIDGET (self), "blur-background");
+  else
+    gtk_widget_remove_css_class (GTK_WIDGET (self), "blur-background");
+}
+
+static void
 ptyxis_window_constructed (GObject *object)
 {
   PtyxisWindow *self = (PtyxisWindow *)object;
+  g_autoptr(AdwAnimationTarget) target = NULL;
+  PtyxisSettings *settings = ptyxis_application_get_settings (PTYXIS_APPLICATION_DEFAULT);
+  GSettings *gsettings = ptyxis_settings_get_settings (settings);
   g_autoptr(GListModel) profiles = NULL;
   g_autoptr(GListModel) containers = NULL;
   g_autoptr(GMenu) menu = NULL;
   GtkSettings *gtk_settings;
 
   G_OBJECT_CLASS (ptyxis_window_parent_class)->constructed (object);
+
+  target = adw_callback_animation_target_new ((AdwAnimationTargetFunc)
+                                              ptyxis_window_overview_transition_animation_cb,
+                                              self, NULL);
+  self->overview_transition_animation = adw_timed_animation_new (GTK_WIDGET (self->tab_overview),
+                                                                 0, 0, 400,
+                                                                 g_steal_pointer (&target));
+  adw_timed_animation_set_easing (ADW_TIMED_ANIMATION (self->overview_transition_animation),
+                                  ADW_EASE);
+
+  self->overview_shade_provider = gtk_css_provider_new ();
+  G_GNUC_BEGIN_IGNORE_DEPRECATIONS
+  gtk_style_context_add_provider (gtk_widget_get_style_context (GTK_WIDGET (self->tab_overview)),
+                                  GTK_STYLE_PROVIDER (self->overview_shade_provider),
+                                  GTK_STYLE_PROVIDER_PRIORITY_USER + 2);
+  G_GNUC_END_IGNORE_DEPRECATIONS
+
+  g_signal_connect_object (gsettings,
+                           "changed::" PTYXIS_SETTING_KEY_BLUR_BACKGROUND,
+                           G_CALLBACK (ptyxis_window_blur_background_changed_cb),
+                           self,
+                           G_CONNECT_SWAPPED);
+  ptyxis_window_blur_background_changed_cb (self, NULL, gsettings);
 
   self->dressing = ptyxis_window_dressing_new (self);
   g_binding_group_bind (self->profile_bindings, "palette",
@@ -1642,6 +1763,12 @@ ptyxis_window_constructed (GObject *object)
   g_binding_group_bind (self->profile_bindings, "opacity",
                         self->dressing, "opacity",
                         G_BINDING_SYNC_CREATE);
+  g_signal_connect_object (self->dressing,
+                           "notify::opacity",
+                           G_CALLBACK (ptyxis_window_opacity_changed_cb),
+                           self,
+                           G_CONNECT_SWAPPED);
+  ptyxis_window_opacity_changed_cb (self, NULL, self->dressing);
 
   gtk_widget_action_set_enabled (GTK_WIDGET (self), "win.unfullscreen", FALSE);
 
@@ -1948,6 +2075,13 @@ ptyxis_window_dispose (GObject *object)
   PtyxisWindow *self = (PtyxisWindow *)object;
 
   self->disposed = TRUE;
+
+  g_clear_object (&self->overview_transition_animation);
+  G_GNUC_BEGIN_IGNORE_DEPRECATIONS
+  gtk_style_context_remove_provider (gtk_widget_get_style_context (GTK_WIDGET (self->tab_overview)),
+                                     GTK_STYLE_PROVIDER (self->overview_shade_provider));
+  G_GNUC_END_IGNORE_DEPRECATIONS
+  g_clear_object (&self->overview_shade_provider);
 
   g_action_map_remove_action (G_ACTION_MAP (self), "interface-style");
 
@@ -2623,4 +2757,22 @@ ptyxis_window_is_animating (PtyxisWindow *self)
   g_return_val_if_fail (PTYXIS_IS_WINDOW (self), FALSE);
 
   return self->tab_overview_animating;
+}
+
+double
+_ptyxis_window_get_overview_background_opacity (PtyxisWindow *self)
+{
+  AdwTimedAnimation *animation;
+  double progress;
+
+  g_return_val_if_fail (PTYXIS_IS_WINDOW (self), 0.);
+
+  animation = ADW_TIMED_ANIMATION (self->overview_transition_animation);
+  progress = adw_animation_get_value (ADW_ANIMATION (animation));
+
+  if (adw_timed_animation_get_value_to (animation) == 0.)
+    return adw_easing_ease (ADW_EASE_OUT_SINE,
+                            CLAMP ((progress - 0.2) / 0.8, 0., 1.));
+
+  return adw_easing_ease (ADW_EASE_OUT_QUAD, progress);
 }

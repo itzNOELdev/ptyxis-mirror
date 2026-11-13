@@ -65,8 +65,7 @@
           </object>
         </child>
         <child>
-          <object class="AdwPreferencesGroup" id="opacity_group">
-            <property name="visible">false</property>
+          <object class="AdwPreferencesGroup">
             <child>
               <object class="AdwActionRow">
                 <property name="title" translatable="yes">Transparency</property>
@@ -121,6 +120,12 @@
                     </property>
                   </object>
                 </child>
+              </object>
+            </child>
+            <child>
+              <object class="AdwSwitchRow" id="blur_background">
+                <property name="title" translatable="yes">Blur Background</property>
+                <property name="subtitle" translatable="yes">Blurs what is visible behind transparent windows</property>
               </object>
             </child>
           </object>
