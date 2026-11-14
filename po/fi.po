@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ptyxis main\n"
 "Report-Msgid-Bugs-To: https://gitlab.gnome.org/chergert/ptyxis/issues\n"
-"POT-Creation-Date: 2025-09-10 22:51+0000\n"
-"PO-Revision-Date: 2025-09-11 19:47+0300\n"
+"POT-Creation-Date: 2026-11-13 12:45+0000\n"
+"PO-Revision-Date: 2026-11-14 15:06+0200\n"
 "Last-Translator: Jiri Grönroos <jiri.gronroos+l10n@iki.fi>\n"
 "Language-Team: Finnish <lokalisointi-lista@googlegroups.com>\n"
 "Language: fi\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.7\n"
+"X-Generator: Poedit 3.10\n"
 
 #: data/org.gnome.Ptyxis.desktop.in.in:2 data/org.gnome.Ptyxis.metainfo.xml.in.in:6
 msgid "@APP_NAME@"
@@ -26,7 +26,7 @@ msgstr ""
 msgid "A container-oriented terminal for GNOME"
 msgstr "Konttisuuntautunut pääte Gnomelle"
 
-#: data/org.gnome.Ptyxis.desktop.in.in:12 src/ptyxis-preferences-window.ui:655 src/ptyxis-tab.c:1465 src/ptyxis-util.c:318
+#: data/org.gnome.Ptyxis.desktop.in.in:12 src/ptyxis-preferences-window.ui:686 src/ptyxis-tab.c:1688 src/ptyxis-util.c:328
 msgid "Terminal"
 msgstr "Pääte"
 
@@ -35,15 +35,15 @@ msgstr "Pääte"
 msgid "terminal;prompt;ptyxis;shell;command;commandline;cmd;cli;console;container;podman;toolbox;distrobox;"
 msgstr "terminal;prompt;ptyxis;shell;command;commandline;cmd;cli;console;container;podman;toolbox;distrobox;pääte;kehote;komento;komentorivi;kontti;konsoli;"
 
-#: data/org.gnome.Ptyxis.desktop.in.in:23 src/org.gnome.Ptyxis.gschema.xml.in:405 src/ptyxis-preferences-window.ui:720
+#: data/org.gnome.Ptyxis.desktop.in.in:24 src/org.gnome.Ptyxis.gschema.xml.in:443 src/ptyxis-preferences-window.ui:759
 msgid "New Window"
 msgstr "Uusi ikkuna"
 
-#: data/org.gnome.Ptyxis.desktop.in.in:27 src/org.gnome.Ptyxis.gschema.xml.in:399 src/ptyxis-preferences-window.ui:746
+#: data/org.gnome.Ptyxis.desktop.in.in:28 src/org.gnome.Ptyxis.gschema.xml.in:437 src/ptyxis-preferences-window.ui:788
 msgid "New Tab"
 msgstr "Uusi välilehti"
 
-#: data/org.gnome.Ptyxis.desktop.in.in:31 src/org.gnome.Ptyxis.gschema.xml.in:417 src/ptyxis-preferences-window.ui:921
+#: data/org.gnome.Ptyxis.desktop.in.in:32 src/org.gnome.Ptyxis.gschema.xml.in:455 src/ptyxis-preferences-window.ui:995
 msgid "Preferences"
 msgstr "Asetukset"
 
@@ -111,52 +111,47 @@ msgstr "Päätteen välilehdet suoritetaan erillisissä cgroupeissa"
 msgid "Terminal inspector to help when writing terminal-based applications"
 msgstr "Päätteen tarkastelutoiminnallisuus auttaa kirjoittamaan päätepohjaisia sovelluksia"
 
-#. developer_name tag deprecated with Appstream 1.0
-#: data/org.gnome.Ptyxis.metainfo.xml.in.in:32
-msgid "Christian Hergert"
-msgstr "Christian Hergert"
-
-#: data/org.gnome.Ptyxis.metainfo.xml.in.in:53
+#: data/org.gnome.Ptyxis.metainfo.xml.in.in:54
 msgid "A column and row size indicator is displayed when resizing the window"
 msgstr "Sarakkeen ja rivien koon ilmaisin ikkunan kokoa muuttaessa"
 
-#: data/org.gnome.Ptyxis.metainfo.xml.in.in:58
+#: data/org.gnome.Ptyxis.metainfo.xml.in.in:59
 msgid "Containers are automatically discovered and displayed"
 msgstr "Kontit havaitaan ja esitetään automaattisesti"
 
-#: data/org.gnome.Ptyxis.metainfo.xml.in.in:63
+#: data/org.gnome.Ptyxis.metainfo.xml.in.in:64
 msgid "Many behaviors of the terminal may be tweaked to user preference"
 msgstr "Päätteen useimmat toiminnallisuudet ovat mukautettavissa käyttäjän mieltymysten mukaan"
 
-#: data/org.gnome.Ptyxis.metainfo.xml.in.in:68
+#: data/org.gnome.Ptyxis.metainfo.xml.in.in:69
 msgid "You may rename a tab by providing a prefix to the title"
 msgstr "Voit nimetä välilehden antamalla etuliitteen otsikolle"
 
-#: data/org.gnome.Ptyxis.metainfo.xml.in.in:73
+#: data/org.gnome.Ptyxis.metainfo.xml.in.in:74
 msgid "Palettes provide an integrated dark mode"
 msgstr "Paletit tarjoavat sisäänrakennetun tuen tummalle teemalle"
 
-#: data/org.gnome.Ptyxis.metainfo.xml.in.in:78
+#: data/org.gnome.Ptyxis.metainfo.xml.in.in:79
 msgid "You can see an overview of your tabs at any time"
 msgstr "Välilehtien yhteenveto on nähtävissä milloin tahansa"
 
-#: data/org.gnome.Ptyxis.metainfo.xml.in.in:83
+#: data/org.gnome.Ptyxis.metainfo.xml.in.in:84
 msgid "Many shortcuts may be remapped to user preference"
 msgstr "Päätteen useimmat pikanäppäimet ovat mukautettavissa käyttäjän mieltymysten mukaan"
 
-#: data/org.gnome.Ptyxis.metainfo.xml.in.in:88
+#: data/org.gnome.Ptyxis.metainfo.xml.in.in:89
 msgid "Built-in color palettes provide both dark and light mode variants"
 msgstr "Sisäänrakennetut paletit tarjoavat tumman ja vaalean värimaailman"
 
-#: data/org.gnome.Ptyxis.metainfo.xml.in.in:93
+#: data/org.gnome.Ptyxis.metainfo.xml.in.in:94
 msgid "Profiles allow for overriding a number of features such as default container"
 msgstr "Profiilit mahdollistavat useimpien ominaisuuksien ohittamisen, kuten oletuskontin"
 
-#: data/org.gnome.Ptyxis.metainfo.xml.in.in:98
+#: data/org.gnome.Ptyxis.metainfo.xml.in.in:99
 msgid "The terminal will remind you when you're root on the local system"
 msgstr "Pääte muistuttaa, kun olet root-oikeuksin paikallisessa järjestelmässä"
 
-#: data/org.gnome.Ptyxis.metainfo.xml.in.in:103
+#: data/org.gnome.Ptyxis.metainfo.xml.in.in:104
 msgid "The terminal will remind you when you're on a remote system"
 msgstr "Pääte muistuttaa, kun olet root-oikeuksin etäjärjestelmässä"
 
@@ -189,7 +184,7 @@ msgstr "Kaikkien profiilien UUID:t"
 msgid "A list of UUID for every profile"
 msgstr "Lista kaikkien profiilien UUID:stä"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:113 src/ptyxis-preferences-window.ui:308
+#: src/org.gnome.Ptyxis.gschema.xml.in:113 src/ptyxis-preferences-window.ui:328
 msgid "New Tab Position"
 msgstr "Uuden välilehden sijainti"
 
@@ -197,7 +192,7 @@ msgstr "Uuden välilehden sijainti"
 msgid "Where to place new tabs"
 msgstr "Mihin uudet välilehdet sijoitetaan"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:119 src/ptyxis-preferences-window.ui:400
+#: src/org.gnome.Ptyxis.gschema.xml.in:119 src/ptyxis-preferences-window.ui:420
 msgid "Audible Bell"
 msgstr "Äänimerkki"
 
@@ -213,638 +208,702 @@ msgstr "Visuaalinen äänimerkki"
 msgid "If a visual bell should be used"
 msgstr ""
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:131
-msgid "Visual Process Leader"
-msgstr ""
+#: src/org.gnome.Ptyxis.gschema.xml.in:131 src/ptyxis-preferences-window.ui:128
+msgid "Blur Background"
+msgstr "Sumenna tausta"
 
 #: src/org.gnome.Ptyxis.gschema.xml.in:132
-msgid "Display a visual window highlight when process leader is SSH, sudo, or other specialized tooling"
+msgid "Blur the background visible through transparent windows"
 msgstr ""
 
 #: src/org.gnome.Ptyxis.gschema.xml.in:137
+msgid "Visual Process Leader"
+msgstr ""
+
+#: src/org.gnome.Ptyxis.gschema.xml.in:138
+msgid "Display a visual window highlight when process leader is SSH, sudo, or other specialized tooling"
+msgstr ""
+
+#: src/org.gnome.Ptyxis.gschema.xml.in:143
 msgid "Use System Font"
 msgstr "Käytä järjestelmän fonttia"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:138
+#: src/org.gnome.Ptyxis.gschema.xml.in:144
 msgid "If the default system monospace font should be used"
 msgstr "Käytetäänkö järjestelmän oletusarvoista tasalevyistä fonttia"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:143
+#: src/org.gnome.Ptyxis.gschema.xml.in:149
 msgid "Font Name"
 msgstr "Fontin nimi"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:144
+#: src/org.gnome.Ptyxis.gschema.xml.in:150
 msgid "The font description to use if use-system-font is set to False"
 msgstr ""
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:149 src/ptyxis-preferences-window.ui:235
+#: src/org.gnome.Ptyxis.gschema.xml.in:155 src/ptyxis-preferences-window.ui:255
 msgid "Cursor Shape"
 msgstr "Kohdistimen muoto"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:150
+#: src/org.gnome.Ptyxis.gschema.xml.in:156
 msgid "The default shape of the cursor"
 msgstr "Kohdistimen oletusmuoto"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:155
+#: src/org.gnome.Ptyxis.gschema.xml.in:161
 msgid "Cursor Blink Mode"
 msgstr "Kohdistimen vilkkumistila"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:156
+#: src/org.gnome.Ptyxis.gschema.xml.in:162
 msgid "The default blink mode cursor"
 msgstr ""
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:161
+#: src/org.gnome.Ptyxis.gschema.xml.in:167
 msgid "List of punctuation characters that are treated as word characters"
 msgstr ""
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:162
+#: src/org.gnome.Ptyxis.gschema.xml.in:168
 msgid ""
 "By default, when doing word-wise selection, most punctuation breaks up word boundaries. This list of exceptions will instead be treated as part of the "
 "word."
 msgstr ""
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:167
+#: src/org.gnome.Ptyxis.gschema.xml.in:173
 msgid "Scrollbar Policy"
 msgstr "Vierityspalkkien käytäntö"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:168
+#: src/org.gnome.Ptyxis.gschema.xml.in:174
 msgid "If scrollbars should be displayed"
 msgstr "Näytetäänkö vierityspalkit"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:177
+#: src/org.gnome.Ptyxis.gschema.xml.in:179
+msgid "Show window size popup"
+msgstr ""
+
+#: src/org.gnome.Ptyxis.gschema.xml.in:180
+msgid "Show a popup with the terminal grid size when the window is resized"
+msgstr ""
+
+#: src/org.gnome.Ptyxis.gschema.xml.in:189
 msgid "Text Blink Mode"
 msgstr "Tekstin vilkkumistila"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:178
+#: src/org.gnome.Ptyxis.gschema.xml.in:190
 msgid "When text blinking is allowed"
 msgstr "Milloin tekstin vilkkuminen on sallittu"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:183
+#: src/org.gnome.Ptyxis.gschema.xml.in:195
 msgid "Interface Style"
 msgstr "Käyttöliittymän tyyli"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:184
+#: src/org.gnome.Ptyxis.gschema.xml.in:196
 msgid "If light or dark interface style should be used"
 msgstr "Käytetäänkö vaaleaa vai tummaa käyttöliittymän tyyliä"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:189 src/ptyxis-preferences-window.ui:337
+#: src/org.gnome.Ptyxis.gschema.xml.in:201 src/ptyxis-preferences-window.ui:357
 msgid "Restore Session"
 msgstr "Palauta istunto"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:190
+#: src/org.gnome.Ptyxis.gschema.xml.in:202
 msgid "Restore tabs from previous session when starting Ptyxis"
 msgstr "Palauta välilehdet aiemmasta istunnosta, kun Ptyxis käynnistyy"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:195 src/ptyxis-preferences-window.ui:343
+#: src/org.gnome.Ptyxis.gschema.xml.in:207 src/ptyxis-preferences-window.ui:363
 msgid "Restore Window Size"
 msgstr "Palauta ikkunan koko"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:196
+#: src/org.gnome.Ptyxis.gschema.xml.in:208
 msgid "Restore the previous window size when creating new windows"
 msgstr "Palauta edellisen ikkunan koko uusia ikkunoita luotaessa"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:206
+#: src/org.gnome.Ptyxis.gschema.xml.in:218
 msgid "Default Column Size"
 msgstr "Sarakkeen oletuskoko"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:207 src/org.gnome.Ptyxis.gschema.xml.in:214
+#: src/org.gnome.Ptyxis.gschema.xml.in:219 src/org.gnome.Ptyxis.gschema.xml.in:226
 msgid "Default window size when restore-window-size is not true."
 msgstr ""
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:213
+#: src/org.gnome.Ptyxis.gschema.xml.in:225
 msgid "Default Row Size"
 msgstr "Rivin oletuskoko"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:219
+#: src/org.gnome.Ptyxis.gschema.xml.in:231
 msgid "Toast on Copy Clipboard"
 msgstr "Sovelluksen sisäinen ilmoitus, kun leikepöydälle kopioidaan"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:220
+#: src/org.gnome.Ptyxis.gschema.xml.in:232
 msgid "Show the user when text has copied to the clipboard."
 msgstr "Näytä käyttäjälle, kun tekstiä on kopioitu leikepöydälle."
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:225
+#: src/org.gnome.Ptyxis.gschema.xml.in:237
 msgid "Enable Accessibility"
 msgstr "Käytä esteettömyyttä"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:226
+#: src/org.gnome.Ptyxis.gschema.xml.in:238
 msgid "Currently experimental feature to send accessibility information to screen readers."
 msgstr ""
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:231
+#: src/org.gnome.Ptyxis.gschema.xml.in:243
+msgid "Enable zoom on scroll holding the control key"
+msgstr ""
+
+#: src/org.gnome.Ptyxis.gschema.xml.in:244
+msgid "Enable to adjust the zoom level on scroll scroll while holding the control key."
+msgstr ""
+
+#: src/org.gnome.Ptyxis.gschema.xml.in:249
 msgid "Disable Padding around Terminal Emulator"
 msgstr ""
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:232
+#: src/org.gnome.Ptyxis.gschema.xml.in:250
 msgid "Do not pad around the terminal emulator widget. Setting to true may have significant performance impacts."
 msgstr ""
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:237
+#: src/org.gnome.Ptyxis.gschema.xml.in:255
 msgid "Prompt when active tab is closed"
 msgstr ""
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:238
+#: src/org.gnome.Ptyxis.gschema.xml.in:256
 msgid "If a tab (or window) is closed with active foreground processes, prompt the user for confirmation."
 msgstr ""
 
 #. Translators: OSC stands for "Operating System Command" and is referencing in-band escape sequences from the child process to set the title
-#: src/org.gnome.Ptyxis.gschema.xml.in:244
+#: src/org.gnome.Ptyxis.gschema.xml.in:262
 msgid "Ignore OSC Title"
 msgstr ""
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:245
+#: src/org.gnome.Ptyxis.gschema.xml.in:263
 msgid "If OSC title should be ignored in tab titles."
 msgstr ""
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:254
+#: src/org.gnome.Ptyxis.gschema.xml.in:268 src/ptyxis-preferences-window.ui:437
+msgid "Disable Dynamic Title"
+msgstr ""
+
+#: src/org.gnome.Ptyxis.gschema.xml.in:269
+msgid "Disable dynamic title updates from running commands."
+msgstr ""
+
+#: src/org.gnome.Ptyxis.gschema.xml.in:275
+msgid "Inhibit Logout"
+msgstr ""
+
+#: src/org.gnome.Ptyxis.gschema.xml.in:276
+msgid "Inhibit desktop logout when a foreground process is running in a tab."
+msgstr ""
+
+#: src/org.gnome.Ptyxis.gschema.xml.in:285
 msgid "Label"
 msgstr ""
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:255
+#: src/org.gnome.Ptyxis.gschema.xml.in:286
 msgid "The label for the profile"
 msgstr ""
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:260
+#: src/org.gnome.Ptyxis.gschema.xml.in:291
 msgid "Login Shell"
 msgstr "Kirjautumiskehote"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:261
+#: src/org.gnome.Ptyxis.gschema.xml.in:292
 msgid "Use a login shell"
 msgstr ""
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:266 src/ptyxis-preferences-window.ui:468 src/ptyxis-profile-editor.ui:319
+#: src/org.gnome.Ptyxis.gschema.xml.in:297 src/ptyxis-preferences-window.ui:499 src/ptyxis-profile-editor.ui:333
 msgid "Limit Scrollback"
 msgstr "Rajoita takaisinvieritystä"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:267
+#: src/org.gnome.Ptyxis.gschema.xml.in:298
 msgid "Limit the number of lines to keep for scrollback"
 msgstr "Rajoita takaisinvieritystä varten säilytettävien rivien määrää"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:273 src/ptyxis-preferences-window.ui:477 src/ptyxis-profile-editor.ui:328
+#: src/org.gnome.Ptyxis.gschema.xml.in:304 src/ptyxis-preferences-window.ui:508 src/ptyxis-profile-editor.ui:342
 msgid "Scrollback Lines"
 msgstr "Takaisinvierityksen rivit"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:274
+#: src/org.gnome.Ptyxis.gschema.xml.in:305
 msgid "The number of lines to keep in the scrollback, zero for no scrollback"
 msgstr "Takaisinvieritystä varten säilytettävien rivien määrä, nolla tarkoittaa ettei takaisinvieritystä ole"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:279 src/ptyxis-preferences-window.ui:458 src/ptyxis-profile-editor.ui:309
+#: src/org.gnome.Ptyxis.gschema.xml.in:310 src/ptyxis-preferences-window.ui:489 src/ptyxis-profile-editor.ui:323
 msgid "Scroll on Output"
 msgstr "Vieritä tulostaessa"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:280
+#: src/org.gnome.Ptyxis.gschema.xml.in:311
 msgid "Scroll to the bottom upon new output"
 msgstr "Vieritä alas kun uutta tulostetta vastaanotetaan"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:285 src/ptyxis-preferences-window.ui:452 src/ptyxis-profile-editor.ui:303
+#: src/org.gnome.Ptyxis.gschema.xml.in:316 src/ptyxis-preferences-window.ui:483 src/ptyxis-profile-editor.ui:317
 msgid "Scroll on Keystroke"
 msgstr "Vieritä kirjoitettaessa"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:286
+#: src/org.gnome.Ptyxis.gschema.xml.in:317
 msgid "Scroll to the bottom upon user keystroke"
 msgstr "Vieritä alas, kun käyttäjä kirjoittaa päätteeseen"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:291 src/ptyxis-profile-editor.ui:173
+#: src/org.gnome.Ptyxis.gschema.xml.in:322 src/ptyxis-profile-editor.ui:187
 msgid "Use Custom Command"
 msgstr "Käytä omavalintaista komentoa"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:292
+#: src/org.gnome.Ptyxis.gschema.xml.in:323
 msgid "If a custom command should be used"
 msgstr "Käytetäänkö mukautettua komentoa"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:297
+#: src/org.gnome.Ptyxis.gschema.xml.in:328
 msgid "Use Proxy"
 msgstr "Käytä välityspalvelinta"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:298
+#: src/org.gnome.Ptyxis.gschema.xml.in:329
 msgid "Apply proxy settings from the host in the container"
 msgstr ""
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:303 src/ptyxis-profile-editor.ui:178
+#: src/org.gnome.Ptyxis.gschema.xml.in:334 src/ptyxis-profile-editor.ui:192
 msgid "Custom Command"
 msgstr "Omavalintainen komento"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:304
+#: src/org.gnome.Ptyxis.gschema.xml.in:335
 msgid "A custom command for the shell"
 msgstr "Mukautettu komento komentokehotteelle"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:309 src/ptyxis-profile-editor.ui:197
+#: src/org.gnome.Ptyxis.gschema.xml.in:340 src/ptyxis-profile-editor.ui:211
 msgid "Default Container"
 msgstr "Oletuskontti"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:310
+#: src/org.gnome.Ptyxis.gschema.xml.in:341
 msgid "The default container to run the command in"
 msgstr ""
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:315 src/ptyxis-profile-editor.ui:206
+#: src/org.gnome.Ptyxis.gschema.xml.in:346 src/ptyxis-profile-editor.ui:220
 msgid "Preserve Container"
 msgstr "Säilytä kontti"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:316
+#: src/org.gnome.Ptyxis.gschema.xml.in:347
 msgid "Preserve the active container when creating new tabs and windows"
 msgstr ""
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:321 src/ptyxis-preferences-window.ui:537 src/ptyxis-profile-editor.ui:267
+#: src/org.gnome.Ptyxis.gschema.xml.in:352 src/ptyxis-preferences-window.ui:568 src/ptyxis-profile-editor.ui:281
 msgid "Exit Action"
 msgstr "Poistumistoiminto"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:322
+#: src/org.gnome.Ptyxis.gschema.xml.in:353
 msgid "The action to take when the shell exits"
 msgstr ""
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:327
+#: src/org.gnome.Ptyxis.gschema.xml.in:358
 msgid "Preserve Directory"
 msgstr "Säilytä hakemisto"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:328
+#: src/org.gnome.Ptyxis.gschema.xml.in:359
 msgid "If the directory should be preserved for new terminals"
 msgstr ""
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:333 src/ptyxis-inspector.ui:102 src/ptyxis-preferences-window.ui:40 src/ptyxis-profile-editor.ui:65
+#: src/org.gnome.Ptyxis.gschema.xml.in:364 src/ptyxis-inspector.ui:108 src/ptyxis-preferences-window.ui:41 src/ptyxis-profile-editor.ui:65
 msgid "Palette"
 msgstr "Paletti"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:334
+#: src/org.gnome.Ptyxis.gschema.xml.in:365
 msgid "The color palette to use for the profile, by name"
 msgstr "Profiilissa käytettävä väripaletti, nimen mukaan"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:340
+#: src/org.gnome.Ptyxis.gschema.xml.in:371
 msgid "Opacity"
 msgstr "Peittokyky"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:341
+#: src/org.gnome.Ptyxis.gschema.xml.in:372
 msgid "The opacity of the palette background"
 msgstr ""
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:346
+#: src/org.gnome.Ptyxis.gschema.xml.in:377
 msgid "Bold is Bright"
 msgstr ""
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:347
+#: src/org.gnome.Ptyxis.gschema.xml.in:378
 msgid "Setting bold on one of the lower 8 colors in the palette will use bright variant (upper 8 colors)"
 msgstr ""
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:353 src/ptyxis-preferences-window.ui:175 src/ptyxis-profile-editor.ui:143
+#: src/org.gnome.Ptyxis.gschema.xml.in:384 src/ptyxis-preferences-window.ui:181 src/ptyxis-profile-editor.ui:143
 msgid "Line Spacing"
-msgstr ""
+msgstr "Riviväli"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:354
+#: src/org.gnome.Ptyxis.gschema.xml.in:385
 msgid "The terminal’s cell height scale"
 msgstr ""
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:359
+#: src/org.gnome.Ptyxis.gschema.xml.in:391 src/ptyxis-preferences-window.ui:195 src/ptyxis-profile-editor.ui:157
+msgid "Column Spacing"
+msgstr "Sarakeväli"
+
+#: src/org.gnome.Ptyxis.gschema.xml.in:392
+msgid "The terminal’s cell width scale"
+msgstr ""
+
+#: src/org.gnome.Ptyxis.gschema.xml.in:397
 msgid "CJK Ambiguous Width"
 msgstr ""
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:360
+#: src/org.gnome.Ptyxis.gschema.xml.in:398
 msgid "The size to apply to ambiguous width characters"
 msgstr ""
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:365 src/org.gnome.Ptyxis.gschema.xml.in:371
+#: src/org.gnome.Ptyxis.gschema.xml.in:403 src/org.gnome.Ptyxis.gschema.xml.in:409
 msgid "Backspace Binding"
 msgstr ""
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:366 src/org.gnome.Ptyxis.gschema.xml.in:372
+#: src/org.gnome.Ptyxis.gschema.xml.in:404 src/org.gnome.Ptyxis.gschema.xml.in:410
 msgid "What to send to the PTY when a backspace is entered"
 msgstr ""
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:377 src/ptyxis-preferences-window.ui:620 src/ptyxis-profile-editor.ui:395
+#: src/org.gnome.Ptyxis.gschema.xml.in:415 src/ptyxis-preferences-window.ui:651 src/ptyxis-profile-editor.ui:409
 msgid "Custom Links"
 msgstr "Mukautetut linkit"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:378
+#: src/org.gnome.Ptyxis.gschema.xml.in:416
 msgid "A list of custom hyperlinks, each defined by a regular expression matching the text, and a replacement pattern"
 msgstr ""
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:387 src/ptyxis-preferences-window.ui:658
+#: src/org.gnome.Ptyxis.gschema.xml.in:425 src/ptyxis-preferences-window.ui:689
 msgid "Copy to Clipboard"
 msgstr "Kopioi leikepöydälle"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:388
+#: src/org.gnome.Ptyxis.gschema.xml.in:426
 msgid "The shortcut to copy to clipboard"
 msgstr "Leikepöydälle kopiointiin käytettävä pikanäppäin"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:393 src/ptyxis-preferences-window.ui:663
+#: src/org.gnome.Ptyxis.gschema.xml.in:431 src/ptyxis-preferences-window.ui:695
 msgid "Paste from Clipboard"
 msgstr "Liitä leikepöydältä"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:394
+#: src/org.gnome.Ptyxis.gschema.xml.in:432
 msgid "The shortcut to paste from the clipboard"
 msgstr "Leikepöydältä liittämiseen käytettävä pikanäppäin"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:400
+#: src/org.gnome.Ptyxis.gschema.xml.in:438
 msgid "The shortcut to create a new tab in the current window"
 msgstr "Pikanäppäin, jolla luodaan uusi välilehti nykyiseen ikkunaan"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:406
+#: src/org.gnome.Ptyxis.gschema.xml.in:444
 msgid "The shortcut to create a new tab in a new window"
 msgstr "Pikanäppäin, jolla luodaan uusi välilehti uuteen ikkunaan"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:411
+#: src/org.gnome.Ptyxis.gschema.xml.in:449
 msgid "Tab Overview"
 msgstr "Välilehtien yleisnäkymä"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:412
+#: src/org.gnome.Ptyxis.gschema.xml.in:450
 msgid "The shortcut to show the tab overview"
 msgstr "Pikanäppäin, jolla näytetään välilehtien yhteenveto"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:418
+#: src/org.gnome.Ptyxis.gschema.xml.in:456
 msgid "The shortcut to show application preferences"
 msgstr "Pikanäppäin, jolla näytetään sovelluksen asetukset"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:423 src/ptyxis-preferences-window.ui:884 src/ptyxis-window.c:1427 src/ptyxis-window.c:1435
+#: src/org.gnome.Ptyxis.gschema.xml.in:461 src/ptyxis-preferences-window.ui:1002
+msgid "Keyboard Shortcuts"
+msgstr "Pikanäppäimet"
+
+#: src/org.gnome.Ptyxis.gschema.xml.in:462
+msgid "The shortcut to show the keyboard shortcuts configuration"
+msgstr "Pikanäppäin, jolla näytetään pikanäppäinten määritykset"
+
+#: src/org.gnome.Ptyxis.gschema.xml.in:467 src/ptyxis-preferences-window.ui:953 src/ptyxis-window.c:1657 src/ptyxis-window.c:1665
 msgid "Zoom Out"
 msgstr "Loitonna"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:424
+#: src/org.gnome.Ptyxis.gschema.xml.in:468
 msgid "The shortcut to zoom out"
 msgstr "Pikanäppäin, jolla loitonnetaan"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:429 src/ptyxis-preferences-window.ui:889 src/ptyxis-window.c:1444
+#: src/org.gnome.Ptyxis.gschema.xml.in:473 src/ptyxis-preferences-window.ui:959 src/ptyxis-window.c:1674
 msgid "Reset Zoom"
 msgstr "Palauta mittakaava"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:430
+#: src/org.gnome.Ptyxis.gschema.xml.in:474
 msgid "The shortcut to reset zoom"
 msgstr "Pikanäppäin, jolla nollataan lähennys/loitonnus"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:435 src/ptyxis-preferences-window.ui:879 src/ptyxis-window.c:1412 src/ptyxis-window.c:1420
+#: src/org.gnome.Ptyxis.gschema.xml.in:479 src/ptyxis-preferences-window.ui:947 src/ptyxis-window.c:1642 src/ptyxis-window.c:1650
 msgid "Zoom In"
 msgstr "Lähennä"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:436
+#: src/org.gnome.Ptyxis.gschema.xml.in:480
 msgid "The shortcut to zoom in"
 msgstr "Lähentämiseen käytettävä pikanäppäin"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:441 src/ptyxis-preferences-window.ui:899
+#: src/org.gnome.Ptyxis.gschema.xml.in:485 src/ptyxis-preferences-window.ui:970
 msgid "Toggle Fullscreen"
 msgstr "Koko näyttö päälle/pois"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:442
+#: src/org.gnome.Ptyxis.gschema.xml.in:486
 msgid "The shortcut to toggle fullscreen"
 msgstr "Pikanäppäin, jolla siirrytään koko näytön tilaan tai koko näytöstä pois"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:447
+#: src/org.gnome.Ptyxis.gschema.xml.in:491
 msgid "Reset Terminal"
 msgstr "Nollaa pääte"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:448
+#: src/org.gnome.Ptyxis.gschema.xml.in:492
 msgid "Reset the terminal state for misbehaving clients"
 msgstr ""
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:453
+#: src/org.gnome.Ptyxis.gschema.xml.in:497
 msgid "Reset Terminal and Clear History"
 msgstr "Nollaa pääte ja tyhjennä historia"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:454
+#: src/org.gnome.Ptyxis.gschema.xml.in:498
 msgid "Reset the terminal state and clear history for misbehaving clients"
 msgstr ""
 
 #. Translators: Refers to searching the terminal scrollback
-#: src/org.gnome.Ptyxis.gschema.xml.in:460 src/ptyxis-find-bar.ui:39 src/ptyxis-preferences-window.ui:701
+#: src/org.gnome.Ptyxis.gschema.xml.in:504 src/ptyxis-find-bar.ui:39 src/ptyxis-preferences-window.ui:738
 msgid "Search History"
 msgstr "Etsi historiasta"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:461
+#: src/org.gnome.Ptyxis.gschema.xml.in:505
 msgid "Shortcut to begin searching the terminal history"
 msgstr "Pikanäppäin, jolla aletaan hakea päätteen historiasta"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:466 src/ptyxis-preferences-window.ui:672
+#: src/org.gnome.Ptyxis.gschema.xml.in:510 src/ptyxis-preferences-window.ui:705
 msgid "Select All"
 msgstr "Valitse kaikki"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:467
+#: src/org.gnome.Ptyxis.gschema.xml.in:511
 msgid "Shortcut to select all the entire terminal scrollback"
 msgstr "Pikanäppäin, jolla valitaan päätteen koko takaisinvieritys"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:472
+#: src/org.gnome.Ptyxis.gschema.xml.in:516
 msgid "Select None"
 msgstr "Älä valitse mitään"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:473
+#: src/org.gnome.Ptyxis.gschema.xml.in:517
 msgid "Shortcut to clear the terminal selection"
 msgstr "Pikanäppäin, jolla tyhjennetään päätteen valinta"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:478
+#: src/org.gnome.Ptyxis.gschema.xml.in:522
 msgid "Popup Menu"
 msgstr "Ponnahdusvalikko"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:479
+#: src/org.gnome.Ptyxis.gschema.xml.in:523
 msgid "Shortcut to show the popup menu for the terminal"
 msgstr ""
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:484
+#: src/org.gnome.Ptyxis.gschema.xml.in:528
 msgid "Primary Menu"
 msgstr "Ensisijainen valikko"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:485
+#: src/org.gnome.Ptyxis.gschema.xml.in:529
 msgid "Shortcut to show the primary menu for the window"
 msgstr "Pikanäppäin, jolla aktivoidaan ikkunan ensisijainen valikko"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:490
+#: src/org.gnome.Ptyxis.gschema.xml.in:534
 msgid "Tab Menu"
 msgstr "Välilehtivalikko"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:491
+#: src/org.gnome.Ptyxis.gschema.xml.in:535
 msgid "Shortcut to show the new tab menu"
 msgstr "Pikanäppäin, jolla näytetään uuden välilehden valikko"
 
 #. Translators: in this context, "Move" means to switch tabs
-#: src/org.gnome.Ptyxis.gschema.xml.in:497 src/ptyxis-preferences-window.ui:788
+#: src/org.gnome.Ptyxis.gschema.xml.in:541 src/ptyxis-preferences-window.ui:835
 msgid "Move to Previous Tab"
 msgstr "Siirry edelliseen välilehteen"
 
 #. Translators: in this context, "Move" means to switch tabs
-#: src/org.gnome.Ptyxis.gschema.xml.in:499
+#: src/org.gnome.Ptyxis.gschema.xml.in:543
 msgid "Shortcut to move to the previous tab"
 msgstr "Pikanäppäin, jolla siirrytään edelliseen välilehteen"
 
 #. Translators: in this context, "Move" means to switch tabs
-#: src/org.gnome.Ptyxis.gschema.xml.in:505 src/ptyxis-preferences-window.ui:793
+#: src/org.gnome.Ptyxis.gschema.xml.in:549 src/ptyxis-preferences-window.ui:841
 msgid "Move to Next Tab"
 msgstr "Siirry seuraavaan välilehteen"
 
 #. Translators: in this context, "Move" means to switch tabs
-#: src/org.gnome.Ptyxis.gschema.xml.in:507
+#: src/org.gnome.Ptyxis.gschema.xml.in:551
 msgid "Shortcut to move to the next tab"
 msgstr "Pikanäppäin, jolla siirrytään seuraavaan välilehteen"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:512 src/ptyxis-preferences-window.ui:802
+#: src/org.gnome.Ptyxis.gschema.xml.in:556 src/ptyxis-preferences-window.ui:851
 msgid "Move Tab Left"
 msgstr "Siirrä välilehti vasemmalle"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:513
+#: src/org.gnome.Ptyxis.gschema.xml.in:557
 msgid "Shortcut to move the current tab to the left one position"
 msgstr "Pikanäppäin, jolla siirretään nykyinen välilehti yhden sijainnin vasemmalle"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:518 src/ptyxis-preferences-window.ui:808
+#: src/org.gnome.Ptyxis.gschema.xml.in:562 src/ptyxis-preferences-window.ui:858
 msgid "Move Tab Right"
 msgstr "Siirrä välilehti oikealle"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:519
+#: src/org.gnome.Ptyxis.gschema.xml.in:563
 msgid "Shortcut to move the current tab to the right one position"
 msgstr "Pikanäppäin, jolla siirretään nykyinen välilehti yhden sijainnin oikealle"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:524 src/ptyxis-preferences-window.ui:814
+#: src/org.gnome.Ptyxis.gschema.xml.in:568 src/ptyxis-preferences-window.ui:865
 msgid "Move Tab to New Window"
 msgstr "Siirrä välilehti uuteen ikkunaan"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:525
+#: src/org.gnome.Ptyxis.gschema.xml.in:569
 msgid "Shortcut to move the current tab into a new window"
 msgstr "Pikanäppäin, jolla siirretään nykyinen välilehti uuteen ikkunaan"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:530 src/ptyxis-preferences-window.ui:766
+#: src/org.gnome.Ptyxis.gschema.xml.in:574 src/ptyxis-preferences-window.ui:810
 msgid "Close Tab"
 msgstr "Sulje välilehti"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:531
+#: src/org.gnome.Ptyxis.gschema.xml.in:575
 msgid "Shortcut to close the current tab"
 msgstr "Pikanäppäin, jolla suljetaan nykyinen välilehti"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:536 src/ptyxis-preferences-window.ui:772
+#: src/org.gnome.Ptyxis.gschema.xml.in:580 src/ptyxis-preferences-window.ui:817
 msgid "Close Other Tabs"
 msgstr "Sulje muut välilehdet"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:537
+#: src/org.gnome.Ptyxis.gschema.xml.in:581
 msgid "Shortcut to close all tabs in the window but the current one"
 msgstr "Pikanäppäin, jolla suljetaan kaikki ikkunan välilehdet paitsi nykyinen välilehti"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:542 src/ptyxis-preferences-window.ui:726
+#: src/org.gnome.Ptyxis.gschema.xml.in:586 src/ptyxis-preferences-window.ui:766
 msgid "Close Window"
 msgstr "Sulje ikkuna"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:543
+#: src/org.gnome.Ptyxis.gschema.xml.in:587
 msgid "Shortcut to close the current window"
 msgstr "Pikanäppäin, jolla suljetaan nykyinen ikkuna"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:548 src/ptyxis-preferences-window.ui:736 src/ptyxis-terminal.ui:244 src/ptyxis-window.c:1152 src/ptyxis-window.ui:833
+#: src/org.gnome.Ptyxis.gschema.xml.in:592 src/ptyxis-preferences-window.ui:777 src/ptyxis-terminal.ui:271 src/ptyxis-window.c:1353 src/ptyxis-window.ui:921
 msgid "Set Title"
 msgstr "Aseta otsikko"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:549
+#: src/org.gnome.Ptyxis.gschema.xml.in:593
 #, fuzzy
 #| msgid "The shortcut to show the tab overview"
 msgid "The shortcut to show set title"
 msgstr "Pikanäppäin, jolla näytetään välilehtien yhteenveto"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:554
+#: src/org.gnome.Ptyxis.gschema.xml.in:598
 msgid "Focus Tab 1"
 msgstr "Kohdista välilehteen 1"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:555
+#: src/org.gnome.Ptyxis.gschema.xml.in:599
 msgid "Shortcut to focus tab 1"
 msgstr "Pikanäppäin 1. välilehteen kohdistamiseksi"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:560
+#: src/org.gnome.Ptyxis.gschema.xml.in:604
 msgid "Focus Tab 2"
 msgstr "Kohdista välilehteen 2"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:561
+#: src/org.gnome.Ptyxis.gschema.xml.in:605
 msgid "Shortcut to focus tab 2"
 msgstr "Pikanäppäin 2. välilehteen kohdistamiseksi"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:566
+#: src/org.gnome.Ptyxis.gschema.xml.in:610
 msgid "Focus Tab 3"
 msgstr "Kohdista välilehteen 3"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:567
+#: src/org.gnome.Ptyxis.gschema.xml.in:611
 msgid "Shortcut to focus tab 3"
 msgstr "Pikanäppäin 3. välilehteen kohdistamiseksi"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:572
+#: src/org.gnome.Ptyxis.gschema.xml.in:616
 msgid "Focus Tab 4"
 msgstr "Kohdista välilehteen 4"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:573
+#: src/org.gnome.Ptyxis.gschema.xml.in:617
 msgid "Shortcut to focus tab 4"
 msgstr "Pikanäppäin 4. välilehteen kohdistamiseksi"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:578
+#: src/org.gnome.Ptyxis.gschema.xml.in:622
 msgid "Focus Tab 5"
 msgstr "Kohdista välilehteen 5"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:579
+#: src/org.gnome.Ptyxis.gschema.xml.in:623
 msgid "Shortcut to focus tab 5"
 msgstr "Pikanäppäin 5. välilehteen kohdistamiseksi"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:584
+#: src/org.gnome.Ptyxis.gschema.xml.in:628
 msgid "Focus Tab 6"
 msgstr "Kohdista välilehteen 6"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:585
+#: src/org.gnome.Ptyxis.gschema.xml.in:629
 msgid "Shortcut to focus tab 6"
 msgstr "Pikanäppäin 6. välilehteen kohdistamiseksi"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:590
+#: src/org.gnome.Ptyxis.gschema.xml.in:634
 msgid "Focus Tab 7"
 msgstr "Kohdista välilehteen 7"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:591
+#: src/org.gnome.Ptyxis.gschema.xml.in:635
 msgid "Shortcut to focus tab 7"
 msgstr "Pikanäppäin 7. välilehteen kohdistamiseksi"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:596
+#: src/org.gnome.Ptyxis.gschema.xml.in:640
 msgid "Focus Tab 8"
 msgstr "Kohdista välilehteen 8"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:597
+#: src/org.gnome.Ptyxis.gschema.xml.in:641
 msgid "Shortcut to focus tab 8"
 msgstr "Pikanäppäin 8. välilehteen kohdistamiseksi"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:602
+#: src/org.gnome.Ptyxis.gschema.xml.in:646
 msgid "Focus Tab 9"
 msgstr "Kohdista välilehteen 9"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:603
+#: src/org.gnome.Ptyxis.gschema.xml.in:647
 msgid "Shortcut to focus tab 9"
 msgstr "Pikanäppäin 9. välilehteen kohdistamiseksi"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:608
+#: src/org.gnome.Ptyxis.gschema.xml.in:652
 msgid "Focus Tab 10"
 msgstr "Kohdista välilehteen 10"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:609
+#: src/org.gnome.Ptyxis.gschema.xml.in:653
 msgid "Shortcut to focus tab 10"
 msgstr "Pikanäppäin 10. välilehteen kohdistamiseksi"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:614 src/ptyxis-preferences-window.ui:778
+#: src/org.gnome.Ptyxis.gschema.xml.in:658
+msgid "Focus Last Tab"
+msgstr "Kohdista viimeiseen välilehteen"
+
+#: src/org.gnome.Ptyxis.gschema.xml.in:659
+msgid "Shortcut to focus the last tab"
+msgstr "Pikanäppäin viimeiseen välilehteen kohdistamiseksi"
+
+#: src/org.gnome.Ptyxis.gschema.xml.in:664 src/ptyxis-preferences-window.ui:824
 msgid "Undo Close Tab"
 msgstr "Kumoa välilehden sulkeminen"
 
-#: src/org.gnome.Ptyxis.gschema.xml.in:615
+#: src/org.gnome.Ptyxis.gschema.xml.in:665
 msgid "Undo closing of last tab"
 msgstr "Kumoa viimeisimmän välilehden sulkeminen"
 
-#: src/ptyxis-application.c:465
+#: src/ptyxis-application.c:464
 msgid "--tab, --tab-with-profile, or --new-window may not be used together"
 msgstr ""
 
-#: src/ptyxis-application.c:511
+#: src/ptyxis-application.c:512
 #, c-format
 msgid "Cannot parse command: %s"
 msgstr "Komentoa ei voi jäsentää: %s"
 
-#: src/ptyxis-application.c:1145
+#: src/ptyxis-application.c:1190
 msgid "Examples:"
 msgstr "Esimerkkejä:"
 
-#: src/ptyxis-application.c:1147
+#: src/ptyxis-application.c:1192
 msgid "Show the application preferences"
 msgstr "Näytä sovelluksen asetukset"
 
 #. Used for new tabs/windows/etc when specified
-#: src/ptyxis-application.c:1150
+#: src/ptyxis-application.c:1195
 msgid "Use DIR for --tab, --tab-with-profile, --new-window, or -x"
 msgstr ""
 
-#: src/ptyxis-application.c:1150
+#: src/ptyxis-application.c:1195
 msgid "DIR"
 msgstr ""
 
 #. By default, this implies a new ptyxis instance unless the options
 #. * below are provided to override that.
 #.
-#: src/ptyxis-application.c:1155
+#: src/ptyxis-application.c:1200
 msgid "Command to execute in new window"
 msgstr "Uudessa ikkunassa suoritettava komento"
 
@@ -852,69 +911,69 @@ msgstr "Uudessa ikkunassa suoritettava komento"
 #. * short command options for these to make it easier to sniff them in early args
 #. * checking from `main.c`.
 #.
-#: src/ptyxis-application.c:1161
+#: src/ptyxis-application.c:1206
 msgid "New terminal window"
 msgstr "Uusi pääteikkuna"
 
-#: src/ptyxis-application.c:1162
+#: src/ptyxis-application.c:1207
 msgid "New terminal tab in active window"
 msgstr "Uusi päätevälilehti aktiiviseen ikkunaan"
 
-#: src/ptyxis-application.c:1163
+#: src/ptyxis-application.c:1208
 msgid "New terminal tab in active window using the profile UUID"
 msgstr "Uusi päätevälilehti aktiiviseen ikkunaan käyttäen profiilia UUID"
 
-#: src/ptyxis-application.c:1163
+#: src/ptyxis-application.c:1208
 msgid "PROFILE_UUID"
 msgstr ""
 
 #. Standalone (single instance mode)
-#: src/ptyxis-application.c:1166
+#: src/ptyxis-application.c:1211
 msgid "Start a new instance, ignoring existing instances"
 msgstr "Käynnistä uusi instanssi, älä huomioi olemassa olevia instansseja"
 
-#: src/ptyxis-application.c:1168
+#: src/ptyxis-application.c:1213
 msgid "Set title for new tab"
 msgstr "Aseta otsikko uudelle välilehdelle"
 
-#: src/ptyxis-application.c:1169
+#: src/ptyxis-application.c:1214
 msgid "Maximize a newly created window"
 msgstr "Suurenna luotu ikkuna"
 
-#: src/ptyxis-application.c:1170
+#: src/ptyxis-application.c:1215
 msgid "Fullscreen a newly created window"
 msgstr "Suurenna luotu ikkuna koko näyttöön"
 
 #. Import a custom .palette file. This works like dragging the file onto preferences
-#: src/ptyxis-application.c:1173
+#: src/ptyxis-application.c:1218
 msgid "Import a Ptyxis palette file"
 msgstr "Tuo Ptyxis-palettitiedosto"
 
-#: src/ptyxis-application.c:1173
+#: src/ptyxis-application.c:1218
 msgid "FILE"
 msgstr ""
 
-#: src/ptyxis-application.c:1180
+#: src/ptyxis-application.c:1225
 msgid "Run Separate Instance"
 msgstr "Käynnistä erillinen instanssi"
 
-#: src/ptyxis-application.c:1184
+#: src/ptyxis-application.c:1229
 msgid "Open Preferences"
 msgstr "Avaa asetukset"
 
-#: src/ptyxis-application.c:1188
+#: src/ptyxis-application.c:1233
 msgid "Run Custom Command in New Window"
 msgstr "Suorita omavalintainen komento uudessa ikkunassa"
 
-#: src/ptyxis-application.c:1193
+#: src/ptyxis-application.c:1238
 msgid "Import a custom palette"
-msgstr ""
+msgstr "Tuo mukautettu paletti"
 
-#: src/ptyxis-application.c:1196
+#: src/ptyxis-application.c:1241
 msgid "[-- COMMAND ARGUMENTS]"
 msgstr ""
 
-#: src/ptyxis-application.c:1434
+#: src/ptyxis-application.c:1486
 msgid "translator-credits"
 msgstr "Jiri Grönroos"
 
@@ -965,13 +1024,12 @@ msgstr "Säännöllinen lauseke"
 msgid "Target URL"
 msgstr "Kohdeosoite"
 
-#: src/ptyxis-custom-link-row.c:131
+#: src/ptyxis-custom-link-row.c:129
 #, c-format
-#| msgid "Removed profile “%s”"
 msgid "Removed custom link “%s”"
 msgstr "Poistettu mukautettu linkki “%s”"
 
-#: src/ptyxis-custom-link-row.c:133 src/ptyxis-profile-editor.c:185 src/ptyxis-profile-row.c:106
+#: src/ptyxis-custom-link-row.c:131 src/ptyxis-profile-editor.c:184 src/ptyxis-profile-row.c:104
 msgid "Undo"
 msgstr "Kumoa"
 
@@ -1011,7 +1069,7 @@ msgstr "_Vain kokonaiset sanat"
 msgid "Use _Regular Expressions"
 msgstr "Käytä _säännöllisiä lausekkeita"
 
-#: src/ptyxis-find-bar.ui:128 src/ptyxis-preferences-window.ui:558 src/ptyxis-profile-editor.ui:288
+#: src/ptyxis-find-bar.ui:128 src/ptyxis-preferences-window.ui:589 src/ptyxis-profile-editor.ui:302
 msgid "Close"
 msgstr "Sulje"
 
@@ -1039,7 +1097,7 @@ msgstr "Sarake"
 #. * This is fine for now, but I'd like it to be better and actually
 #. * show the proper `tcgetpgrp()` foreground.
 #.
-#: src/ptyxis-inspector.c:177 src/ptyxis-inspector.c:197 src/ptyxis-preferences-window.ui:494 src/ptyxis-profile-editor.ui:170
+#: src/ptyxis-inspector.c:177 src/ptyxis-inspector.c:197 src/ptyxis-preferences-window.ui:525 src/ptyxis-profile-editor.ui:184
 msgid "Shell"
 msgstr "Komentokehote"
 
@@ -1059,71 +1117,71 @@ msgstr "Prosessi"
 msgid "Foreground Process"
 msgstr "Edustaprosessi"
 
-#: src/ptyxis-inspector.ui:33
+#: src/ptyxis-inspector.ui:34
 msgid "Window Title"
 msgstr "Ikkunan otsikko"
 
-#: src/ptyxis-inspector.ui:45
+#: src/ptyxis-inspector.ui:47
 msgid "Current Directory"
 msgstr "Nykyinen hakemisto"
 
-#: src/ptyxis-inspector.ui:53
+#: src/ptyxis-inspector.ui:56
 msgid "Current File"
 msgstr "Nykyinen tiedosto"
 
-#: src/ptyxis-inspector.ui:63
+#: src/ptyxis-inspector.ui:67
 msgid "Container"
 msgstr "Kontti"
 
-#: src/ptyxis-inspector.ui:66
+#: src/ptyxis-inspector.ui:70
 msgid "Runtime"
 msgstr ""
 
-#: src/ptyxis-inspector.ui:74 src/ptyxis-inspector.ui:228 src/ptyxis-profile-editor.ui:36
+#: src/ptyxis-inspector.ui:79 src/ptyxis-inspector.ui:234 src/ptyxis-profile-editor.ui:36
 msgid "Name"
 msgstr "Nimi"
 
-#: src/ptyxis-inspector.ui:86 src/ptyxis-preferences-window.ui:36
+#: src/ptyxis-inspector.ui:92 src/ptyxis-preferences-window.ui:37
 msgid "Appearance"
 msgstr "Ulkoasu"
 
-#: src/ptyxis-inspector.ui:92
+#: src/ptyxis-inspector.ui:98
 msgid "Grid Size"
 msgstr "Ruudukon koko"
 
-#: src/ptyxis-inspector.ui:105
+#: src/ptyxis-inspector.ui:111
 msgid "Colors"
 msgstr "Värit"
 
-#: src/ptyxis-inspector.ui:225 src/ptyxis-preferences-window.ui:130
+#: src/ptyxis-inspector.ui:231 src/ptyxis-preferences-window.ui:136
 msgid "Font"
 msgstr "Fontti"
 
-#: src/ptyxis-inspector.ui:233
+#: src/ptyxis-inspector.ui:240
 msgid "Cell Size"
 msgstr "Solun koko"
 
-#: src/ptyxis-inspector.ui:242
+#: src/ptyxis-inspector.ui:249
 msgid "Input"
 msgstr "Syöte"
 
-#: src/ptyxis-inspector.ui:246 src/ptyxis-preferences-window.ui:232
+#: src/ptyxis-inspector.ui:253 src/ptyxis-preferences-window.ui:252
 msgid "Cursor"
 msgstr "Kohdistin"
 
-#: src/ptyxis-inspector.ui:249 src/ptyxis-inspector.ui:262
+#: src/ptyxis-inspector.ui:256 src/ptyxis-inspector.ui:269
 msgid "Position"
 msgstr "Sijainti"
 
-#: src/ptyxis-inspector.ui:259
+#: src/ptyxis-inspector.ui:266
 msgid "Mouse"
 msgstr "Hiiri"
 
-#: src/ptyxis-inspector.ui:270
+#: src/ptyxis-inspector.ui:277
 msgid "Hyperlink"
 msgstr "Hyperlinkki"
 
-#: src/ptyxis-menu-row.c:166 src/ptyxis-profile-editor.c:216 src/ptyxis-window.c:1656
+#: src/ptyxis-menu-row.c:166 src/ptyxis-profile-editor.c:213 src/ptyxis-window.c:2013
 msgid "My Computer"
 msgstr "Oma tietokone"
 
@@ -1131,23 +1189,23 @@ msgstr "Oma tietokone"
 msgid "The quick brown fox jumps over the lazy dog"
 msgstr ""
 
-#: src/ptyxis-preferences-window.c:273
+#: src/ptyxis-preferences-window.c:272
 msgid "Select Font"
 msgstr "Valitse fontti"
 
-#: src/ptyxis-preferences-window.c:348
+#: src/ptyxis-preferences-window.c:357
 msgid "Show Fewer Palettes"
 msgstr "Näytä vähemmän paletteja"
 
-#: src/ptyxis-preferences-window.c:353 src/ptyxis-preferences-window.ui:46
+#: src/ptyxis-preferences-window.c:362 src/ptyxis-preferences-window.ui:47
 msgid "Show All Palettes"
 msgstr "Näytä kaikki paletit"
 
-#: src/ptyxis-preferences-window.c:378
+#: src/ptyxis-preferences-window.c:387
 msgid "Add Profile"
 msgstr "Lisää profiili"
 
-#: src/ptyxis-preferences-window.c:480 src/ptyxis-profile-editor.c:269
+#: src/ptyxis-preferences-window.c:489 src/ptyxis-profile-editor.c:266
 msgid "Add Link"
 msgstr "Lisää linkki"
 
@@ -1159,392 +1217,420 @@ msgstr "Läpinäkyvyys"
 msgid "Reduces the opacity of the background window"
 msgstr "Vähentää taustaikkunan läpinäkymättömyyttä"
 
-#: src/ptyxis-preferences-window.ui:134
+#: src/ptyxis-preferences-window.ui:129
+msgid "Blurs what is visible behind transparent windows"
+msgstr "Sumentaa läpinäkyvien ikkunoiden takana olevan näkyvyyden"
+
+#: src/ptyxis-preferences-window.ui:140
 msgid "Use System _Font"
 msgstr "Käytä järjestelmän _fonttia"
 
-#: src/ptyxis-preferences-window.ui:146
+#: src/ptyxis-preferences-window.ui:152
 msgid "Custom Font"
 msgstr "Omavalintainen fontti"
 
-#: src/ptyxis-preferences-window.ui:193
+#: src/ptyxis-preferences-window.ui:213
 msgid "Blinking Text"
 msgstr "Vilkkuva teksti"
 
-#: src/ptyxis-preferences-window.ui:202 src/ptyxis-preferences-window.ui:426 src/ptyxis-preferences-window.ui:515 src/ptyxis-profile-editor.ui:216
-#: src/ptyxis-profile-editor.ui:245
+#: src/ptyxis-preferences-window.ui:222 src/ptyxis-preferences-window.ui:457 src/ptyxis-preferences-window.ui:546 src/ptyxis-profile-editor.ui:230
+#: src/ptyxis-profile-editor.ui:259
 msgid "Never"
 msgstr "Ei koskaan"
 
-#: src/ptyxis-preferences-window.ui:208
+#: src/ptyxis-preferences-window.ui:228
 msgid "Focused"
 msgstr "Kohdistettu"
 
-#: src/ptyxis-preferences-window.ui:214
+#: src/ptyxis-preferences-window.ui:234
 msgid "Unfocused"
 msgstr "Kohdistamaton"
 
-#: src/ptyxis-preferences-window.ui:220 src/ptyxis-preferences-window.ui:438 src/ptyxis-preferences-window.ui:527 src/ptyxis-profile-editor.ui:222
-#: src/ptyxis-profile-editor.ui:257
+#: src/ptyxis-preferences-window.ui:240 src/ptyxis-preferences-window.ui:469 src/ptyxis-preferences-window.ui:558 src/ptyxis-profile-editor.ui:236
+#: src/ptyxis-profile-editor.ui:271
 msgid "Always"
 msgstr "Aina"
 
-#: src/ptyxis-preferences-window.ui:244
+#: src/ptyxis-preferences-window.ui:264
 msgid "Block"
 msgstr "Lohko"
 
-#: src/ptyxis-preferences-window.ui:250
+#: src/ptyxis-preferences-window.ui:270
 msgid "I-Beam"
 msgstr "I-viiva"
 
-#: src/ptyxis-preferences-window.ui:256
+#: src/ptyxis-preferences-window.ui:276
 msgid "Underline"
 msgstr "Alleviivaus"
 
-#: src/ptyxis-preferences-window.ui:266
+#: src/ptyxis-preferences-window.ui:286
 msgid "Cursor Blinking"
 msgstr "Kohdistimen vilkunta"
 
-#: src/ptyxis-preferences-window.ui:275 src/ptyxis-preferences-window.ui:432
+#: src/ptyxis-preferences-window.ui:295 src/ptyxis-preferences-window.ui:463
 msgid "Follow System"
 msgstr "Seuraa järjestelmää"
 
-#: src/ptyxis-preferences-window.ui:281
+#: src/ptyxis-preferences-window.ui:301
 msgid "Enabled"
 msgstr "Käytössä"
 
-#: src/ptyxis-preferences-window.ui:287
+#: src/ptyxis-preferences-window.ui:307
 msgid "Disabled"
 msgstr "Ei käytössä"
 
-#: src/ptyxis-preferences-window.ui:301
+#: src/ptyxis-preferences-window.ui:321
 msgid "Behavior"
 msgstr "Toiminta"
 
-#: src/ptyxis-preferences-window.ui:305
+#: src/ptyxis-preferences-window.ui:325
 msgid "Interface"
 msgstr "Käyttöliittymä"
 
-#: src/ptyxis-preferences-window.ui:317
+#: src/ptyxis-preferences-window.ui:337
 msgid "Next"
 msgstr "Seuraava"
 
-#: src/ptyxis-preferences-window.ui:323
+#: src/ptyxis-preferences-window.ui:343
 msgid "Last"
 msgstr "Viimeinen"
 
-#: src/ptyxis-preferences-window.ui:338
+#: src/ptyxis-preferences-window.ui:358
 msgid "Attempt to restore previous tabs when Ptyxis starts"
 msgstr "Yritä palauttaa aiemmat välilehdet, kun Ptyxis käynnistyy"
 
-#: src/ptyxis-preferences-window.ui:344
+#: src/ptyxis-preferences-window.ui:364
 msgid "Restore the previous window size when creating a new window"
 msgstr "Palauta edellisen ikkunan koko, kun uusi ikkuna luodaan"
 
-#: src/ptyxis-preferences-window.ui:354
+#: src/ptyxis-preferences-window.ui:374
 msgid "Columns"
 msgstr "Sarakkeet"
 
-#: src/ptyxis-preferences-window.ui:368
+#: src/ptyxis-preferences-window.ui:388
 msgid "Rows"
 msgstr "Rivit"
 
-#: src/ptyxis-preferences-window.ui:386
+#: src/ptyxis-preferences-window.ui:406
 msgid "Accessibility"
 msgstr "Esteettömyys"
 
-#: src/ptyxis-preferences-window.ui:389
+#: src/ptyxis-preferences-window.ui:409
 msgid "Allow Screen Readers"
 msgstr "Salli näytönlukijat"
 
-#: src/ptyxis-preferences-window.ui:390
+#: src/ptyxis-preferences-window.ui:410
 msgid "Permit screen readers such as Orca to read terminal content and typed text"
 msgstr "Salli näytönlukijaohjelmien, kuten Orca, lukea päätteen sisältöä ja kirjoitettua tekstiä"
 
-#: src/ptyxis-preferences-window.ui:397
+#: src/ptyxis-preferences-window.ui:417
 msgid "Bell"
 msgstr "Äänimerkki"
 
-#: src/ptyxis-preferences-window.ui:401
+#: src/ptyxis-preferences-window.ui:421
 msgid "Emit an audible bell when requested by active tab"
 msgstr "Toista äänimerkki, kun aktiivinen välilehti pyytää sitä"
 
-#: src/ptyxis-preferences-window.ui:406
+#: src/ptyxis-preferences-window.ui:426
 msgid "Visual Bell"
 msgstr "Visuaalinen äänimerkki"
 
-#: src/ptyxis-preferences-window.ui:407
+#: src/ptyxis-preferences-window.ui:427
 msgid "Emit a visual bell when requested by active tab"
 msgstr "Toista visuaalinen äänimerkki, kun aktiivinen välilehti pyytää sitä"
 
-#: src/ptyxis-preferences-window.ui:414 src/ptyxis-profile-editor.ui:300
+#: src/ptyxis-preferences-window.ui:434 src/ptyxis-title-dialog.ui:36
+msgid "Title"
+msgstr "Otsikko"
+
+#: src/ptyxis-preferences-window.ui:438
+msgid "Do not show running command in tab title"
+msgstr "Älä näytä käynnissä olevaa komentoa välilehden otsikossa"
+
+#: src/ptyxis-preferences-window.ui:445 src/ptyxis-profile-editor.ui:314
 msgid "Scrolling"
 msgstr "Vieritys"
 
-#: src/ptyxis-preferences-window.ui:417
+#: src/ptyxis-preferences-window.ui:448
 msgid "Use Scrollbars"
 msgstr "Käytä vierityspalkkeja"
 
-#: src/ptyxis-preferences-window.ui:453 src/ptyxis-profile-editor.ui:304
+#: src/ptyxis-preferences-window.ui:484 src/ptyxis-profile-editor.ui:318
 msgid "Scroll to the bottom upon input keystroke"
 msgstr "Vieritä alas, kun näppäimistösyötettä vastaanotetaan"
 
-#: src/ptyxis-preferences-window.ui:459 src/ptyxis-profile-editor.ui:310
+#: src/ptyxis-preferences-window.ui:490 src/ptyxis-profile-editor.ui:324
 msgid "Scroll to the bottom when new content is available"
 msgstr "Vieritä alas, kun uutta sisältöä on saatavilla"
 
-#: src/ptyxis-preferences-window.ui:469 src/ptyxis-profile-editor.ui:320
+#: src/ptyxis-preferences-window.ui:500 src/ptyxis-profile-editor.ui:334
 msgid "Restrict the number of lines saved for scrollback"
 msgstr "Rajoita takaisinvieritykseen säilytettävien rivien määrää"
 
-#: src/ptyxis-preferences-window.ui:478 src/ptyxis-profile-editor.ui:329
+#: src/ptyxis-preferences-window.ui:509 src/ptyxis-profile-editor.ui:343
 msgid "The number of lines to keep for scrollback"
 msgstr "Takaisinvieritykseen käytettävien rivien määrä"
 
-#: src/ptyxis-preferences-window.ui:497 src/ptyxis-profile-editor.ui:188
+#: src/ptyxis-preferences-window.ui:528 src/ptyxis-profile-editor.ui:202
 msgid "Use Login Shell"
 msgstr "Käytä kirjautumiskehotetta"
 
-#: src/ptyxis-preferences-window.ui:506 src/ptyxis-profile-editor.ui:236
+#: src/ptyxis-preferences-window.ui:537 src/ptyxis-profile-editor.ui:250
 msgid "Preserve Working Directory"
 msgstr "Säilytä työhakemisto"
 
-#: src/ptyxis-preferences-window.ui:521 src/ptyxis-profile-editor.ui:251
+#: src/ptyxis-preferences-window.ui:552 src/ptyxis-profile-editor.ui:265
 msgid "Safe"
 msgstr "Turvallinen"
 
-#: src/ptyxis-preferences-window.ui:546 src/ptyxis-profile-editor.ui:276
+#: src/ptyxis-preferences-window.ui:577 src/ptyxis-profile-editor.ui:290
 msgid "No Action"
 msgstr "Ei toimintoa"
 
-#: src/ptyxis-preferences-window.ui:552 src/ptyxis-profile-editor.ui:282
+#: src/ptyxis-preferences-window.ui:583 src/ptyxis-profile-editor.ui:296
 msgid "Restart"
 msgstr "Käynnistä uudelleen"
 
-#: src/ptyxis-preferences-window.ui:570 src/ptyxis-profile-editor.ui:345
+#: src/ptyxis-preferences-window.ui:601 src/ptyxis-profile-editor.ui:359
 msgid "Compatibility"
 msgstr "Yhteensopivuus"
 
-#: src/ptyxis-preferences-window.ui:573 src/ptyxis-profile-editor.ui:348
+#: src/ptyxis-preferences-window.ui:604 src/ptyxis-profile-editor.ui:362
 msgid "Backspace Key"
 msgstr "Askelpalautin tuottaa"
 
-#: src/ptyxis-preferences-window.ui:574 src/ptyxis-profile-editor.ui:349
+#: src/ptyxis-preferences-window.ui:605 src/ptyxis-profile-editor.ui:363
 msgid "Sequence to send for Backspace key"
 msgstr "Askelpalauttimesta lähettävä sarja"
 
-#: src/ptyxis-preferences-window.ui:583 src/ptyxis-profile-editor.ui:358
+#: src/ptyxis-preferences-window.ui:614 src/ptyxis-profile-editor.ui:372
 msgid "Delete Key"
 msgstr "Delete tuottaa"
 
-#: src/ptyxis-preferences-window.ui:584 src/ptyxis-profile-editor.ui:359
+#: src/ptyxis-preferences-window.ui:615 src/ptyxis-profile-editor.ui:373
 msgid "Sequence to send for Delete key"
 msgstr "Delete-näppäimestä lähetettävä sarja"
 
-#: src/ptyxis-preferences-window.ui:593 src/ptyxis-profile-editor.ui:368
+#: src/ptyxis-preferences-window.ui:624 src/ptyxis-profile-editor.ui:382
 msgid "Ambiguous-width Characters"
 msgstr "Leveydeltään asiayhteyskohtaiset merkit"
 
-#: src/ptyxis-preferences-window.ui:602 src/ptyxis-profile-editor.ui:377
+#: src/ptyxis-preferences-window.ui:633 src/ptyxis-profile-editor.ui:391
 msgid "Narrow"
 msgstr "Kapea"
 
-#: src/ptyxis-preferences-window.ui:608 src/ptyxis-profile-editor.ui:383
+#: src/ptyxis-preferences-window.ui:639 src/ptyxis-profile-editor.ui:397
 msgid "Wide"
 msgstr "Leveä"
 
-#: src/ptyxis-preferences-window.ui:641
+#: src/ptyxis-preferences-window.ui:672
 msgid "Set as Default Terminal"
 msgstr "Aseta oletuspäätteeksi"
 
-#: src/ptyxis-preferences-window.ui:651
+#: src/ptyxis-preferences-window.ui:682
 msgid "Shortcuts"
 msgstr "Pikanäppäimet"
 
-#: src/ptyxis-preferences-window.ui:677
+#: src/ptyxis-preferences-window.ui:711
 msgid "Clear Selection"
 msgstr "Tyhjennä valinta"
 
-#: src/ptyxis-preferences-window.ui:686 src/ptyxis-terminal.ui:230
+#: src/ptyxis-preferences-window.ui:721 src/ptyxis-shortcut-accel-dialog.ui:48 src/ptyxis-terminal.ui:257
 msgid "Reset"
 msgstr "Nollaa"
 
-#: src/ptyxis-preferences-window.ui:691 src/ptyxis-terminal.ui:236
+#: src/ptyxis-preferences-window.ui:727 src/ptyxis-terminal.ui:263
 msgid "Reset and Clear"
 msgstr "Nollaa ja tyhjennä"
 
-#: src/ptyxis-preferences-window.ui:710
+#: src/ptyxis-preferences-window.ui:748
 msgid "Show Context Menu"
 msgstr "Näytä kontekstivalikko"
 
-#: src/ptyxis-preferences-window.ui:717
+#: src/ptyxis-preferences-window.ui:756
 msgid "Windows"
 msgstr "Ikkunat"
 
-#: src/ptyxis-preferences-window.ui:721
+#: src/ptyxis-preferences-window.ui:760
 msgid "Open a new tab in a new window"
 msgstr "Avaa välilehti uuteen ikkunaan"
 
-#: src/ptyxis-preferences-window.ui:727
+#: src/ptyxis-preferences-window.ui:767
 msgid "Close the current window"
 msgstr "Sulje nykyinen ikkuna"
 
-#: src/ptyxis-preferences-window.ui:743
+#: src/ptyxis-preferences-window.ui:785
 msgid "Tabs"
 msgstr "Välilehdet"
 
-#: src/ptyxis-preferences-window.ui:747
+#: src/ptyxis-preferences-window.ui:789
 msgid "Open a new tab in the current window"
 msgstr "Avaa välilehti nykyiseen ikkunaan"
 
-#: src/ptyxis-preferences-window.ui:756
+#: src/ptyxis-preferences-window.ui:799
 msgid "View Tab Overview"
 msgstr "Näytä välilehtien yleisnäkymä"
 
-#: src/ptyxis-preferences-window.ui:757
+#: src/ptyxis-preferences-window.ui:800
 msgid "Show an overview of all tabs within the window"
 msgstr "Näytä ikkunan kaikkien välilehtien yhteenveto"
 
-#: src/ptyxis-preferences-window.ui:767
+#: src/ptyxis-preferences-window.ui:811
 msgid "Close the current tab"
 msgstr "Sulje nykyinen välilehti"
 
-#: src/ptyxis-preferences-window.ui:773
+#: src/ptyxis-preferences-window.ui:818
 msgid "Close all tabs except the active tab"
 msgstr "Sulje kaikki välilehdet paitsi aktiivinen välilehti"
 
-#: src/ptyxis-preferences-window.ui:779
+#: src/ptyxis-preferences-window.ui:825
 msgid "Undo closing the last tab"
 msgstr "Kumoa viimeisimmän välilehden sulkeminen"
 
-#: src/ptyxis-preferences-window.ui:803
+#: src/ptyxis-preferences-window.ui:852
 msgid "Move the tab one position to the left"
 msgstr "Siirrä välilehti yhden pykälän vasemmalle"
 
-#: src/ptyxis-preferences-window.ui:809
+#: src/ptyxis-preferences-window.ui:859
 msgid "Move the tab one position to the right"
 msgstr "Siirrä välilehti yhden pykälän oikealle"
 
-#: src/ptyxis-preferences-window.ui:815
+#: src/ptyxis-preferences-window.ui:866
 msgid "Detach the current tab and move it to a new window"
 msgstr "Irrota nykyinen välilehti ja siirrä se uuteen ikkunaan"
 
-#: src/ptyxis-preferences-window.ui:824
+#: src/ptyxis-preferences-window.ui:876
 msgid "Switch to Tab 1"
 msgstr "Vaihda välilehteen 1"
 
-#: src/ptyxis-preferences-window.ui:829
+#: src/ptyxis-preferences-window.ui:882
 msgid "Switch to Tab 2"
 msgstr "Vaihda välilehteen 2"
 
-#: src/ptyxis-preferences-window.ui:834
+#: src/ptyxis-preferences-window.ui:888
 msgid "Switch to Tab 3"
 msgstr "Vaihda välilehteen 3"
 
-#: src/ptyxis-preferences-window.ui:839
+#: src/ptyxis-preferences-window.ui:894
 msgid "Switch to Tab 4"
 msgstr "Vaihda välilehteen 4"
 
-#: src/ptyxis-preferences-window.ui:844
+#: src/ptyxis-preferences-window.ui:900
 msgid "Switch to Tab 5"
 msgstr "Vaihda välilehteen 5"
 
-#: src/ptyxis-preferences-window.ui:849
+#: src/ptyxis-preferences-window.ui:906
 msgid "Switch to Tab 6"
 msgstr "Vaihda välilehteen 6"
 
-#: src/ptyxis-preferences-window.ui:854
+#: src/ptyxis-preferences-window.ui:912
 msgid "Switch to Tab 7"
 msgstr "Vaihda välilehteen 7"
 
-#: src/ptyxis-preferences-window.ui:859
+#: src/ptyxis-preferences-window.ui:918
 msgid "Switch to Tab 8"
 msgstr "Vaihda välilehteen 8"
 
-#: src/ptyxis-preferences-window.ui:864
+#: src/ptyxis-preferences-window.ui:924
 msgid "Switch to Tab 9"
 msgstr "Vaihda välilehteen 9"
 
-#: src/ptyxis-preferences-window.ui:869
+#: src/ptyxis-preferences-window.ui:930
 msgid "Switch to Tab 10"
 msgstr "Vaihda välilehteen 10"
 
-#: src/ptyxis-preferences-window.ui:876
+#: src/ptyxis-preferences-window.ui:936
+msgid "Switch to Last Tab"
+msgstr "Siirry viimeiseen välilehteen"
+
+#: src/ptyxis-preferences-window.ui:944
 msgid "Zoom"
 msgstr "Suurennus"
 
-#: src/ptyxis-preferences-window.ui:896
+#: src/ptyxis-preferences-window.ui:967
 msgid "Application"
 msgstr "Sovellus"
 
-#: src/ptyxis-preferences-window.ui:900
+#: src/ptyxis-preferences-window.ui:971
 msgid "Toggle in and out of fullscreen"
 msgstr "Koko näyttö päällä/pois"
 
-#: src/ptyxis-preferences-window.ui:909
+#: src/ptyxis-preferences-window.ui:981
 msgid "Show Primary Menu"
 msgstr "Näytä ensisijainen valikko"
 
-#: src/ptyxis-preferences-window.ui:910
+#: src/ptyxis-preferences-window.ui:982
 msgid "Displays the primary menu for the terminal window"
 msgstr "Näyttää pääteikkunan ensisijaisen valikon"
 
-#: src/ptyxis-preferences-window.ui:915
+#: src/ptyxis-preferences-window.ui:988
 msgid "Show New Tab Menu"
 msgstr "Näytä Uusi välilehti -valikko"
 
-#: src/ptyxis-preferences-window.ui:916
+#: src/ptyxis-preferences-window.ui:989
 msgid "Displays the new tab menu for the terminal window"
 msgstr "Näyttää Uusi välilehti -valikon pääteikkunassa"
 
-#: src/ptyxis-preferences-window.ui:922
+#: src/ptyxis-preferences-window.ui:996
 msgid "Show this preferences window"
 msgstr "Näytä tämä asetusikkuna"
 
-#: src/ptyxis-preferences-window.ui:931 src/ptyxis-preferences-window.ui:935 src/ptyxis-window.c:1630 src/ptyxis-window.c:1792
+#: src/ptyxis-preferences-window.ui:1003
+msgid "Show the keyboard shortcuts configuration"
+msgstr "Näytä pikanäppäinten määritykset"
+
+#: src/ptyxis-preferences-window.ui:1013 src/ptyxis-preferences-window.ui:1017 src/ptyxis-window.c:1987 src/ptyxis-window.c:2149
 msgid "Profiles"
 msgstr "Profiilit"
 
-#: src/ptyxis-preferences-window.ui:954 src/ptyxis-profile-editor.ui:428
+#: src/ptyxis-preferences-window.ui:1036 src/ptyxis-profile-editor.ui:442
 msgid "Automatic"
 msgstr "Automaattinen"
 
-#: src/ptyxis-preferences-window.ui:960 src/ptyxis-profile-editor.ui:434
+#: src/ptyxis-preferences-window.ui:1042 src/ptyxis-profile-editor.ui:448
 msgid "Control-H"
 msgstr "Control-H"
 
-#: src/ptyxis-preferences-window.ui:966 src/ptyxis-profile-editor.ui:440
+#: src/ptyxis-preferences-window.ui:1048 src/ptyxis-profile-editor.ui:454
 msgid "ASCII DEL"
 msgstr "ASCII DEL"
 
-#: src/ptyxis-preferences-window.ui:972 src/ptyxis-profile-editor.ui:446
+#: src/ptyxis-preferences-window.ui:1054 src/ptyxis-profile-editor.ui:460
 msgid "Escape Sequence"
 msgstr "Escape-sarja"
 
-#: src/ptyxis-preferences-window.ui:978 src/ptyxis-profile-editor.ui:452
+#: src/ptyxis-preferences-window.ui:1060 src/ptyxis-profile-editor.ui:466
 msgid "TTY Erase"
 msgstr "TTY-poispyyhintä"
 
-#: src/ptyxis-profile.c:711
+#: src/ptyxis-profile.c:729
 msgid "Untitled Profile"
 msgstr "Nimetön profiili"
 
-#: src/ptyxis-profile-editor.c:154 src/ptyxis-terminal.c:438 src/ptyxis-terminal.c:470
+#: src/ptyxis-profile-dialog.ui:29 src/ptyxis-terminal.ui:276
+msgid "Change Profile"
+msgstr "Vaihda profiilia"
+
+#: src/ptyxis-profile-dialog.ui:42 src/ptyxis-profile-editor.ui:31
+msgid "Profile"
+msgstr "Profiili"
+
+#: src/ptyxis-profile-dialog.ui:43
+msgid "Select a profile to apply to this terminal"
+msgstr "Valitse tähän päätteeseen toteutettava profiili"
+
+#: src/ptyxis-profile-editor.c:155 src/ptyxis-terminal.c:478 src/ptyxis-terminal.c:533
 msgid "Copied to clipboard"
 msgstr "Kopioitu leikepöydälle"
 
-#: src/ptyxis-profile-editor.c:183 src/ptyxis-profile-row.c:104
+#: src/ptyxis-profile-editor.c:182 src/ptyxis-profile-row.c:102
 #, c-format
 msgid "Removed profile “%s”"
 msgstr "Profiili “%s” poistettu"
 
-#: src/ptyxis-profile-editor.ui:22 src/ptyxis-tab.c:411 src/ptyxis-tab.c:468
+#: src/ptyxis-profile-editor.ui:22 src/ptyxis-tab.c:512 src/ptyxis-tab.c:569
 msgid "Edit Profile"
 msgstr "Muokkaa profiilia"
-
-#: src/ptyxis-profile-editor.ui:31
-msgid "Profile"
-msgstr "Profiili"
 
 #: src/ptyxis-profile-editor.ui:41
 msgid "Identifier"
@@ -1562,27 +1648,27 @@ msgstr "Väri"
 msgid "Use Bright Colors for Bold"
 msgstr "Käytä kirkkaita värejä lihavointiin"
 
-#: src/ptyxis-profile-editor.ui:159
+#: src/ptyxis-profile-editor.ui:173
 msgid "Network"
 msgstr "Verkko"
 
-#: src/ptyxis-profile-editor.ui:162
+#: src/ptyxis-profile-editor.ui:176
 msgid "Proxy"
 msgstr "Välityspalvelin"
 
-#: src/ptyxis-profile-editor.ui:163
+#: src/ptyxis-profile-editor.ui:177
 msgid "Applies the network proxy settings to the container environment"
 msgstr "Toteuttaa verkon välityspalvelinasetukset konttiympäristölle"
 
-#: src/ptyxis-profile-editor.ui:198
+#: src/ptyxis-profile-editor.ui:212
 msgid "The default container to use with this profile"
 msgstr "Tämän profiilin kanssa käytettävä oletuskontti"
 
-#: src/ptyxis-profile-editor.ui:207
+#: src/ptyxis-profile-editor.ui:221
 msgid "Preserve the current container when opening new tabs and windows"
 msgstr "Säilytä nykyinen kontti uusia välilehtiä ja ikkunoita avatessa"
 
-#: src/ptyxis-profile-editor.ui:413
+#: src/ptyxis-profile-editor.ui:427
 msgid "Remove Profile"
 msgstr "Poista profiili"
 
@@ -1595,7 +1681,7 @@ msgid "_Duplicate…"
 msgstr "_Monista…"
 
 #. Translators: <b>%s</b> is used to show the provided text in bold
-#: src/ptyxis-shortcut-accel-dialog.c:455
+#: src/ptyxis-shortcut-accel-dialog.c:538
 #, c-format
 msgid "Enter new shortcut to change <b>%s</b>."
 msgstr "Anna uusi pikanäppäin vaihtaaksesi <b>%s</b>."
@@ -1606,15 +1692,15 @@ msgid "Cancel"
 msgstr "Peru"
 
 #. do not use underline as it prevents alt+s as an accelerator
-#: src/ptyxis-shortcut-accel-dialog.ui:49
+#: src/ptyxis-shortcut-accel-dialog.ui:56
 msgid "Set"
 msgstr "Aseta"
 
-#: src/ptyxis-shortcut-accel-dialog.ui:89
+#: src/ptyxis-shortcut-accel-dialog.ui:96
 msgid "Press Escape to cancel or Backspace to disable."
 msgstr "Paina Esc peruaksesi tai askelpalautin poistaaksesi käytöstä."
 
-#: src/ptyxis-shortcut-row.c:75
+#: src/ptyxis-shortcut-row.c:84
 msgid "Set Shortcut"
 msgstr "Aseta pikanäppäin"
 
@@ -1622,12 +1708,16 @@ msgstr "Aseta pikanäppäin"
 msgid "disabled"
 msgstr "ei käytössä"
 
-#: src/ptyxis-tab.c:319
+#: src/ptyxis-tab.c:360
+msgid "A foreground process is running"
+msgstr "Edustaprosessi on käynnissä"
+
+#: src/ptyxis-tab.c:417
 #, c-format
 msgid "Process Exited from Signal %d"
 msgstr "Prosessi poistui signaalilla %d"
 
-#: src/ptyxis-tab.c:322 src/ptyxis-tab.c:345
+#: src/ptyxis-tab.c:420 src/ptyxis-tab.c:446
 msgid "_Restart"
 msgstr "_Käynnistä uudelleen"
 
@@ -1635,96 +1725,96 @@ msgstr "_Käynnistä uudelleen"
 #. * display it again if the tab is removed from the parking lot and
 #. * restored into the window.
 #.
-#: src/ptyxis-tab.c:344
+#: src/ptyxis-tab.c:445
 msgid "Process Exited"
 msgstr "Prosessi poistui"
 
-#: src/ptyxis-tab.c:410
+#: src/ptyxis-tab.c:511
 msgid "Failed to launch terminal"
 msgstr "Päätteen käynnistäminen epäonnistui"
 
-#: src/ptyxis-tab.c:466
+#: src/ptyxis-tab.c:567
 #, c-format
 msgid "Cannot locate container “%s”"
 msgstr "Konttia “%s” ei voi paikantaa"
 
-#: src/ptyxis-tab.c:490
+#: src/ptyxis-tab.c:591
 msgid "Failed to create pseudo terminal device"
 msgstr "Näennäispäätelaitteen luominen epäonnistui"
 
-#: src/ptyxis-tab.c:1468
+#: src/ptyxis-tab.c:1691
 msgid "Exited"
 msgstr "Poistui"
 
-#: src/ptyxis-tab.c:1470
+#: src/ptyxis-tab.c:1693
 msgid "Failed"
 msgstr "Epäonnistui"
 
-#: src/ptyxis-tab.c:2052
+#: src/ptyxis-tab.c:2294
 msgid "Failed to open link"
 msgstr "Linkin avaaminen epäonnistui"
 
-#: src/ptyxis-tab-notify.h:89
+#: src/ptyxis-tab-notify.h:97
 msgid "Command completed"
 msgstr "Komento suoritettu"
 
-#: src/ptyxis-terminal.ui:170
-msgid "Search…"
-msgstr "Etsi…"
-
-#: src/ptyxis-terminal.ui:176
+#: src/ptyxis-terminal.ui:196
 msgid "_Open Link"
 msgstr "_Avaa linkki"
 
-#: src/ptyxis-terminal.ui:184
-msgid "_Copy"
-msgstr "_Kopioi"
-
-#: src/ptyxis-terminal.ui:185
-msgid "Copy selection from terminal to clipboard"
-msgstr "Kopioi valinta päätteestä leikepöydälle"
-
-#: src/ptyxis-terminal.ui:189
-msgid "Copy as _HTML"
-msgstr "Kopioi _HTML:nä"
-
-#: src/ptyxis-terminal.ui:190
-msgid "Copy selection from terminal to clipboard with HTML formatting"
-msgstr "Kopioi valinta päätteestä leikepöydälle HTML-muotoilun kera"
-
-#: src/ptyxis-terminal.ui:195
+#: src/ptyxis-terminal.ui:201
 msgid "_Copy Link"
 msgstr "_Kopioi linkki"
 
-#: src/ptyxis-terminal.ui:201
+#: src/ptyxis-terminal.ui:209
+msgid "Search…"
+msgstr "Etsi…"
+
+#: src/ptyxis-terminal.ui:216
+msgid "_Copy"
+msgstr "_Kopioi"
+
+#: src/ptyxis-terminal.ui:217
+msgid "Copy selection from terminal to clipboard"
+msgstr "Kopioi valinta päätteestä leikepöydälle"
+
+#: src/ptyxis-terminal.ui:221
+msgid "Copy as _HTML"
+msgstr "Kopioi _HTML:nä"
+
+#: src/ptyxis-terminal.ui:222
+msgid "Copy selection from terminal to clipboard with HTML formatting"
+msgstr "Kopioi valinta päätteestä leikepöydälle HTML-muotoilun kera"
+
+#: src/ptyxis-terminal.ui:228
 msgid "_Paste"
 msgstr "_Liitä"
 
-#: src/ptyxis-terminal.ui:202
+#: src/ptyxis-terminal.ui:229
 msgid "Paste from clipboard into the terminal"
 msgstr "Liitä leikepöydältä päätteeseen"
 
-#: src/ptyxis-terminal.ui:209
+#: src/ptyxis-terminal.ui:236
 msgid "Select _All"
 msgstr "Valitse _kaikki"
 
-#: src/ptyxis-terminal.ui:210
+#: src/ptyxis-terminal.ui:237
 msgid "Selection all text from terminal including scrollback"
 msgstr "Kaiken tekstin valinta mukaan lukien takaisinvieritys"
 
-#: src/ptyxis-terminal.ui:216
+#: src/ptyxis-terminal.ui:243
 msgid "Select _None"
 msgstr "_Älä valitse mitään"
 
-#: src/ptyxis-terminal.ui:223
+#: src/ptyxis-terminal.ui:250
 msgid "Read-Only"
 msgstr "Vain luku"
 
-#: src/ptyxis-terminal.ui:251 src/ptyxis-window.ui:388 src/ptyxis-window.ui:779
+#: src/ptyxis-terminal.ui:284 src/ptyxis-window.ui:439 src/ptyxis-window.ui:866
 msgid "Leave Fullscreen"
 msgstr "Poistu koko näytön tilasta"
 
-#: src/ptyxis-terminal.ui:257
+#: src/ptyxis-terminal.ui:290
 msgid "_Inspect Terminal"
 msgstr "Tutki päätett_ä"
 
@@ -1752,10 +1842,6 @@ msgstr "Tumma tyyli"
 msgid "Dark style"
 msgstr "Tumma tyyli"
 
-#: src/ptyxis-title-dialog.ui:36
-msgid "Title"
-msgstr "Otsikko"
-
 #: src/ptyxis-title-dialog.ui:42
 msgid "Include Process Title"
 msgstr "Sisällytä prosessin otsikko"
@@ -1765,101 +1851,104 @@ msgid "Append title from Shell application"
 msgstr "Lisää otsikko Shell-sovelluksesta"
 
 #. translators: Builder Terminal means this is a terminal bundled with GNOME Builder
-#: src/ptyxis-util.c:316
+#: src/ptyxis-util.c:326
 msgid "Builder Terminal"
 msgstr "Builder-pääte"
 
-#: src/ptyxis-util.c:320
+#: src/ptyxis-util.c:330
 msgid "Ptyxis"
 msgstr "Ptyxis"
 
-#: src/ptyxis-window.c:1423
+#: src/ptyxis-window.c:1653
 msgid "Zoom in"
 msgstr "Lähennä"
 
-#: src/ptyxis-window.c:1438
+#: src/ptyxis-window.c:1668
 msgid "Zoom out"
 msgstr "Loitonna"
 
-#: src/ptyxis-window.c:1624 src/ptyxis-window.c:1796
+#: src/ptyxis-window.c:1981 src/ptyxis-window.c:2153
 msgid "Containers"
 msgstr "Kontit"
 
-#: src/ptyxis-window.ui:403
-msgid "New Terminal"
-msgstr "Uusi pääte"
-
-#: src/ptyxis-window.ui:416
-msgid "Show Profiles and Containers"
-msgstr "Näytä profiilit ja kontit"
-
-#: src/ptyxis-window.ui:436
-msgid "Filter…"
-msgstr "Suodata…"
-
-#: src/ptyxis-window.ui:598
-msgid "No Matching Results"
-msgstr "Hakuehtoja vastaavia tuloksia ei löytynyt"
-
-#: src/ptyxis-window.ui:640
+#: src/ptyxis-window.ui:415 src/ptyxis-window.ui:689 src/ptyxis-window.ui:744
 msgid "Main Menu"
 msgstr "Päävalikko"
 
-#: src/ptyxis-window.ui:648 src/ptyxis-window.ui:765
+#: src/ptyxis-window.ui:454 src/ptyxis-window.ui:723
+msgid "New Terminal"
+msgstr "Uusi pääte"
+
+#: src/ptyxis-window.ui:467 src/ptyxis-window.ui:731
+msgid "Show Profiles and Containers"
+msgstr "Näytä profiilit ja kontit"
+
+#: src/ptyxis-window.ui:490
+msgid "Filter…"
+msgstr "Suodata…"
+
+#: src/ptyxis-window.ui:645
+msgid "No Matching Results"
+msgstr "Hakuehtoja vastaavia tuloksia ei löytynyt"
+
+#: src/ptyxis-window.ui:697 src/ptyxis-window.ui:852
 msgid "Show Open Tabs"
 msgstr "Näytä avoimet välilehdet"
 
-#: src/ptyxis-window.ui:749
+#: src/ptyxis-window.ui:836
 msgid "New _Tab"
 msgstr "Uusi _välilehti"
 
-#: src/ptyxis-window.ui:756
+#: src/ptyxis-window.ui:843
 msgid "New _Window"
 msgstr "Uusi _ikkuna"
 
-#: src/ptyxis-window.ui:773
+#: src/ptyxis-window.ui:860
 msgid "Fullscreen"
 msgstr "Koko näyttö"
 
-#: src/ptyxis-window.ui:787
+#: src/ptyxis-window.ui:874
 msgid "_Preferences"
 msgstr "_Asetukset"
 
-#: src/ptyxis-window.ui:791
+#: src/ptyxis-window.ui:879
 msgid "_Keyboard Shortcuts"
 msgstr "_Pikanäppäimet"
 
-#: src/ptyxis-window.ui:795
+#: src/ptyxis-window.ui:883
 msgid "_About"
 msgstr "_Tietoja"
 
-#: src/ptyxis-window.ui:804
+#: src/ptyxis-window.ui:892
 msgid "Move _Left"
 msgstr "Siirrä _vasemmalle"
 
-#: src/ptyxis-window.ui:809
+#: src/ptyxis-window.ui:897
 msgid "Move _Right"
 msgstr "Siirrä _oikealle"
 
-#: src/ptyxis-window.ui:814
+#: src/ptyxis-window.ui:902
 msgid "Move to New _Window"
 msgstr "_Siirrä uuteen ikkunaan"
 
-#: src/ptyxis-window.ui:820
+#: src/ptyxis-window.ui:908
 msgid "_Pin Tab"
 msgstr "_Kiinnitä välilehti"
 
-#: src/ptyxis-window.ui:825
+#: src/ptyxis-window.ui:913
 msgid "Un_pin Tab"
 msgstr "Poista välile_hden kiinnitys"
 
-#: src/ptyxis-window.ui:840
+#: src/ptyxis-window.ui:928
 msgid "Close _Other Tabs"
 msgstr "Sulje _muut välilehdet"
 
-#: src/ptyxis-window.ui:845
+#: src/ptyxis-window.ui:933
 msgid "_Close Tab"
 msgstr "_Sulje välilehti"
+
+#~ msgid "Christian Hergert"
+#~ msgstr "Christian Hergert"
 
 #~ msgid "Unknown Container"
 #~ msgstr "Tuntematon kontti"
