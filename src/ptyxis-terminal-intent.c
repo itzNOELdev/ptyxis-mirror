@@ -159,6 +159,11 @@ unpack_desktop_entry (const char  *desktop_entry_path,
   return TRUE;
 }
 
+static void
+activate_cb (GObject      *source_object,
+             GAsyncResult *res,
+             void         *data);
+
 static gboolean
 ptyxis_terminal_intent_handle_launch_command (FdoTerminal1          *intent,
                                               GDBusMethodInvocation *invocation,
@@ -177,6 +182,9 @@ ptyxis_terminal_intent_handle_launch_command (FdoTerminal1          *intent,
   g_autofree char *path = NULL;
   gboolean keep_terminal_open = FALSE;
   PtyxisWindow *window;
+  GDBusConnection *session_bus;
+  GVariantBuilder builder;
+  g_autofree char *object_path = NULL;
 
   g_assert (PTYXIS_IS_TERMINAL_INTENT (intent));
   g_assert (G_IS_DBUS_METHOD_INVOCATION (invocation));
@@ -281,9 +289,46 @@ ptyxis_terminal_intent_handle_launch_command (FdoTerminal1          *intent,
 
   gtk_window_present (GTK_WINDOW (window));
 
+  session_bus = g_dbus_method_invocation_get_connection (invocation);
+  g_variant_builder_init_static (&builder, G_VARIANT_TYPE_TUPLE);
+  g_variant_builder_add_value (&builder, platform_data);
+  object_path = g_strconcat ("/", APP_ID, NULL);
+  g_strdelimit (object_path, ".", '/');
+  g_strdelimit (object_path, "-", '_');
+
+  g_dbus_connection_call (session_bus,
+                          APP_ID,
+                          object_path,
+                          "org.freedesktop.Application",
+                          "Activate",
+                          g_variant_builder_end (&builder),
+                          NULL,
+                          G_DBUS_CALL_FLAGS_NONE,
+                          -1,
+                          NULL,
+                          activate_cb,
+                          NULL);
+
   fdo_terminal1_complete_launch_command (intent, g_steal_pointer (&invocation));
 
   return G_DBUS_METHOD_INVOCATION_HANDLED;
+}
+
+static void
+activate_cb (GObject      *source_object,
+             GAsyncResult *res,
+             void         *data)
+{
+  GDBusConnection *connection = G_DBUS_CONNECTION (source_object);
+  g_autoptr (GVariant) result = NULL;
+  g_autoptr (GError) error = NULL;
+
+  result = g_dbus_connection_call_finish (connection, res, &error);
+
+  if (result == NULL)
+    {
+      g_warning ("Error activating: %s", error->message);
+    }
 }
 
 static void
