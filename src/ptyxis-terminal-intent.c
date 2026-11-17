@@ -123,27 +123,42 @@ unpack_desktop_entry (const char  *desktop_entry_path,
                       char       **path,
                       GError     **error)
 {
-  g_autoptr (GDesktopAppInfo) desktop_app_info = NULL;
+  g_autoptr(GKeyFile) key_file = NULL;
+  g_autoptr(GError) local_error = NULL;
+  g_autofree char *name_value = NULL;
   g_autofree char *path_value = NULL;
   g_autoptr(GFile) path_file = NULL;
 
   if (desktop_entry_path[0] == '\0')
     return TRUE;
 
-  desktop_app_info = g_desktop_app_info_new_from_filename (desktop_entry_path);
+  key_file = g_key_file_new ();
 
-  if (desktop_app_info == NULL)
+  if (!g_key_file_load_from_file (key_file, desktop_entry_path, G_KEY_FILE_NONE, &local_error))
     {
-      g_set_error_literal (error,
-                           G_DBUS_ERROR,
-                           G_DBUS_ERROR_INVALID_ARGS,
-                           "Not a valid path to a Desktop Entry");
+      g_set_error (error,
+                   G_DBUS_ERROR,
+                   G_DBUS_ERROR_INVALID_ARGS,
+                   "Error loading Desktop Entry: %s",
+                   local_error->message);
       return FALSE;
     }
 
-  *name = g_strdup (g_app_info_get_name (G_APP_INFO (desktop_app_info)));
+  name_value = g_key_file_get_locale_string (key_file, "Desktop Entry", "Name", NULL, &local_error);
 
-  path_value = g_desktop_app_info_get_string (desktop_app_info, "Path");
+  if (name_value == NULL)
+    {
+      g_set_error (error,
+                   G_DBUS_ERROR,
+                   G_DBUS_ERROR_INVALID_ARGS,
+                   "Failed to get Name from Desktop Entry: %s",
+                   local_error->message);
+      return FALSE;
+    }
+
+  g_set_str_take (name, g_steal_pointer (&name_value));
+
+  path_value = g_key_file_get_string (key_file, "Desktop Entry", "Path", NULL);
 
   if (path_value != NULL)
     {
