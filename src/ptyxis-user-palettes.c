@@ -30,7 +30,8 @@ struct _PtyxisUserPalettes
   GFileMonitor *monitor;
   GHashTable   *file_to_palette;
   GHashTable   *id_to_palette;
-  GHashTable   *pending_reloads;
+  DexFuture    *loading;
+  guint64       generation;
   GPtrArray    *items;
   guint         reload_source;
 };
@@ -73,55 +74,6 @@ G_DEFINE_FINAL_TYPE_WITH_CODE (PtyxisUserPalettes, ptyxis_user_palettes, G_TYPE_
                                G_IMPLEMENT_INTERFACE (G_TYPE_LIST_MODEL, list_model_iface_init))
 
 static void
-ptyxis_user_palettes_load_file (PtyxisUserPalettes *self,
-                                const char         *path)
-{
-  g_autoptr(PtyxisPalette) palette = NULL;
-  g_autoptr(GError) error = NULL;
-
-  g_assert (PTYXIS_IS_USER_PALETTES (self));
-  g_assert (path != NULL);
-
-  if ((palette = ptyxis_palette_new_from_file (path, &error)))
-    {
-      PtyxisPalette *previous;
-
-      if ((previous = g_hash_table_lookup (self->file_to_palette, path)))
-        {
-          guint pos;
-
-          if (g_ptr_array_find (self->items, previous, &pos))
-            {
-              g_hash_table_remove (self->id_to_palette,
-                                   ptyxis_palette_get_id (previous));
-              g_object_unref (g_ptr_array_index (self->items, pos));
-              g_ptr_array_index (self->items, pos) = g_object_ref (palette);
-              g_hash_table_insert (self->file_to_palette,
-                                   g_strdup (path),
-                                   g_object_ref (palette));
-              g_hash_table_insert (self->id_to_palette,
-                                   g_strdup (ptyxis_palette_get_id (palette)),
-                                   g_object_ref (palette));
-              g_list_model_items_changed (G_LIST_MODEL (self), pos, 1, 1);
-              return;
-            }
-        }
-
-      g_hash_table_insert (self->file_to_palette,
-                           g_strdup (path),
-                           g_object_ref (palette));
-      g_hash_table_insert (self->id_to_palette,
-                           g_strdup (ptyxis_palette_get_id (palette)),
-                           g_object_ref (palette));
-      g_ptr_array_add (self->items, g_object_ref (palette));
-      g_list_model_items_changed (G_LIST_MODEL (self), self->items->len - 1, 0, 1);
-    }
-
-  if (error)
-    g_warning ("%s", error->message);
-}
-
-static void
 ptyxis_user_palettes_dispose (GObject *object)
 {
   PtyxisUserPalettes *self = (PtyxisUserPalettes *)object;
@@ -136,7 +88,7 @@ ptyxis_user_palettes_dispose (GObject *object)
 
   g_hash_table_remove_all (self->file_to_palette);
   g_hash_table_remove_all (self->id_to_palette);
-  g_hash_table_remove_all (self->pending_reloads);
+  dex_clear (&self->loading);
 
   if (self->items->len > 0)
     g_ptr_array_remove_range (self->items, 0, self->items->len);
@@ -151,7 +103,7 @@ ptyxis_user_palettes_finalize (GObject *object)
 
   g_clear_pointer (&self->file_to_palette, g_hash_table_unref);
   g_clear_pointer (&self->id_to_palette, g_hash_table_unref);
-  g_clear_pointer (&self->pending_reloads, g_hash_table_unref);
+
   g_clear_pointer (&self->items, g_ptr_array_unref);
 
   G_OBJECT_CLASS (ptyxis_user_palettes_parent_class)->finalize (object);
@@ -178,97 +130,189 @@ ptyxis_user_palettes_init (PtyxisUserPalettes *self)
                                                g_str_equal,
                                                g_free,
                                                g_object_unref);
-  self->pending_reloads = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
+
 }
 
-static void
-ptyxis_user_palettes_load (PtyxisUserPalettes *self)
+DEX_DEFINE_CLOSURE_TYPE (PaletteLoad, palette_load,
+                         DEX_DEFINE_CLOSURE_VALUE_WITH_CLEAR (GWeakRef, palettes, g_weak_ref_clear),
+                         DEX_DEFINE_CLOSURE_OBJECT (GFile, directory))
+
+static void ptyxis_user_palettes_monitor_changed_cb (PtyxisUserPalettes *self,
+                                                     GFile              *file,
+                                                     GFile              *other_file,
+                                                     GFileMonitorEvent   event_type,
+                                                     GFileMonitor       *monitor);
+
+static DexFuture *
+ptyxis_user_palettes_load_fiber (gpointer data)
 {
-  g_autoptr(GFileEnumerator) enumerator = NULL;
-  gpointer infoptr;
+  PaletteLoad *load = data;
 
-  g_assert (PTYXIS_IS_USER_PALETTES (self));
-  g_assert (G_IS_FILE (self->directory));
-
-  enumerator = g_file_enumerate_children (self->directory,
-                                          G_FILE_ATTRIBUTE_STANDARD_NAME,
-                                          0,
-                                          NULL,
-                                          NULL);
-  if (enumerator == NULL)
-    return;
-
-  while ((infoptr = g_file_enumerator_next_file (enumerator, NULL, NULL)))
+  dex_await (dex_file_make_directory_with_parents (load->directory), NULL);
+  for (;;)
     {
-      g_autoptr(GFileInfo) info = infoptr;
-      g_autoptr(GFile) file = g_file_enumerator_get_child (enumerator, info);
-      const char *path = g_file_peek_path (file);
+      g_autoptr(PtyxisUserPalettes) self = g_weak_ref_get (&load->palettes);
+      g_autoptr(GFileEnumerator) enumerator = NULL;
+      g_autoptr(GError) enumeration_error = NULL;
+      g_autoptr(GPtrArray) items = g_ptr_array_new_with_free_func (g_object_unref);
+      g_autoptr(GHashTable) files = g_hash_table_new_full (g_str_hash,
+                                                           g_str_equal,
+                                                           g_free,
+                                                           g_object_unref);
+      g_autoptr(GHashTable) ids = g_hash_table_new_full (g_str_hash,
+                                                         g_str_equal,
+                                                         g_free,
+                                                         g_object_unref);
+      guint64 generation;
+      guint removed;
 
-      if (g_str_has_suffix (path, ".palette"))
-        ptyxis_user_palettes_load_file (self, path);
-    }
-}
+      if (self == NULL)
+        return dex_future_new_false ();
 
-static void
-ptyxis_user_palettes_remove (PtyxisUserPalettes *self,
-                             const char         *path)
-{
-  PtyxisPalette *palette;
-
-  g_assert (PTYXIS_IS_USER_PALETTES (self));
-  g_assert (path != NULL);
-
-  if ((palette = g_hash_table_lookup (self->file_to_palette, path)))
-    {
-      const char *id = ptyxis_palette_get_id (palette);
-      guint pos;
-
-      if (g_ptr_array_find (self->items, palette, &pos))
+      if (self->monitor == NULL)
         {
-          g_ptr_array_remove_index (self->items, pos);
-          g_list_model_items_changed (G_LIST_MODEL (self), pos, 1, 0);
+          self->monitor = g_file_monitor_directory (load->directory,
+                                                    G_FILE_MONITOR_NONE,
+                                                    NULL,
+                                                    NULL);
+          if (self->monitor != NULL)
+            g_signal_connect_object (self->monitor,
+                                     "changed",
+                                     G_CALLBACK (ptyxis_user_palettes_monitor_changed_cb),
+                                     self,
+                                     G_CONNECT_SWAPPED);
         }
 
-      g_hash_table_remove (self->id_to_palette, id);
-      g_hash_table_remove (self->file_to_palette, path);
+      generation = self->generation;
+
+      g_clear_object (&self);
+      enumerator = dex_await_object (dex_file_enumerate_children (load->directory,
+                                                                  G_FILE_ATTRIBUTE_STANDARD_NAME,
+                                                                  G_FILE_QUERY_INFO_NONE,
+                                                                  G_PRIORITY_LOW),
+                                     NULL);
+
+      if (enumerator == NULL)
+        return dex_future_new_false ();
+
+      for (;;)
+        {
+          g_autolist(GFileInfo) infos = dex_await_boxed (dex_file_enumerator_next_files (enumerator,
+                                                                                         32,
+                                                                                         G_PRIORITY_LOW),
+                                                         &enumeration_error);
+
+          if (infos == NULL)
+            break;
+
+          for (GList *iter = infos; iter != NULL; iter = iter->next)
+            {
+              g_autoptr(GFile) file = g_file_enumerator_get_child (enumerator, iter->data);
+              g_autoptr(GBytes) bytes = NULL;
+              g_autoptr(PtyxisPalette) palette = NULL;
+              g_autoptr(GError) error = NULL;
+              const char *path = g_file_peek_path (file);
+
+              if (!g_str_has_suffix (path, ".palette"))
+                continue;
+
+              if ((bytes = dex_await_boxed (dex_file_load_contents_bytes (file), &error)))
+                palette = ptyxis_palette_new_from_bytes (path, bytes, &error);
+
+              if (palette == NULL)
+                {
+                  if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_NOT_FOUND))
+                    g_warning ("Failed to load palette %s: %s", path, error->message);
+
+                  if ((self = g_weak_ref_get (&load->palettes)))
+                    {
+                      if ((palette = g_hash_table_lookup (self->file_to_palette, path)))
+                        g_object_ref (palette);
+                    }
+
+                  g_clear_object (&self);
+
+                  if (palette == NULL)
+                    continue;
+                }
+
+              g_hash_table_insert (files, g_strdup (path), g_object_ref (palette));
+              g_hash_table_insert (ids,
+                                   g_strdup (ptyxis_palette_get_id (palette)),
+                                   g_object_ref (palette));
+              g_ptr_array_add (items, g_steal_pointer (&palette));
+            }
+        }
+
+      dex_await (dex_file_enumerator_close (enumerator, G_PRIORITY_LOW), NULL);
+      if (enumeration_error != NULL)
+        return dex_future_new_for_error (g_steal_pointer (&enumeration_error));
+
+      if (!(self = g_weak_ref_get (&load->palettes)))
+        return dex_future_new_false ();
+
+      if (generation != self->generation)
+        continue;
+
+      removed = self->items->len;
+      g_ptr_array_unref (self->items);
+      g_hash_table_unref (self->file_to_palette);
+      g_hash_table_unref (self->id_to_palette);
+      self->items = g_steal_pointer (&items);
+      self->file_to_palette = g_steal_pointer (&files);
+      self->id_to_palette = g_steal_pointer (&ids);
+
+      g_list_model_items_changed (G_LIST_MODEL (self), 0, removed, self->items->len);
+
+      return dex_future_new_true ();
     }
+}
+
+/**
+ * ptyxis_user_palettes_load:
+ * @self: a palette collection
+ *
+ * Loads a complete snapshot and starts monitoring changes. The model is updated
+ * on the main thread after all palette reads finish.
+ *
+ * Returns: (transfer full): the shared initial loading future
+ */
+DexFuture *
+ptyxis_user_palettes_load (PtyxisUserPalettes *self)
+{
+  PaletteLoad *load;
+
+  g_return_val_if_fail (PTYXIS_IS_USER_PALETTES (self), NULL);
+
+  if (self->loading != NULL)
+    return dex_ref (self->loading);
+
+  load = palette_load_new ();
+  g_weak_ref_init (&load->palettes, self);
+  load->directory = g_object_ref (self->directory);
+  self->loading = dex_scheduler_spawn (NULL,
+                                       0,
+                                       ptyxis_user_palettes_load_fiber,
+                                       load,
+                                       (GDestroyNotify)palette_load_free);
+
+  return dex_ref (self->loading);
 }
 
 static gboolean
-ptyxis_user_palettes_reload_cb (gpointer user_data)
+ptyxis_user_palettes_reload_cb (gpointer data)
 {
-  PtyxisUserPalettes *self = user_data;
-  GHashTableIter iter;
-  gpointer key;
-
-  g_assert (PTYXIS_IS_USER_PALETTES (self));
+  PtyxisUserPalettes *self = data;
 
   self->reload_source = 0;
 
-  g_hash_table_iter_init (&iter, self->pending_reloads);
-  while (g_hash_table_iter_next (&iter, &key, NULL))
-    ptyxis_user_palettes_load_file (self, key);
-
-  g_hash_table_remove_all (self->pending_reloads);
+  if (self->loading == NULL || !dex_future_is_pending (self->loading))
+    {
+      dex_clear (&self->loading);
+      dex_future_disown (ptyxis_user_palettes_load (self));
+    }
 
   return G_SOURCE_REMOVE;
-}
-
-static void
-ptyxis_user_palettes_queue_reload (PtyxisUserPalettes *self,
-                                   const char         *path)
-{
-  g_assert (PTYXIS_IS_USER_PALETTES (self));
-  g_assert (path != NULL);
-
-  g_hash_table_add (self->pending_reloads, g_strdup (path));
-
-  if (self->reload_source == 0)
-    self->reload_source = g_timeout_add_full (G_PRIORITY_LOW,
-                                              100,
-                                              ptyxis_user_palettes_reload_cb,
-                                              g_object_ref (self),
-                                              g_object_unref);
 }
 
 static void
@@ -278,57 +322,30 @@ ptyxis_user_palettes_monitor_changed_cb (PtyxisUserPalettes *self,
                                          GFileMonitorEvent   event_type,
                                          GFileMonitor       *monitor)
 {
-  g_autofree char *name = NULL;
-
-  g_assert (PTYXIS_IS_USER_PALETTES (self));
-  g_assert (G_IS_FILE (file));
-  g_assert (!other_file || G_IS_FILE (other_file));
-  g_assert (G_IS_FILE_MONITOR (monitor));
-
-  name = g_file_get_basename (file);
+  g_autofree char *name = g_file_get_basename (file);
 
   if (!g_str_has_suffix (name, ".palette"))
     return;
 
-  if (event_type == G_FILE_MONITOR_EVENT_DELETED)
-    {
-      g_hash_table_remove (self->pending_reloads, g_file_peek_path (file));
-      ptyxis_user_palettes_remove (self, g_file_peek_path (file));
-    }
-  else if (event_type == G_FILE_MONITOR_EVENT_CREATED ||
-           event_type == G_FILE_MONITOR_EVENT_CHANGED ||
-           event_type == G_FILE_MONITOR_EVENT_CHANGES_DONE_HINT)
-    ptyxis_user_palettes_queue_reload (self, g_file_peek_path (file));
+  self->generation++;
+
+  if (self->reload_source == 0)
+    self->reload_source = g_timeout_add_full (G_PRIORITY_LOW,
+                                              100,
+                                              ptyxis_user_palettes_reload_cb,
+                                              self,
+                                              NULL);
 }
 
 PtyxisUserPalettes *
 ptyxis_user_palettes_new (const char *directory)
 {
-  g_autoptr(GFile) file = NULL;
-  g_autoptr(GFileMonitor) monitor = NULL;
   PtyxisUserPalettes *self;
 
   g_return_val_if_fail (directory != NULL, NULL);
 
-  file = g_file_new_for_path (directory);
-  if (!g_file_query_exists (file, NULL))
-    g_file_make_directory_with_parents (file, NULL, NULL);
-
-  monitor = g_file_monitor_directory (file, G_FILE_MONITOR_NONE, NULL, NULL);
-  if (monitor == NULL)
-    return NULL;
-
   self = g_object_new (PTYXIS_TYPE_USER_PALETTES, NULL);
-  self->directory = g_steal_pointer (&file);
-  self->monitor = g_steal_pointer (&monitor);
-
-  g_signal_connect_object (self->monitor,
-                           "changed",
-                           G_CALLBACK (ptyxis_user_palettes_monitor_changed_cb),
-                           self,
-                           G_CONNECT_SWAPPED);
-
-  ptyxis_user_palettes_load (self);
+  self->directory = g_file_new_for_path (directory);
 
   return self;
 }

@@ -21,6 +21,8 @@
 
 #pragma once
 
+#include <libdex.h>
+
 #include <gdk/gdk.h>
 
 G_BEGIN_DECLS
@@ -65,22 +67,25 @@ typedef struct _PtyxisPaletteFace
 
 G_DECLARE_FINAL_TYPE (PtyxisPalette, ptyxis_palette, PTYXIS, PALETTE, GObject)
 
+char                    *ptyxis_get_user_palettes_dir          (void);
 GListModel              *ptyxis_palette_get_all                (void);
+const PtyxisPaletteFace *ptyxis_palette_get_face               (PtyxisPalette  *self,
+                                                                gboolean        dark);
+const char              *ptyxis_palette_get_id                 (PtyxisPalette  *self);
+const char              *ptyxis_palette_get_name               (PtyxisPalette  *self);
+gboolean                 ptyxis_palette_has_dark               (PtyxisPalette  *self);
+gboolean                 ptyxis_palette_has_light              (PtyxisPalette  *self);
+DexFuture               *ptyxis_palette_import                 (const char     *path) G_GNUC_WARN_UNUSED_RESULT;
 void                     ptyxis_palette_init_user_palettes     (void);
+gboolean                 ptyxis_palette_is_primary             (PtyxisPalette  *self);
 GListModel              *ptyxis_palette_list_model_get_default (void);
+DexFuture               *ptyxis_palette_load_user_palettes     (void) G_GNUC_WARN_UNUSED_RESULT;
 PtyxisPalette           *ptyxis_palette_lookup                 (const char     *name);
-PtyxisPalette           *ptyxis_palette_new_from_file          (const char     *file,
+PtyxisPalette           *ptyxis_palette_new_from_bytes         (const char     *file,
+                                                                GBytes         *bytes,
                                                                 GError        **error);
 PtyxisPalette           *ptyxis_palette_new_from_resource      (const char     *file,
                                                                 GError        **error);
-const char              *ptyxis_palette_get_id                 (PtyxisPalette  *self);
-const char              *ptyxis_palette_get_name               (PtyxisPalette  *self);
-const PtyxisPaletteFace *ptyxis_palette_get_face               (PtyxisPalette  *self,
-                                                                gboolean        dark);
 gboolean                 ptyxis_palette_use_system_accent      (PtyxisPalette  *self);
-gboolean                 ptyxis_palette_is_primary             (PtyxisPalette  *self);
-gboolean                 ptyxis_palette_has_dark               (PtyxisPalette  *self);
-gboolean                 ptyxis_palette_has_light              (PtyxisPalette  *self);
-char                    *ptyxis_get_user_palettes_dir          (void);
 
 G_END_DECLS

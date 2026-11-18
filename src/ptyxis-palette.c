@@ -196,6 +196,57 @@ ptyxis_get_user_palettes_dir (void)
   return g_build_filename (g_get_user_data_dir (), APP_ID, "palettes", NULL);
 }
 
+DEX_DEFINE_CLOSURE_TYPE (PaletteImport, palette_import,
+                         DEX_DEFINE_CLOSURE_POINTER (char *, path, g_free))
+
+static DexFuture *
+ptyxis_palette_import_fiber (gpointer data)
+{
+  PaletteImport *import = data;
+  g_autoptr(GError) error = NULL;
+  g_autoptr(GFile) source = g_file_new_for_commandline_arg (import->path);
+  g_autofree char *basename = g_file_get_basename (source);
+  g_autofree char *user_palettes_dir = ptyxis_get_user_palettes_dir ();
+  g_autoptr(GFile) directory = g_file_new_for_path (user_palettes_dir);
+  g_autoptr(GFile) dest = g_file_get_child (directory, basename);
+
+  if (!dex_await (dex_file_make_directory_with_parents (directory), &error) &&
+      !g_error_matches (error, G_IO_ERROR, G_IO_ERROR_EXISTS))
+    goto failure;
+
+  g_clear_error (&error);
+
+  if (!dex_await (dex_file_copy (source, dest, G_FILE_COPY_NONE, G_PRIORITY_DEFAULT), &error))
+    goto failure;
+
+  return dex_future_new_true ();
+
+failure:
+  if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_EXISTS))
+    g_printerr (_("Error: %s already exists.\nPlease remove it first.\n"), g_file_peek_path (dest));
+  else
+    g_printerr ("%s: %s\n", _("Error"), error->message);
+
+  return dex_future_new_false ();
+}
+
+DexFuture *
+ptyxis_palette_import (const char *path)
+{
+  PaletteImport *import;
+
+  dex_return_error_if_fail (path != NULL);
+
+  import = palette_import_new ();
+  import->path = g_strdup (path);
+
+  return dex_scheduler_spawn (NULL,
+                              0,
+                              ptyxis_palette_import_fiber,
+                              import,
+                              (GDestroyNotify)palette_import_free);
+}
+
 void
 ptyxis_palette_init_user_palettes (void)
 {
@@ -205,6 +256,13 @@ ptyxis_palette_init_user_palettes (void)
 
       user_palettes = ptyxis_user_palettes_new (directory);
     }
+}
+
+DexFuture *
+ptyxis_palette_load_user_palettes (void)
+{
+  ptyxis_palette_init_user_palettes ();
+  return ptyxis_user_palettes_load (user_palettes);
 }
 
 GListModel *
@@ -480,8 +538,9 @@ ptyxis_palette_load_info (const char         *path,
 }
 
 PtyxisPalette *
-ptyxis_palette_new_from_file (const char  *path,
-                              GError     **error)
+ptyxis_palette_new_from_bytes (const char  *path,
+                               GBytes      *bytes,
+                               GError     **error)
 {
   g_autoptr(GKeyFile) key_file = NULL;
   PtyxisPaletteData data;
@@ -493,7 +552,7 @@ ptyxis_palette_new_from_file (const char  *path,
 
   key_file = g_key_file_new ();
 
-  if (!g_key_file_load_from_file (key_file, path, 0, error))
+  if (!g_key_file_load_from_bytes (key_file, bytes, 0, error))
     return NULL;
 
   memset (&data, 0, sizeof data);

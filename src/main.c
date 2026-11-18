@@ -1,6 +1,6 @@
 /* main.c
  *
- * Copyright 2023 Christian Hergert
+ * Copyright 2023-2026 Christian Hergert <christian@sourceandstack.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -125,46 +125,14 @@ warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\
       exit (EXIT_SUCCESS);
     }
 
-  /* We handle this here instead of in the main application so we can
-   * synchronously copy without blocking the main loop and also to not
-   * complicate the "activation" path that would normally need to
-   * happen in the remote instance.
-   */
   if (palette != NULL)
     {
-      g_autoptr(GError) error = NULL;
-      g_autofree char *contents = NULL;
-      g_autofree char *basename = g_path_get_basename (palette);
-      g_autofree char *user_palettes_dir = ptyxis_get_user_palettes_dir ();
-      g_autofree char *dest = g_build_filename (user_palettes_dir, basename, NULL);
-      gsize len;
+      g_autoptr(DexFuture) future = ptyxis_palette_import (palette);
 
-      if (!g_file_get_contents (palette, &contents, &len, &error))
-        {
-          g_printerr ("%s: %s\n", _("Error"), error->message);
-          exit (EXIT_FAILURE);
-        }
+      while (dex_future_is_pending (future))
+        g_main_context_iteration (NULL, TRUE);
 
-      if (g_mkdir_with_parents (user_palettes_dir, 0750) != 0)
-        {
-          int errsv = errno;
-          g_printerr ("%s: %s\n", _("Error"), g_strerror (errsv));
-          exit (EXIT_FAILURE);
-        }
-
-      if (g_file_test (dest, G_FILE_TEST_EXISTS))
-        {
-          g_printerr (_("Error: %s already exists.\nPlease remove it first.\n"), dest);
-          exit (EXIT_FAILURE);
-        }
-
-      if (!g_file_set_contents (dest, contents, len, &error))
-        {
-          g_printerr ("%s: %s\n", _("Error"), error->message);
-          exit (EXIT_FAILURE);
-        }
-
-      exit (EXIT_SUCCESS);
+      exit (dex_await_boolean (g_steal_pointer (&future), NULL) ? EXIT_SUCCESS : EXIT_FAILURE);
     }
 }
 
