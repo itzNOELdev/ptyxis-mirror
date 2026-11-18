@@ -1,3 +1,9 @@
+libdex_dep = dependency('libdex-1', version: dex_req)
+libdex_codegen = libdex_dep.get_variable(pkgconfig: 'gdbus_codegen_extension', default_value: '')
+if libdex_codegen == '' or not import('fs').is_file(libdex_codegen)
+  error('Ptyxis requires libdex built with -Dgdbus=enabled and its gdbus-codegen extension')
+endif
+
 terminal_intent_ipc = gnome.gdbus_codegen('terminal-intent',
            sources: 'org.freedesktop.Terminal1.xml',
   interface_prefix: 'org.freedesktop.',

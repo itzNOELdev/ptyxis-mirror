@@ -49,6 +49,7 @@ gtk_req_version = '4.14'
 adwaita_req_version = '1.8'
 json_glib_req_version = '1.6'
 vte_req_version = '0.79'
+dex_req_version = '1.3'
 
 gtk_major_version = gtk_req_version.split('.')[0].to_int()
 gtk_minor_version = gtk_req_version.split('.')[1].to_int()
@@ -64,6 +65,8 @@ deprecated_c_args = [
   '-DGDK_VERSION_MAX_ALLOWED=GDK_VERSION_@0@_@1@'.format(gtk_major_version, gtk_minor_version),
   '-DADW_VERSION_MIN_REQUIRED=ADW_VERSION_@0@'.format(adwaita_req_version.replace('.', '_')),
   '-DADW_VERSION_MAX_ALLOWED=ADW_VERSION_@0@'.format(adwaita_req_version.replace('.', '_')),
+  '-DDEX_VERSION_MIN_REQUIRED=DEX_VERSION_@0@'.format(dex_req_version.replace('.', '_')),
+  '-DDEX_VERSION_MAX_ALLOWED=DEX_VERSION_@0@'.format(dex_req_version.replace('.', '_')),
 ]
 
 glib_req = '>= @0@'.format(glib_req_version)
@@ -71,6 +74,7 @@ gtk_req = '>= @0@'.format(gtk_req_version)
 adwaita_req = '>= @0@'.format(adwaita_req_version)
 json_glib_req = '>= @0@'.format(json_glib_req_version)
 vte_req = '>= @0@'.format(vte_req_version)
+dex_req = '>= @0@'.format(dex_req_version)
 
 # Various optimizations for non-debug builds including disabling of
 # cast checks, asserts, and additional link options.
