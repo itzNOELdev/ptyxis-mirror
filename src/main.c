@@ -20,6 +20,8 @@
 
 #include "config.h"
 
+#include <libdex.h>
+
 #include <errno.h>
 #include <sys/resource.h>
 
@@ -217,6 +219,7 @@ main (int   argc,
   g_set_prgname ("ptyxis");
   g_set_application_name (ptyxis_app_name ());
 
+  dex_init ();
   check_early_opts (&argc, &argv, &standalone);
 
   if (standalone)
