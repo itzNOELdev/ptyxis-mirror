@@ -59,7 +59,7 @@ if libc_compat
 endif
 endif
 
-executable('ptyxis-agent', ptyxis_agent_sources,
+ptyxis_agent = executable('ptyxis-agent', ptyxis_agent_sources,
          dependencies: ptyxis_agent_deps,
               install: true,
           install_dir: get_option('libexecdir'),
