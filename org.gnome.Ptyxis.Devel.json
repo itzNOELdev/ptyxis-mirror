@@ -43,11 +43,7 @@
                 {
                     "type" : "git",
                     "url" : "https://gitlab.gnome.org/GNOME/libdex.git",
-                    "commit" : "2870c4c4c2c3ecc3eb60750ef9fc1fff18d01bbc"
-                },
-                {
-                    "type" : "patch",
-                    "path" : "build-aux/libdex-gdbus.patch"
+                    "branch" : "main"
                 }
             ]
         },
