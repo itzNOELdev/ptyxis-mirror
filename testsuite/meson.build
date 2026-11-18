@@ -33,3 +33,19 @@ foreach test, params: testsuite
     test(test, test_exe, env: test_env)
   endif
 endforeach
+
+command_plan_test = executable('test-command-plan', 'test-command-plan.c',
+       dependencies: ptyxis_deps,
+         link_whole: ptyxis_core,
+             c_args: testsuite_c_args,
+  include_directories: ptyxis_include_directories,
+)
+test('test-command-plan', command_plan_test, env: test_env)
+
+early_options_test = executable('test-early-options',
+  ['test-early-options.c', '../src/ptyxis-early-options.c'],
+       dependencies: dependency('gio-2.0', version: glib_req),
+             c_args: testsuite_c_args,
+  include_directories: [include_directories('..'), include_directories('../src')],
+)
+test('test-early-options', early_options_test, env: test_env)

@@ -177,9 +177,10 @@ on your `PATH`.
 - `-- PROGRAM [ARGUMENTS...]`: Run a program with arguments in a new window.
   Example: `ptyxis -- htop -u myuser`
 - `-d DIR`, `--working-directory DIR`: Set the working directory for a new tab,
-  window, or command.
+  window, or command. Without a launch option, open a new window in DIR.
   Example: `ptyxis -d /home/user/myproject`
-- `--title=TITLE`: Set the initial tab title.
+- `--title=TITLE`: Set the initial tab title. Without a launch option, open a
+  new window with that title.
 - `--maximize`: Open the new window maximized.
 - `--fullscreen`: Open the new window in fullscreen mode.
 - `--import-palette=FILE`: Import a Ptyxis `.palette` file.
@@ -187,6 +188,8 @@ on your `PATH`.
 - `-h`, `--help`: Show a summary of options.
 
 See `ptyxis --help` or the `ptyxis(1)` man page for the full list.
+`--tab`, `--tab-with-profile`, and `--new-window` are mutually exclusive;
+`--preferences` cannot be combined with terminal launch options.
 
 ---
 

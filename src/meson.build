@@ -22,16 +22,17 @@ ptyxis_sources = [
   terminal_intent_ipc,
 
   'gdkhsla.c',
-  'main.c',
   'ptyxis-add-button-list-item.c',
   'ptyxis-add-button-list-model.c',
   'ptyxis-application.c',
   'ptyxis-client.c',
   'ptyxis-close-dialog.c',
+  'ptyxis-command-plan.c',
   'ptyxis-custom-link-editor.c',
   'ptyxis-custom-link-row.c',
   'ptyxis-custom-link.c',
   'ptyxis-dbus-util.c',
+  'ptyxis-early-options.c',
   'ptyxis-find-bar.c',
   'ptyxis-fullscreen-box.c',
   'ptyxis-gated-list-model.c',
@@ -133,8 +134,15 @@ ptyxis_include_directories = [
   include_directories('../agent'),
 ]
 
-executable('ptyxis', ptyxis_sources + ptyxis_application_ipc,
+ptyxis_core = static_library('ptyxis-core', ptyxis_sources + ptyxis_application_ipc,
          dependencies: ptyxis_deps,
+               c_args: ptyxis_c_args,
+  include_directories: ptyxis_include_directories,
+)
+
+executable('ptyxis', 'main.c',
+         dependencies: ptyxis_deps,
+           link_whole: ptyxis_core,
               install: true,
                c_args: ptyxis_c_args,
   include_directories: ptyxis_include_directories,

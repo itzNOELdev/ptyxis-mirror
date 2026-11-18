@@ -39,6 +39,7 @@ Show the version of the program.
 .TP
 .B \-\-preferences
 Show the preferences window.
+This option cannot be combined with terminal launch options.
 
 .TP
 .BR \-\-new\-window
@@ -91,12 +92,13 @@ options.
 .TP
 .BR \-d ", " \-\-working\-directory
 Set the current working directory for a new tab [\-\-tab],
-window [\-\-window], or custom command [\-\- COMMAND...].
+window [\-\-new\-window], or custom command [\-\- COMMAND...].
+When used alone, open a new window in this directory.
 
 .TP
 .BR \-\-title=TITLE
-Sets the title for a new terminal page created with either
-\-\-tab or \-\-new-window.
+Set the title for a new terminal page. When used alone, open a new window
+with this title.
 
 .TP
 .BR \-\-maximize
@@ -113,6 +115,7 @@ profile. The profile should be a
 .B UUID
 string which can be found in the profile editor of the
 preferences dialog.
+This option cannot be combined with \-\-tab or \-\-new\-window.
 
 .TP
 .BR \-s ", " \-\-standalone

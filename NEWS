@@ -23,6 +23,8 @@
  * Fix the title dialog not closing when Enter is pressed.
  * Fix markup in the inspector (#611), container and spawn-environment
    leaks, and terminal drag-and-drop action handling.
+ * Command line processing has been extracted to allow us to better test
+   expected behaviors.
  * Port asynchronous application code to libdex.
  * Update the README (#600) and translations.
 

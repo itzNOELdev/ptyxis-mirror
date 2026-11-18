@@ -24,14 +24,30 @@
 
 G_BEGIN_DECLS
 
+typedef struct _PtyxisTerminal PtyxisTerminal;
+typedef struct _PtyxisWindow   PtyxisWindow;
+
 typedef void (*PtyxisApplicationRequestFunc) (PtyxisApplication *self,
                                               gpointer           data);
 
-void _ptyxis_application_queue_request  (PtyxisApplication            *self,
-                                         PtyxisApplicationRequestFunc  callback,
-                                         gpointer                      data,
-                                         GDestroyNotify                destroy);
-void _ptyxis_application_set_agent_path (PtyxisApplication            *self,
-                                         const char                   *agent_path);
+void          _ptyxis_application_queue_request           (PtyxisApplication            *self,
+                                                           PtyxisApplicationRequestFunc  callback,
+                                                           gpointer                      data,
+                                                           GDestroyNotify                destroy);
+void          _ptyxis_application_set_agent_path          (PtyxisApplication            *self,
+                                                           const char                   *agent_path);
+gboolean      _ptyxis_application_restore_session         (PtyxisApplication            *self);
+void          _ptyxis_application_apply_default_size      (PtyxisApplication            *self,
+                                                           PtyxisTerminal               *terminal);
+void          _ptyxis_application_activate_window         (GApplication                 *app,
+                                                           const char                   *title,
+                                                           gboolean                      maximize,
+                                                           gboolean                      fullscreen);
+PtyxisWindow *_ptyxis_application_get_current_window      (PtyxisApplication            *self);
+gboolean      _ptyxis_application_should_ignore_osc_title (PtyxisApplication            *self,
+                                                           const char                   *title);
+void          _ptyxis_application_apply_window_state      (PtyxisWindow                 *window,
+                                                           gboolean                      maximize,
+                                                           gboolean                      fullscreen);
 
 G_END_DECLS
