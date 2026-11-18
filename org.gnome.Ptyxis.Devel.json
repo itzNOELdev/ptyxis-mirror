@@ -31,6 +31,27 @@
     ],
     "modules" : [
         {
+            "name" : "libdex",
+            "buildsystem" : "meson",
+            "config-opts" : [
+                "-Dgdbus=enabled",
+                "-Dexamples=false",
+                "-Dtests=false",
+                "-Ddocs=false"
+            ],
+            "sources" : [
+                {
+                    "type" : "git",
+                    "url" : "https://gitlab.gnome.org/GNOME/libdex.git",
+                    "commit" : "2870c4c4c2c3ecc3eb60750ef9fc1fff18d01bbc"
+                },
+                {
+                    "type" : "patch",
+                    "path" : "build-aux/libdex-gdbus.patch"
+                }
+            ]
+        },
+        {
             "name" : "libportal",
             "config-opts" : [
                 "--buildtype=debugoptimized",
