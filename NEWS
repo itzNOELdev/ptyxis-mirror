@@ -1,3 +1,31 @@
+# Ptyxis 52.alpha (unreleased)
+
+ * Implement the org.freedesktop.Terminal1 terminal intent interface so
+   applications can launch commands in Ptyxis.
+ * Adapt the tab bar, menus, and preferences to narrow windows. Menus and
+   preferences open in bottom sheets, with tab overview in a bottom bar.
+ * Add navigation for submenus and controls in the main menu.
+ * Show transparency controls in preferences and add an option to blur the
+   background behind transparent windows.
+ * Add an option to hide the running command from tab titles (#550).
+ * Add a setting to disable the terminal size popup while resizing (#457).
+ * Show a hover label for OSC-8 links and use substituted URLs for custom
+   links in the terminal context menu.
+ * Export PTYXIS_TAB to child processes and document the Ptyxis environment
+   variables in the man page (#599).
+ * Restore the saved session when launching a new window from the GNOME
+   Shell dock (#560).
+ * Add a systemd user service to reduce the chance of the UI being
+   terminated under memory pressure.
+ * Allow palettes to specify a selected tab background and improve its
+   visibility in the dark Linux palette.
+ * Preserve the working directory when launching the fallback shell.
+ * Fix the title dialog not closing when Enter is pressed.
+ * Fix markup in the inspector (#611), container and spawn-environment
+   leaks, and terminal drag-and-drop action handling.
+ * Port asynchronous application code to libdex.
+ * Update the README (#600) and translations.
+
 # Ptyxis 50.1
 
  * Fix GNOME CI pipeline which fails on alpha/beta/rc in metainfo
