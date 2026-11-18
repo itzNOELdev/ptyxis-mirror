@@ -4,6 +4,13 @@ if libdex_codegen == '' or not import('fs').is_file(libdex_codegen)
   error('Ptyxis requires libdex built with -Dgdbus=enabled and its gdbus-codegen extension')
 endif
 
+ptyxis_application_ipc = gnome.gdbus_codegen('ptyxis-application-ipc',
+           sources: '../agent/org.gnome.Ptyxis.Agent.xml',
+  interface_prefix: 'org.gnome.Ptyxis.',
+         namespace: 'PtyxisIpc',
+        extra_args: ['--extension-path=' + libdex_codegen],
+)
+
 terminal_intent_ipc = gnome.gdbus_codegen('terminal-intent',
            sources: 'org.freedesktop.Terminal1.xml',
   interface_prefix: 'org.freedesktop.',
@@ -125,7 +132,7 @@ ptyxis_include_directories = [
   include_directories('../agent'),
 ]
 
-executable('ptyxis', ptyxis_sources + ptyxis_agent_ipc,
+executable('ptyxis', ptyxis_sources + ptyxis_application_ipc,
          dependencies: ptyxis_deps,
               install: true,
                c_args: ptyxis_c_args,
