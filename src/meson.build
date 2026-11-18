@@ -94,6 +94,7 @@ configure_file(
 )
 
 ptyxis_deps = [
+  libdex_dep,
   dependency('gio-unix-2.0', version: glib_req),
   dependency('gtk4', version: gtk_req),
   dependency('libadwaita-1', version: adwaita_req),
