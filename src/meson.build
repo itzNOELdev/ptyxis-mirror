@@ -18,6 +18,7 @@ ptyxis_sources = [
   'ptyxis-custom-link-editor.c',
   'ptyxis-custom-link-row.c',
   'ptyxis-custom-link.c',
+  'ptyxis-dbus-util.c',
   'ptyxis-find-bar.c',
   'ptyxis-fullscreen-box.c',
   'ptyxis-gated-list-model.c',
