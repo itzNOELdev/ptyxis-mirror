@@ -30,6 +30,7 @@
 #include "ptyxis-application.h"
 #include "ptyxis-custom-link-editor.h"
 #include "ptyxis-custom-link-row.h"
+#include "ptyxis-gtk.h"
 #include "ptyxis-palette-preview.h"
 #include "ptyxis-preferences-list-item.h"
 #include "ptyxis-preferences-window.h"
@@ -43,6 +44,7 @@ struct _PtyxisPreferencesWindow
 {
   AdwPreferencesDialog  parent_instance;
 
+  DexFuture            *font_operation;
   char                 *default_palette_id;
   GtkCustomFilter      *filter;
   GtkFilterListModel   *filter_palettes;
@@ -221,27 +223,17 @@ monospace_filter (gpointer item,
   return family ? pango_font_family_is_monospace (family) : FALSE;
 }
 
-static void
-ptyxis_preferences_window_select_custom_font_cb (GObject      *object,
-                                                 GAsyncResult *result,
-                                                 gpointer      user_data)
+static DexFuture *
+ptyxis_preferences_window_apply_font (DexFuture *future,
+                                      gpointer   data)
 {
-  GtkFontDialog *dialog = GTK_FONT_DIALOG (object);
-  g_autoptr(PangoFontDescription) font_desc = NULL;
-  g_autoptr(PtyxisSettings) settings = user_data;
-  g_autoptr(GError) error = NULL;
+  const PangoFontDescription *font = g_value_get_boxed (dex_future_get_value (future, NULL));
+  g_autofree char *name = pango_font_description_to_string (font);
 
-  g_assert (GTK_IS_FONT_DIALOG (dialog));
-  g_assert (G_IS_ASYNC_RESULT (result));
-  g_assert (PTYXIS_IS_SETTINGS (settings));
+  if (!ptyxis_str_empty0 (name))
+    ptyxis_settings_set_font_name (data, name);
 
-  if ((font_desc = gtk_font_dialog_choose_font_finish (dialog, result, &error)))
-    {
-      g_autofree char *font_name = pango_font_description_to_string (font_desc);
-
-      if (!ptyxis_str_empty0 (font_name))
-        ptyxis_settings_set_font_name (settings, font_name);
-    }
+  return NULL;
 }
 
 static void
@@ -268,17 +260,20 @@ ptyxis_preferences_window_select_custom_font (GtkWidget  *widget,
   font_desc = pango_font_description_from_string (font_name);
 
   filter = gtk_custom_filter_new (monospace_filter, NULL, NULL);
-  dialog = (GtkFontDialog *)g_object_new (GTK_TYPE_FONT_DIALOG,
-                                          "title", _("Select Font"),
-                                          "filter", filter,
-                                          NULL);
+  dialog = g_object_new (GTK_TYPE_FONT_DIALOG,
+                         "title", _("Select Font"),
+                         "filter", filter,
+                         NULL);
 
-  gtk_font_dialog_choose_font (dialog,
-                               GTK_WINDOW (gtk_widget_get_root (widget)),
-                               font_desc,
-                               NULL,
-                               ptyxis_preferences_window_select_custom_font_cb,
-                               g_object_ref (settings));
+  dex_clear (&PTYXIS_PREFERENCES_WINDOW (widget)->font_operation);
+
+  PTYXIS_PREFERENCES_WINDOW (widget)->font_operation =
+    dex_future_then (ptyxis_gtk_font_dialog_choose_font (dialog,
+                                                         GTK_WINDOW (gtk_widget_get_root (widget)),
+                                                         font_desc),
+                     ptyxis_preferences_window_apply_font,
+                     g_object_ref (settings),
+                     g_object_unref);
 }
 
 static void
@@ -639,7 +634,7 @@ ptyxis_preferences_window_drop_palette_cb (PtyxisPreferencesWindow *self,
 
   if (G_VALUE_HOLDS (value, GDK_TYPE_FILE_LIST))
     {
-      const GSList *files = g_value_get_boxed (value);
+      const GSList *files = gdk_file_list_get_files (g_value_get_boxed (value));
 
       for (const GSList *iter = files; iter; iter = iter->next)
         {
@@ -653,11 +648,10 @@ ptyxis_preferences_window_drop_palette_cb (PtyxisPreferencesWindow *self,
           dest = g_file_new_build_filename (g_get_user_data_dir (),
                                             APP_ID, "palettes", name,
                                             NULL);
-          g_file_copy_async (file,
-                             dest,
-                             G_FILE_COPY_OVERWRITE,
-                             G_PRIORITY_DEFAULT,
-                             NULL, NULL, NULL, NULL, NULL);
+          dex_future_disown (dex_file_copy (file,
+                                            dest,
+                                            G_FILE_COPY_OVERWRITE,
+                                            G_PRIORITY_DEFAULT));
         }
 
       return TRUE;
@@ -1043,6 +1037,8 @@ ptyxis_preferences_window_dispose (GObject *object)
     instance = NULL;
 
   gtk_widget_dispose_template (GTK_WIDGET (self), PTYXIS_TYPE_PREFERENCES_WINDOW);
+
+  dex_clear (&self->font_operation);
 
   g_clear_pointer (&self->default_palette_id, g_free);
   g_clear_object (&self->filter);

@@ -94,27 +94,32 @@ ptyxis_tab_monitor_backoff_delay (PtyxisTabMonitor *self)
                            ptyxis_tab_monitor_get_ready_time (self));
 }
 
-static void
-ptyxis_tab_monitor_poll_agent_cb (GObject      *object,
-                                  GAsyncResult *result,
-                                  gpointer      user_data)
+static DexFuture *
+ptyxis_tab_monitor_poll_agent (gpointer data)
 {
-  PtyxisTab *tab = (PtyxisTab *)object;
-  g_autoptr(PtyxisTabMonitor) self = user_data;
+  PtyxisTabMonitor *self = data;
+  g_autoptr(PtyxisTab) tab = g_weak_ref_get (&self->tab_wr);
+  g_autoptr(DexFuture) refresh = NULL;
+  gboolean changed;
 
-  g_assert (PTYXIS_IS_TAB (tab));
-  g_assert (G_IS_ASYNC_RESULT (result));
-  g_assert (PTYXIS_IS_TAB_MONITOR (self));
+  if (tab == NULL)
+    return dex_future_new_false ();
+
+  refresh = ptyxis_tab_poll_agent (tab);
+  g_clear_object (&tab);
+  changed = dex_await_boolean (g_steal_pointer (&refresh), NULL);
 
   self->is_polling = FALSE;
 
-  if (self->update_source == NULL)
-    return;
+  if (self->update_source != NULL)
+    {
+      if (changed)
+        ptyxis_tab_monitor_reset_delay (self);
+      else
+        ptyxis_tab_monitor_backoff_delay (self);
+    }
 
-  if (ptyxis_tab_poll_agent_finish (tab, result, NULL))
-    ptyxis_tab_monitor_reset_delay (self);
-  else
-    ptyxis_tab_monitor_backoff_delay (self);
+  return dex_future_new_true ();
 }
 
 static gboolean
@@ -135,10 +140,11 @@ ptyxis_tab_monitor_update_source_func (gpointer user_data)
         {
           self->is_polling = TRUE;
 
-          ptyxis_tab_poll_agent_async (tab,
-                                       NULL,
-                                       ptyxis_tab_monitor_poll_agent_cb,
-                                       g_object_ref (self));
+          dex_future_disown (dex_scheduler_spawn (NULL,
+                                                  0,
+                                                  ptyxis_tab_monitor_poll_agent,
+                                                  g_object_ref (self),
+                                                  g_object_unref));
         }
 
       return G_SOURCE_CONTINUE;
@@ -174,8 +180,11 @@ ptyxis_tab_monitor_queue_update (PtyxisTabMonitor *self)
                              self, NULL);
       g_source_set_static_name (self->update_source, "[ptyxis-tab-monitor]");
       g_source_set_priority (self->update_source, G_PRIORITY_LOW);
+
       ptyxis_tab_monitor_reset_delay (self);
+
       g_source_attach (self->update_source, NULL);
+
       return;
     }
 

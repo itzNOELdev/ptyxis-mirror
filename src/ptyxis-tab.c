@@ -21,6 +21,8 @@
 
 #include "config.h"
 
+#include "ptyxis-process-private.h"
+
 #include <glib/gi18n.h>
 
 #include <cairo.h>
@@ -30,7 +32,7 @@
 # include <libportal-gtk4/portal-gtk4.h>
 #endif
 
-#include "ptyxis-agent-ipc.h"
+#include "ptyxis-application-ipc.h"
 #include "ptyxis-application.h"
 #include "ptyxis-enums.h"
 #include "ptyxis-inspector.h"
@@ -58,7 +60,11 @@ struct _PtyxisTab
   char                    *initial_working_directory_uri;
   char                    *previous_working_directory_uri;
   PtyxisProfile           *profile;
-  PtyxisIpcProcess        *process;
+  PtyxisProcess           *process;
+  DexFuture               *run;
+  DexFuture               *refresh;
+  guint64                  run_id;
+  guint64                  command_id;
   char                    *title_prefix;
   PtyxisTabMonitor        *monitor;
   char                    *uuid;
@@ -119,10 +125,10 @@ enum {
   N_SIGNALS
 };
 
-static void ptyxis_tab_respawn (PtyxisTab *self);
 static void ptyxis_tab_profile_signals_bind_cb (PtyxisTab     *self,
                                                 PtyxisProfile *profile,
                                                 GSignalGroup  *group);
+static void ptyxis_tab_respawn                 (PtyxisTab     *self);
 
 G_DEFINE_FINAL_TYPE (PtyxisTab, ptyxis_tab, GTK_TYPE_WIDGET)
 
@@ -225,26 +231,6 @@ on_scroll_end_cb (GtkEventControllerScroll *scroll,
   g_assert (PTYXIS_IS_TAB (self));
 
   gtk_event_controller_scroll_set_flags (scroll, GTK_EVENT_CONTROLLER_SCROLL_VERTICAL);
-}
-
-static void
-ptyxis_tab_send_signal (PtyxisTab *self,
-                        int        signum)
-{
-  g_autofree char *title = NULL;
-
-  g_assert (PTYXIS_IS_TAB (self));
-
-  if (self->process == NULL)
-    {
-      g_debug ("Cannot send signal %d to tab, process is gone.", signum);
-      return;
-    }
-
-  title = ptyxis_tab_dup_title (self);
-  g_debug ("Sending signal %d to tab \"%s\"", signum, title);
-
-  ptyxis_ipc_process_call_send_signal (self->process, signum, NULL, NULL, NULL);
 }
 
 static gboolean
@@ -369,31 +355,23 @@ ptyxis_tab_update_inhibit (PtyxisTab *self)
 }
 
 static void
-ptyxis_tab_wait_cb (GObject      *object,
-                    GAsyncResult *result,
-                    gpointer      user_data)
+ptyxis_tab_exited (PtyxisTab   *self,
+                   int          exit_code,
+                   const GError *error)
 {
-  PtyxisApplication *app = (PtyxisApplication *)object;
-  g_autoptr(PtyxisTab) self = user_data;
-  g_autoptr(GError) error = NULL;
   PtyxisExitAction exit_action;
   PtyxisWindow *window;
   AdwTabPage *page = NULL;
   GtkWidget *tab_view;
   gboolean is_front = FALSE;
-  int exit_code;
 
-  g_assert (PTYXIS_IS_APPLICATION (app));
-  g_assert (G_IS_ASYNC_RESULT (result));
   g_assert (PTYXIS_IS_TAB (self));
-  g_assert (self->state == PTYXIS_TAB_STATE_RUNNING);
 
   g_clear_object (&self->process);
-
-  /* Update inhibit state when process exits */
+  self->command_id++;
+  dex_clear (&self->refresh);
+  self->has_foreground_process = FALSE;
   ptyxis_tab_update_inhibit (self);
-
-  exit_code = ptyxis_application_wait_finish (app, result, &error);
 
   g_debug ("Process completed with exit-code 0x%x %s",
            exit_code,
@@ -469,6 +447,7 @@ ptyxis_tab_wait_cb (GObject      *object,
             adw_tab_view_set_page_pinned (ADW_TAB_VIEW (tab_view), page, FALSE);
           adw_tab_view_close_page (ADW_TAB_VIEW (tab_view), page);
         }
+
       break;
 
     case PTYXIS_EXIT_ACTION_NONE:
@@ -484,51 +463,113 @@ ptyxis_tab_wait_cb (GObject      *object,
   g_object_notify_by_pspec (G_OBJECT (self), properties[PROP_TITLE]);
 }
 
-static void
-ptyxis_tab_spawn_cb (GObject      *object,
-                     GAsyncResult *result,
-                     gpointer      user_data)
+DEX_DEFINE_CLOSURE_TYPE (TabRun, tab_run,
+                         DEX_DEFINE_CLOSURE_VALUE_WITH_CLEAR (GWeakRef, tab, g_weak_ref_clear),
+                         DEX_DEFINE_CLOSURE_VALUE (guint64, id),
+                         DEX_DEFINE_CLOSURE_OBJECT (PtyxisIpcContainer, container),
+                         DEX_DEFINE_CLOSURE_OBJECT (VtePty, pty))
+
+static PtyxisTab *
+tab_run_ref_active_tab (TabRun *run)
 {
-  PtyxisApplication *app = (PtyxisApplication *)object;
-  g_autoptr(PtyxisIpcProcess) process = NULL;
-  g_autoptr(PtyxisTab) self = user_data;
+  g_autoptr(PtyxisTab) self = g_weak_ref_get (&run->tab);
+
+  if (self == NULL || self->run_id != run->id || self->forced_exit)
+    return NULL;
+
+  return g_steal_pointer (&self);
+}
+
+static DexFuture *
+ptyxis_tab_run (gpointer data)
+{
+  TabRun *run = data;
+  g_autoptr(PtyxisProcess) process = NULL;
   g_autoptr(GError) error = NULL;
+  DexFuture *spawn;
+  int status;
 
-  g_assert (PTYXIS_IS_TAB (self));
-  g_assert (G_IS_ASYNC_RESULT (result));
-  g_assert (PTYXIS_IS_TAB (self));
-  g_assert (self->state == PTYXIS_TAB_STATE_SPAWNING);
+  if (run->pty == NULL)
+    run->pty = dex_await_object (ptyxis_application_create_pty (PTYXIS_APPLICATION_DEFAULT), &error);
 
-  if (!(process = ptyxis_application_spawn_finish (app, result, &error)))
-    {
-      const char *profile_uuid = ptyxis_profile_get_uuid (self->profile);
+  {
+    g_autoptr(PtyxisTab) self = tab_run_ref_active_tab (run);
+    const char *directory;
 
-      self->state = PTYXIS_TAB_STATE_FAILED;
+    if (self == NULL)
+      return dex_future_new_false ();
 
-      vte_terminal_feed (VTE_TERMINAL (self->terminal), error->message, -1);
-      vte_terminal_feed (VTE_TERMINAL (self->terminal), "\r\n", -1);
+    if (run->pty == NULL)
+      {
+        self->state = PTYXIS_TAB_STATE_FAILED;
+        adw_banner_set_title (self->banner, _("Failed to create pseudo terminal device"));
+        adw_banner_set_button_label (self->banner, NULL);
+        gtk_actionable_set_action_name (GTK_ACTIONABLE (self->banner), NULL);
+        gtk_widget_set_visible (GTK_WIDGET (self->banner), TRUE);
+        return dex_future_new_false ();
+      }
 
-      adw_banner_set_title (self->banner, _("Failed to launch terminal"));
-      adw_banner_set_button_label (self->banner, _("Edit Profile"));
-      gtk_actionable_set_action_target (GTK_ACTIONABLE (self->banner), "s", profile_uuid);
-      gtk_actionable_set_action_name (GTK_ACTIONABLE (self->banner), "app.edit-profile");
-      gtk_widget_set_visible (GTK_WIDGET (self->banner), TRUE);
+    vte_terminal_set_pty (VTE_TERMINAL (self->terminal), run->pty);
+    directory = self->initial_working_directory_uri
+              ? self->initial_working_directory_uri
+              : self->previous_working_directory_uri;
 
-      return;
-    }
+    /* The spawn request copies these arguments before the tab reference is released. */
+    spawn = ptyxis_application_spawn (PTYXIS_APPLICATION_DEFAULT,
+                                      run->container, self->profile,
+                                      ptyxis_tab_get_uuid (self), directory, run->pty,
+                                      (const char * const *)self->command,
+                                      (const char * const *)self->environment);
+  }
 
-  self->state = PTYXIS_TAB_STATE_RUNNING;
-  self->respawn_time = g_get_monotonic_time ();
+  process = dex_await_object (spawn, &error);
 
-  g_set_object (&self->process, process);
+  {
+    g_autoptr(PtyxisTab) self = tab_run_ref_active_tab (run);
 
-  g_object_notify_by_pspec (G_OBJECT (self), properties[PROP_ICON]);
+    if (self == NULL)
+      {
+        if (process != NULL)
+          _ptyxis_process_terminate (process);
+        return dex_future_new_false ();
+      }
 
-  ptyxis_application_wait_async (app,
-                                 process,
-                                 NULL,
-                                 ptyxis_tab_wait_cb,
-                                 g_object_ref (self));
+    if (process == NULL)
+      {
+        const char *profile_uuid = ptyxis_profile_get_uuid (self->profile);
+
+        self->state = PTYXIS_TAB_STATE_FAILED;
+
+        vte_terminal_feed (VTE_TERMINAL (self->terminal), error->message, -1);
+        vte_terminal_feed (VTE_TERMINAL (self->terminal), "\r\n", -1);
+
+        adw_banner_set_title (self->banner, _("Failed to launch terminal"));
+        adw_banner_set_button_label (self->banner, _("Edit Profile"));
+        gtk_actionable_set_action_target (GTK_ACTIONABLE (self->banner), "s", profile_uuid);
+        gtk_actionable_set_action_name (GTK_ACTIONABLE (self->banner), "app.edit-profile");
+        gtk_widget_set_visible (GTK_WIDGET (self->banner), TRUE);
+
+        return dex_future_new_false ();
+      }
+
+    self->state = PTYXIS_TAB_STATE_RUNNING;
+    self->respawn_time = g_get_monotonic_time ();
+    g_set_object (&self->process, process);
+    g_object_notify_by_pspec (G_OBJECT (self), properties[PROP_ICON]);
+  }
+
+  status = dex_await_int (_ptyxis_process_wait (process), &error);
+
+  {
+    g_autoptr(PtyxisTab) self = g_weak_ref_get (&run->tab);
+
+    if (self != NULL && self->run_id == run->id)
+      ptyxis_tab_exited (self, status, error);
+    else
+      _ptyxis_process_terminate (process);
+  }
+
+  return dex_future_new_true ();
 }
 
 static void
@@ -536,86 +577,51 @@ ptyxis_tab_respawn (PtyxisTab *self)
 {
   g_autofree char *default_container = NULL;
   g_autoptr(PtyxisIpcContainer) container = NULL;
-  g_autoptr(VtePty) new_pty = NULL;
-  PtyxisApplication *app;
-  const char *profile_uuid;
-  const char *cwd_uri;
+  TabRun *run;
   VtePty *pty;
 
   g_assert (PTYXIS_IS_TAB (self));
-  g_assert (self->state == PTYXIS_TAB_STATE_INITIAL ||
-            self->state == PTYXIS_TAB_STATE_EXITED ||
-            self->state == PTYXIS_TAB_STATE_FAILED);
 
-  gtk_widget_set_visible (GTK_WIDGET (self->banner), FALSE);
-
-  app = PTYXIS_APPLICATION_DEFAULT;
-  profile_uuid = ptyxis_profile_get_uuid (self->profile);
   default_container = ptyxis_profile_dup_default_container (self->profile);
-
   if (self->container_at_creation != NULL)
     container = g_object_ref (self->container_at_creation);
   else
-    container = ptyxis_application_lookup_container (app, default_container);
+    container = ptyxis_application_lookup_container (PTYXIS_APPLICATION_DEFAULT, default_container);
 
   if (container == NULL)
     {
-      g_autofree char *title = NULL;
+      g_autofree char *title = g_strdup_printf (_("Cannot locate container “%s”"), default_container);
 
       self->state = PTYXIS_TAB_STATE_FAILED;
-
-      title = g_strdup_printf (_("Cannot locate container “%s”"), default_container);
       adw_banner_set_title (self->banner, title);
       adw_banner_set_button_label (self->banner, _("Edit Profile"));
-      gtk_actionable_set_action_target (GTK_ACTIONABLE (self->banner), "s", profile_uuid);
+      gtk_actionable_set_action_target (GTK_ACTIONABLE (self->banner), "s", ptyxis_profile_get_uuid (self->profile));
       gtk_actionable_set_action_name (GTK_ACTIONABLE (self->banner), "app.edit-profile");
       gtk_widget_set_visible (GTK_WIDGET (self->banner), TRUE);
-
       return;
     }
 
+  self->run_id++;
+  dex_clear (&self->run);
+  dex_clear (&self->refresh);
+  self->forced_exit = FALSE;
   self->state = PTYXIS_TAB_STATE_SPAWNING;
+
+  gtk_widget_set_visible (GTK_WIDGET (self->banner), FALSE);
 
   pty = vte_terminal_get_pty (VTE_TERMINAL (self->terminal));
 
-  if (pty == NULL)
-    {
-      g_autoptr(GError) error = NULL;
+  run = tab_run_new ();
+  g_weak_ref_init (&run->tab, self);
+  run->id = self->run_id;
+  run->container = g_steal_pointer (&container);
+  run->pty = pty ? g_object_ref (pty) : NULL;
 
-      new_pty = ptyxis_application_create_pty (PTYXIS_APPLICATION_DEFAULT, &error);
-
-      if (new_pty == NULL)
-        {
-          self->state = PTYXIS_TAB_STATE_FAILED;
-
-          adw_banner_set_title (self->banner, _("Failed to create pseudo terminal device"));
-          adw_banner_set_button_label (self->banner, NULL);
-          gtk_actionable_set_action_name (GTK_ACTIONABLE (self->banner), NULL);
-          gtk_widget_set_visible (GTK_WIDGET (self->banner), TRUE);
-
-          return;
-        }
-
-      vte_terminal_set_pty (VTE_TERMINAL (self->terminal), new_pty);
-
-      pty = new_pty;
-    }
-
-  cwd_uri = self->previous_working_directory_uri;
-  if (self->initial_working_directory_uri)
-    cwd_uri = self->initial_working_directory_uri;
-
-  ptyxis_application_spawn_async (PTYXIS_APPLICATION_DEFAULT,
-                                  container,
-                                  self->profile,
-                                  ptyxis_tab_get_uuid (self),
-                                  cwd_uri,
-                                  pty,
-                                  (const char * const *)self->command,
-                                  (const char * const *)self->environment,
-                                  NULL,
-                                  ptyxis_tab_spawn_cb,
-                                  g_object_ref (self));
+  self->run = dex_scheduler_spawn (NULL,
+                                   8 * 1024 * 1024,
+                                   ptyxis_tab_run,
+                                   run,
+                                   (GDestroyNotify)tab_run_free);
 
   g_object_notify_by_pspec (G_OBJECT (self), properties[PROP_TITLE]);
 }
@@ -787,6 +793,7 @@ ptyxis_tab_dup_icon (PtyxisTab *self)
             icon_name[0] != 0)
           return g_themed_icon_new (icon_name);
       }
+
       return NULL;
     }
 }
@@ -1202,6 +1209,8 @@ ptyxis_tab_dispose (GObject *object)
   ptyxis_tab_notify_destroy (&self->notify);
 
   ptyxis_tab_force_quit (self);
+  self->run_id++;
+  dex_clear (&self->run);
 
   gtk_widget_dispose_template (GTK_WIDGET (self), PTYXIS_TYPE_TAB);
 
@@ -1340,6 +1349,7 @@ ptyxis_tab_set_property (GObject      *object,
           g_object_notify_by_pspec (G_OBJECT (self), properties[PROP_DISABLE_DYNAMIC_TITLE]);
           g_object_notify_by_pspec (G_OBJECT (self), properties[PROP_TITLE]);
         }
+
       break;
 
     case PROP_IGNORE_OSC_TITLE:
@@ -1845,53 +1855,6 @@ ptyxis_tab_raise (PtyxisTab *self)
     adw_tab_view_set_selected_page (tab_view, tab_page);
 }
 
-typedef struct _Wait
-{
-  GMainContext *context;
-  gboolean completed;
-  gboolean success;
-} Wait;
-
-static void
-ptyxis_tab_poll_agent_sync_cb (GObject      *object,
-                               GAsyncResult *result,
-                               gpointer      user_data)
-{
-  PtyxisTab *self = (PtyxisTab *)object;
-  Wait *wait = user_data;
-
-  g_assert (PTYXIS_IS_TAB (self));
-  g_assert (G_IS_ASYNC_RESULT (result));
-  g_assert (wait != NULL);
-
-  wait->completed = TRUE;
-  wait->success = ptyxis_tab_poll_agent_finish (self, result, NULL);
-
-  g_main_context_wakeup (wait->context);
-}
-
-static gboolean
-ptyxis_tab_poll_agent (PtyxisTab *self)
-{
-  Wait wait;
-
-  g_return_val_if_fail (PTYXIS_IS_TAB (self), FALSE);
-
-  wait.context = g_main_context_get_thread_default ();
-  wait.completed = FALSE;
-  wait.success = FALSE;
-
-  ptyxis_tab_poll_agent_async (self,
-                               NULL,
-                               ptyxis_tab_poll_agent_sync_cb,
-                               &wait);
-
-  while (!wait.completed)
-    g_main_context_iteration (wait.context, TRUE);
-
-  return wait.success;
-}
-
 /**
  * ptyxis_tab_is_running:
  * @self: a #PtyxisTab
@@ -1905,8 +1868,6 @@ ptyxis_tab_is_running (PtyxisTab  *self,
 {
   g_return_val_if_fail (PTYXIS_IS_TAB (self), FALSE);
 
-  ptyxis_tab_poll_agent (self);
-
   if (cmdline != NULL)
     *cmdline = g_strdup (self->command_line);
 
@@ -1916,44 +1877,21 @@ ptyxis_tab_is_running (PtyxisTab  *self,
   return FALSE;
 }
 
-static gboolean
-ptyxis_tab_force_quit_in_idle (gpointer data)
-{
-  PtyxisTab *self = data;
-
-  g_assert (PTYXIS_IS_TAB (self));
-
-  if (self->process != NULL)
-    ptyxis_tab_send_signal (self, SIGKILL);
-
-  return G_SOURCE_REMOVE;
-}
-
 void
 ptyxis_tab_force_quit (PtyxisTab *self)
 {
   g_return_if_fail (PTYXIS_IS_TAB (self));
 
-  g_debug ("Forcing tab to quit");
-
   self->forced_exit = TRUE;
-
-  if (self->process == NULL)
-    return;
-
-  /* First we try to send SIGHUP so that shells like bash will save their
-   * history (See #308).
-   */
-  ptyxis_tab_send_signal (self, SIGHUP);
-
-  /* In case this was not enough for the process to actually exit, we setup
-   * a short timer to send SIGKILL afterwards.
-   */
-  g_timeout_add_full (G_PRIORITY_HIGH,
-                      50,
-                      ptyxis_tab_force_quit_in_idle,
-                      g_object_ref (self),
-                      g_object_unref);
+  dex_clear (&self->refresh);
+  if (self->process != NULL)
+    _ptyxis_process_terminate (self->process);
+  else
+    {
+      self->run_id++;
+      dex_clear (&self->run);
+      self->state = PTYXIS_TAB_STATE_EXITED;
+    }
 }
 
 PtyxisIpcProcess *
@@ -1961,7 +1899,7 @@ ptyxis_tab_get_process (PtyxisTab *self)
 {
   g_return_val_if_fail (PTYXIS_IS_TAB (self), NULL);
 
-  return self->process;
+  return self->process ? _ptyxis_process_get_proxy (self->process) : NULL;
 }
 
 char *
@@ -2034,38 +1972,28 @@ ptyxis_tab_set_container (PtyxisTab          *self,
   g_set_object (&self->container_at_creation, container);
 }
 
-static void
-ptyxis_tab_poll_agent_cb (GObject      *object,
-                          GAsyncResult *result,
-                          gpointer      user_data)
+DEX_DEFINE_CLOSURE_TYPE (TabRefresh, tab_refresh,
+                         DEX_DEFINE_CLOSURE_VALUE_WITH_CLEAR (GWeakRef, tab, g_weak_ref_clear),
+                         DEX_DEFINE_CLOSURE_VALUE (guint64, id),
+                         DEX_DEFINE_CLOSURE_VALUE (guint64, command_id))
+
+static DexFuture *
+ptyxis_tab_poll_agent_result (DexFuture *future,
+                              gpointer   data)
 {
-  PtyxisIpcProcess *process = (PtyxisIpcProcess *)object;
-  g_autoptr(GTask) task = user_data;
-  g_autofree char *the_cmdline = NULL;
-  g_autofree char *the_leader_kind = NULL;
+  TabRefresh *refresh = data;
+  g_autoptr(PtyxisTab) self = g_weak_ref_get (&refresh->tab);
+  const PtyxisIpcProcessHasForegroundProcessResult *result = g_value_get_boxed (dex_future_get_value (future, NULL));
+  const char *the_cmdline = result->cmdline;
+  const char *the_leader_kind = result->leader_kind;
+  gboolean has_foreground_process = result->has_foreground_process;
+  GPid the_pid = result->pid;
   PtyxisProcessLeaderKind leader_kind;
-  gboolean has_foreground_process;
   gboolean changed = FALSE;
   gboolean inhibit_changed = FALSE;
-  PtyxisTab *self;
-  GPid the_pid;
 
-  g_assert (PTYXIS_IPC_IS_PROCESS (process));
-  g_assert (G_IS_ASYNC_RESULT (result));
-  g_assert (G_IS_TASK (task));
-
-  self = g_task_get_source_object (task);
-
-  g_assert (PTYXIS_IS_TAB (self));
-
-  ptyxis_ipc_process_call_has_foreground_process_finish (process,
-                                                         &has_foreground_process,
-                                                         &the_pid,
-                                                         &the_cmdline,
-                                                         &the_leader_kind,
-                                                         NULL,
-                                                         result,
-                                                         NULL);
+  if (self == NULL || self->run_id != refresh->id || self->command_id != refresh->command_id)
+    return dex_future_new_reject (G_IO_ERROR, G_IO_ERROR_CANCELLED, "Terminal run was replaced");
 
   if (self->pid != the_pid)
     {
@@ -2109,6 +2037,8 @@ ptyxis_tab_poll_agent_cb (GObject      *object,
 
       if (the_cmdline != NULL && (space = strchr (the_cmdline, ' ')))
         program_name = g_strndup (the_cmdline, space - the_cmdline);
+      else
+        program_name = g_strdup (the_cmdline);
 
       if (g_set_str (&self->program_name, program_name))
         inhibit_changed = TRUE;
@@ -2122,69 +2052,59 @@ ptyxis_tab_poll_agent_cb (GObject      *object,
   if (inhibit_changed)
     ptyxis_tab_update_inhibit (self);
 
-  g_task_return_boolean (task, changed);
+  return dex_future_new_for_boolean (changed);
 }
 
-void
-ptyxis_tab_poll_agent_async (PtyxisTab           *self,
-                             GCancellable        *cancellable,
-                             GAsyncReadyCallback  callback,
-                             gpointer             user_data)
+/**
+ * ptyxis_tab_poll_agent:
+ * @self: a tab
+ *
+ * Shares an in-flight refresh for the current run. Failed and stale queries
+ * leave the cached process information unchanged.
+ *
+ * Returns: (transfer full): a future resolving to whether the cache changed
+ */
+DexFuture *
+ptyxis_tab_poll_agent (PtyxisTab *self)
 {
-  g_autoptr(GUnixFDList) fd_list = NULL;
-  g_autoptr(GTask) task = NULL;
+  g_autoptr(GUnixFDList) fds = NULL;
+  g_autoptr(GError) error = NULL;
+  TabRefresh *refresh;
   VtePty *pty;
   int handle;
-  int pty_fd;
 
-  g_assert (PTYXIS_IS_TAB (self));
+  g_return_val_if_fail (PTYXIS_IS_TAB (self), NULL);
 
-  task = g_task_new (self, cancellable, callback, user_data);
-  g_task_set_source_tag (task, ptyxis_tab_poll_agent_async);
+  if (self->refresh != NULL && dex_future_is_pending (self->refresh))
+    return dex_ref (self->refresh);
+  dex_clear (&self->refresh);
 
   if (self->process == NULL)
     {
-      self->has_foreground_process = FALSE;
-      self->pid = -1;
-
-      if (g_set_str (&self->command_line, NULL))
-        g_object_notify_by_pspec (G_OBJECT (self), properties[PROP_COMMAND_LINE]);
-
-      if (self->leader_kind != PTYXIS_PROCESS_LEADER_KIND_UNKNOWN)
-        {
-          self->leader_kind = PTYXIS_PROCESS_LEADER_KIND_UNKNOWN;
-          g_object_notify_by_pspec (G_OBJECT (self), properties[PROP_PROCESS_LEADER_KIND]);
-        }
-
-      g_task_return_boolean (task, FALSE);
-
-      return;
+      if (self->state == PTYXIS_TAB_STATE_SPAWNING)
+        return dex_future_new_reject (G_IO_ERROR, G_IO_ERROR_PENDING, "Terminal is starting");
+      return dex_future_new_false ();
     }
 
   pty = vte_terminal_get_pty (VTE_TERMINAL (self->terminal));
-  pty_fd = vte_pty_get_fd (pty);
-  fd_list = g_unix_fd_list_new ();
-  handle = g_unix_fd_list_append (fd_list, pty_fd, NULL);
+  fds = g_unix_fd_list_new ();
 
-  ptyxis_ipc_process_call_has_foreground_process (self->process,
-                                                  g_variant_new_handle (handle),
-                                                  fd_list,
-                                                  cancellable,
-                                                  ptyxis_tab_poll_agent_cb,
-                                                  g_steal_pointer (&task));
+  if ((handle = g_unix_fd_list_append (fds, vte_pty_get_fd (pty), &error)) == -1)
+    return dex_future_new_for_error (g_steal_pointer (&error));
 
+  refresh = tab_refresh_new ();
+  g_weak_ref_init (&refresh->tab, self);
+  refresh->id = self->run_id;
+  refresh->command_id = self->command_id;
 
-}
+  self->refresh = dex_future_then (ptyxis_ipc_process_call_has_foreground_process_future (_ptyxis_process_get_proxy (self->process),
+                                                                                          g_variant_new_handle (handle),
+                                                                                          fds),
+                                   ptyxis_tab_poll_agent_result,
+                                   refresh,
+                                   (GDestroyNotify)tab_refresh_free);
 
-gboolean
-ptyxis_tab_poll_agent_finish (PtyxisTab     *self,
-                              GAsyncResult  *result,
-                              GError       **error)
-{
-  g_return_val_if_fail (PTYXIS_IS_TAB (self), FALSE);
-  g_return_val_if_fail (G_IS_TASK (result), FALSE);
-
-  return g_task_propagate_boolean (G_TASK (result), error);
+  return dex_ref (self->refresh);
 }
 
 gboolean
@@ -2193,8 +2113,6 @@ ptyxis_tab_has_foreground_process (PtyxisTab  *self,
                                    char      **cmdline)
 {
   g_return_val_if_fail (PTYXIS_IS_TAB (self), FALSE);
-
-  ptyxis_tab_poll_agent (self);
 
   if (pid != NULL)
     *pid = self->pid;
@@ -2277,35 +2195,38 @@ ptyxis_tab_toast (PtyxisTab  *self,
   adw_toast_overlay_add_toast (ADW_TOAST_OVERLAY (overlay), toast);
 }
 
+DEX_DEFINE_CLOSURE_TYPE (OpenUri, open_uri,
+                         DEX_DEFINE_CLOSURE_VALUE_WITH_CLEAR (GWeakRef, tab, g_weak_ref_clear),
+                         DEX_DEFINE_CLOSURE_POINTER (char *, uri, g_free))
+
 static void
 ptyxis_tab_open_uri_cb (GObject      *object,
                         GAsyncResult *result,
-                        gpointer      user_data)
+                        gpointer      data)
 {
-  g_autoptr(PtyxisTab) self = user_data;
+  g_autoptr(DexPromise) promise = data;
   g_autoptr(GError) error = NULL;
 
-  g_assert (XDP_IS_PORTAL (object));
-  g_assert (G_IS_ASYNC_RESULT (result));
-  g_assert (PTYXIS_IS_TAB (self));
-
-  if (!xdp_portal_open_uri_finish (XDP_PORTAL (object), result, &error) &&
-      !g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
-    ptyxis_tab_toast (self, 3, _("Failed to open link"));
+  if (xdp_portal_open_uri_finish (XDP_PORTAL (object), result, &error))
+    dex_promise_resolve_boolean (promise, TRUE);
+  else
+    dex_promise_reject (promise, g_steal_pointer (&error));
 }
 
-void
-ptyxis_tab_open_uri (PtyxisTab  *self,
-                     const char *uri)
+static DexFuture *
+ptyxis_tab_open_uri_fiber (gpointer data)
 {
+  OpenUri *open = data;
+  g_autoptr(PtyxisTab) self = g_weak_ref_get (&open->tab);
   g_autofree char *translated = NULL;
-  GtkWindow *window;
+  g_autoptr(GError) error = NULL;
+  g_autoptr(DexPromise) promise = NULL;
+  const char *uri = open->uri;
+  GtkRoot *root;
   XdpParent *parent;
 
-  g_return_if_fail (PTYXIS_IS_TAB (self));
-  g_return_if_fail (uri != NULL);
-
-  window = GTK_WINDOW (gtk_widget_get_root (GTK_WIDGET (self)));
+  if (self == NULL)
+    return dex_future_new_false ();
 
   if (g_str_has_prefix (uri, "file://"))
     {
@@ -2320,8 +2241,12 @@ ptyxis_tab_open_uri (PtyxisTab  *self,
 
       if (container != NULL)
         {
-          if (ptyxis_ipc_container_call_translate_uri_sync (container, uri, &translated, NULL, NULL))
-            uri = translated;
+          g_autoptr(PtyxisIpcContainerTranslateURIResult) result = NULL;
+
+          g_clear_object (&self);
+          result = dex_await_boxed (ptyxis_ipc_container_call_translate_uri_future (container, uri), NULL);
+          if (result != NULL)
+            uri = translated = g_steal_pointer (&result->translated);
         }
 
       if (ptyxis_get_process_kind () == PTYXIS_PROCESS_KIND_FLATPAK &&
@@ -2350,18 +2275,44 @@ ptyxis_tab_open_uri (PtyxisTab  *self,
       uri = translated = g_strconcat ("mailto:", uri, NULL);
     }
 
+  if (self == NULL)
+    self = g_weak_ref_get (&open->tab);
+  if (self == NULL || !(root = gtk_widget_get_root (GTK_WIDGET (self))))
+    return dex_future_new_false ();
   if (portal == NULL)
     portal = xdp_portal_new ();
 
-  parent = xdp_parent_new_gtk (window);
-  xdp_portal_open_uri (portal,
-                       parent,
-                       uri,
-                       XDP_OPEN_URI_FLAG_NONE,
-                       NULL,
-                       ptyxis_tab_open_uri_cb,
-                       g_object_ref (self));
+  promise = dex_promise_new_cancellable ();
+  parent = xdp_parent_new_gtk (GTK_WINDOW (root));
+  xdp_portal_open_uri (portal, parent, uri, XDP_OPEN_URI_FLAG_NONE,
+                       dex_promise_get_cancellable (promise), ptyxis_tab_open_uri_cb,
+                       dex_ref (promise));
   xdp_parent_free (parent);
+  g_clear_object (&self);
+  if (!dex_await (DEX_FUTURE (g_steal_pointer (&promise)), &error) &&
+      !g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED) &&
+      (self = g_weak_ref_get (&open->tab)))
+    ptyxis_tab_toast (self, 3, _("Failed to open link"));
+  return dex_future_new_true ();
+}
+
+void
+ptyxis_tab_open_uri (PtyxisTab  *self,
+                     const char *uri)
+{
+  OpenUri *open;
+
+  g_return_if_fail (PTYXIS_IS_TAB (self));
+  g_return_if_fail (uri != NULL);
+
+  open = open_uri_new ();
+  g_weak_ref_init (&open->tab, self);
+  open->uri = g_strdup (uri);
+  dex_future_disown (dex_scheduler_spawn (NULL,
+                                          8 * 1024 * 1024,
+                                          ptyxis_tab_open_uri_fiber,
+                                          open,
+                                          (GDestroyNotify)open_uri_free));
 }
 #else
 void
@@ -2374,33 +2325,40 @@ ptyxis_tab_open_uri (PtyxisTab  *self,
 }
 #endif
 
-char *
+static DexFuture *
+ptyxis_tab_directory_result (DexFuture *future,
+                             gpointer   data)
+{
+  const PtyxisIpcProcessGetWorkingDirectoryResult *result = g_value_get_boxed (dex_future_get_value (future, NULL));
+
+  return dex_future_new_for_string (result->path);
+}
+
+DexFuture *
 ptyxis_tab_query_working_directory_from_agent (PtyxisTab *self)
 {
-  g_autofree char *path = NULL;
-  g_autoptr(GUnixFDList) fd_list = NULL;
+  g_autoptr(GUnixFDList) fds = NULL;
+  g_autoptr(GError) error = NULL;
   VtePty *pty;
-  int pty_fd;
   int handle;
 
   g_return_val_if_fail (PTYXIS_IS_TAB (self), NULL);
 
   if (self->process == NULL)
-    return NULL;
+    return dex_future_new_reject (G_IO_ERROR, G_IO_ERROR_CLOSED, "Terminal is not running");
 
   pty = vte_terminal_get_pty (VTE_TERMINAL (self->terminal));
-  pty_fd = vte_pty_get_fd (pty);
-  fd_list = g_unix_fd_list_new ();
-  handle = g_unix_fd_list_append (fd_list, pty_fd, NULL);
+  fds = g_unix_fd_list_new ();
 
-  if (ptyxis_ipc_process_call_get_working_directory_sync (self->process,
-                                                          g_variant_new_handle (handle),
-                                                          fd_list,
-                                                          &path,
-                                                          NULL, NULL, NULL))
-    return g_steal_pointer (&path);
+  if ((handle = g_unix_fd_list_append (fds, vte_pty_get_fd (pty), &error)) == -1)
+    return dex_future_new_for_error (g_steal_pointer (&error));
 
-  return NULL;
+  return dex_future_then (ptyxis_ipc_process_call_get_working_directory_future (_ptyxis_process_get_proxy (self->process),
+                                                                                g_variant_new_handle (handle),
+                                                                                fds),
+                          ptyxis_tab_directory_result,
+                          NULL,
+                          NULL);
 }
 
 PtyxisTabProgress
@@ -2613,4 +2571,13 @@ ptyxis_tab_set_keep_terminal_open (PtyxisTab *self,
   g_return_if_fail (PTYXIS_IS_TAB (self));
 
   self->keep_terminal_open = !!keep_terminal_open;
+}
+
+void
+_ptyxis_tab_invalidate_process_info (PtyxisTab *self)
+{
+  g_return_if_fail (PTYXIS_IS_TAB (self));
+
+  self->command_id++;
+  dex_clear (&self->refresh);
 }

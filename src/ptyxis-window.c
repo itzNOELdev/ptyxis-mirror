@@ -105,7 +105,11 @@ struct _PtyxisWindow
   guint                  single_terminal_mode : 1;
   guint                  is_maximized : 1;
   guint                  is_fullscreen : 1;
+
+  DexFuture             *close_operation;
+  GHashTable            *closing_pages;
   guint                  in_close_request : 1;
+
   guint                  changing_breakpoint : 1;
   guint                  narrow : 1;
   guint                  reset_nonvisible_from_size_allocate : 1;
@@ -140,82 +144,122 @@ ptyxis_window_save_size (PtyxisWindow *self)
     }
 }
 
-static void
-ptyxis_window_close_page_dialog_cb (GObject      *object,
-                                    GAsyncResult *result,
-                                    gpointer      user_data)
-{
-  g_autoptr(PtyxisTab) tab = user_data;
-  g_autoptr(GError) error = NULL;
-  PtyxisWindow *self;
-  AdwTabPage *page;
+DEX_DEFINE_CLOSURE_TYPE (ClosePage, close_page,
+                         DEX_DEFINE_CLOSURE_VALUE_WITH_CLEAR (GWeakRef, window, g_weak_ref_clear),
+                         DEX_DEFINE_CLOSURE_OBJECT (AdwTabPage, page))
 
-  g_assert (G_IS_ASYNC_RESULT (result));
+static gboolean
+ptyxis_window_tab_may_be_running (PtyxisTab *tab)
+{
+  gboolean refreshed;
+
   g_assert (PTYXIS_IS_TAB (tab));
 
-  self = PTYXIS_WINDOW (gtk_widget_get_ancestor (GTK_WIDGET (tab), PTYXIS_TYPE_WINDOW));
-  page = adw_tab_view_get_page (self->tab_view, GTK_WIDGET (tab));
+  refreshed = dex_await (ptyxis_tab_poll_agent (tab), NULL);
 
-  if (!_ptyxis_close_dialog_run_finish (result, &error))
+  return !refreshed || ptyxis_tab_is_running (tab, NULL);
+}
+
+static gboolean
+ptyxis_window_contains_page (PtyxisWindow *self,
+                             AdwTabPage  *page)
+{
+  GtkWidget *child;
+
+  g_assert (PTYXIS_IS_WINDOW (self));
+  g_assert (ADW_IS_TAB_PAGE (page));
+
+  child = adw_tab_page_get_child (page);
+
+  return gtk_widget_get_ancestor (child, PTYXIS_TYPE_WINDOW) == GTK_WIDGET (self) &&
+         adw_tab_view_get_page (self->tab_view, child) == page;
+}
+
+static DexFuture *
+ptyxis_window_close_page (gpointer data)
+{
+  ClosePage *close = data;
+  g_autoptr(PtyxisWindow) self = NULL;
+  g_autoptr(PtyxisTab) tab = g_object_ref (PTYXIS_TAB (adw_tab_page_get_child (close->page)));
+  g_autoptr(GPtrArray) possibly_running = g_ptr_array_new_with_free_func (g_object_unref);
+  g_autoptr(DexFuture) confirmation = NULL;
+  gboolean may_be_running;
+  gboolean confirmed = TRUE;
+
+  may_be_running = ptyxis_window_tab_may_be_running (tab);
+
+  self = g_weak_ref_get (&close->window);
+  if (self == NULL || self->disposed)
+    return dex_future_new_false ();
+  if (!ptyxis_window_contains_page (self, close->page))
     {
-      adw_tab_view_close_page_finish (self->tab_view, page, FALSE);
-      return;
+      g_hash_table_remove (self->closing_pages, close->page);
+      return dex_future_new_false ();
     }
 
-  ptyxis_parking_lot_push (self->parking_lot, tab);
+  if (may_be_running &&
+      ptyxis_settings_get_prompt_on_close (ptyxis_application_get_settings (PTYXIS_APPLICATION_DEFAULT)))
+    {
+      g_ptr_array_add (possibly_running, g_object_ref (tab));
+      confirmation = _ptyxis_close_dialog_run (GTK_WINDOW (self), possibly_running);
+      g_clear_object (&self);
+      confirmed = dex_await_boolean (g_steal_pointer (&confirmation), NULL);
+      self = g_weak_ref_get (&close->window);
+    }
 
-  /* Ignore snapshot because libadwaita will try to snapshot this when
-   * calling adw_tab_view_close_page_finish(). This just skips past it
-   * until we maybe get re-added to a view later.
-   */
-  _ptyxis_tab_ignore_snapshot (tab);
+  if (self == NULL || self->disposed)
+    return dex_future_new_false ();
 
-  adw_tab_view_close_page_finish (self->tab_view, page, TRUE);
+  if (ptyxis_window_contains_page (self, close->page))
+    {
+      if (confirmed)
+        {
+          if (possibly_running->len > 0)
+            ptyxis_tab_force_quit (tab);
 
-  /* Resize if we are going from 2->1 tabs */
-  if (adw_tab_view_get_n_pages (self->tab_view) == 1)
-    gtk_window_set_default_size (GTK_WINDOW (self), -1, -1);
+          ptyxis_parking_lot_push (self->parking_lot, tab);
+          _ptyxis_tab_ignore_snapshot (tab);
+        }
+
+      adw_tab_view_close_page_finish (self->tab_view, close->page, confirmed);
+
+      if (confirmed && adw_tab_view_get_n_pages (self->tab_view) == 1)
+        gtk_window_set_default_size (GTK_WINDOW (self), -1, -1);
+    }
+
+  g_hash_table_remove (self->closing_pages, close->page);
+
+  return dex_future_new_for_boolean (confirmed);
 }
 
 static gboolean
 ptyxis_window_close_page_cb (PtyxisWindow *self,
-                             AdwTabPage   *tab_page,
-                             AdwTabView   *tab_view)
+                             AdwTabPage   *page,
+                             AdwTabView   *view)
 {
-  g_autoptr(GPtrArray) tabs = NULL;
-  PtyxisSettings *settings;
-  PtyxisTab *tab;
+  ClosePage *close;
 
   g_assert (PTYXIS_IS_WINDOW (self));
-  g_assert (ADW_IS_TAB_PAGE (tab_page));
-  g_assert (ADW_IS_TAB_VIEW (tab_view));
+  g_assert (ADW_IS_TAB_PAGE (page));
+  g_assert (ADW_IS_TAB_VIEW (view));
 
-  ptyxis_window_save_size (self);
-
-  tab = PTYXIS_TAB (adw_tab_page_get_child (tab_page));
-  settings = ptyxis_application_get_settings (PTYXIS_APPLICATION_DEFAULT);
-
-  /* If we are disposed, allow closing immediately */
   if (self->disposed)
     return GDK_EVENT_PROPAGATE;
 
-  if (!ptyxis_tab_is_running (tab, NULL) ||
-      !ptyxis_settings_get_prompt_on_close (settings))
-    {
-      ptyxis_parking_lot_push (self->parking_lot, tab);
-      gtk_window_set_default_size (GTK_WINDOW (self), -1, -1);
-      return GDK_EVENT_PROPAGATE;
-    }
+  if (g_hash_table_contains (self->closing_pages, page))
+    return GDK_EVENT_STOP;
 
-  tabs = g_ptr_array_new_with_free_func (g_object_unref);
-  g_ptr_array_add (tabs, g_object_ref (tab));
-
-  _ptyxis_close_dialog_run_async (GTK_WINDOW (self),
-                                  tabs,
-                                  NULL,
-                                  ptyxis_window_close_page_dialog_cb,
-                                  g_object_ref (tab));
-
+  ptyxis_window_save_size (self);
+  close = close_page_new ();
+  g_weak_ref_init (&close->window, self);
+  close->page = g_object_ref (page);
+  g_hash_table_insert (self->closing_pages,
+                       page,
+                       dex_scheduler_spawn (NULL,
+                                            8 * 1024 * 1024,
+                                            ptyxis_window_close_page,
+                                            close,
+                                            (GDestroyNotify)close_page_free));
   return GDK_EVENT_STOP;
 }
 
@@ -1477,23 +1521,6 @@ ptyxis_window_tab_menu_action (GtkWidget  *widget,
     }
 }
 
-static void
-ptyxis_window_close_request_cb (GObject      *object,
-                                GAsyncResult *result,
-                                gpointer      user_data)
-{
-  g_autoptr(PtyxisWindow) self = user_data;
-  g_autoptr(GError) error = NULL;
-
-  g_assert (G_IS_ASYNC_RESULT (result));
-  g_assert (PTYXIS_IS_WINDOW (self));
-
-  if (_ptyxis_close_dialog_run_finish (result, &error))
-    gtk_window_destroy (GTK_WINDOW (self));
-
-  self->in_close_request = FALSE;
-}
-
 static gboolean
 is_last_window (PtyxisWindow *self)
 {
@@ -1511,51 +1538,118 @@ is_last_window (PtyxisWindow *self)
 }
 
 static gboolean
+ptyxis_window_contains_tabs (PtyxisWindow *self,
+                             GPtrArray    *tabs)
+{
+  g_assert (PTYXIS_IS_WINDOW (self));
+  g_assert (tabs != NULL);
+
+  if (adw_tab_view_get_n_pages (self->tab_view) != tabs->len)
+    return FALSE;
+
+  for (guint i = 0; i < tabs->len; i++)
+    {
+      GtkWidget *tab = g_ptr_array_index (tabs, i);
+
+      if (gtk_widget_get_ancestor (tab, PTYXIS_TYPE_WINDOW) != GTK_WIDGET (self))
+        return FALSE;
+    }
+
+  return TRUE;
+}
+
+DEX_DEFINE_CLOSURE_TYPE (CloseWindow, close_window,
+                         DEX_DEFINE_CLOSURE_VALUE_WITH_CLEAR (GWeakRef, window, g_weak_ref_clear))
+
+static DexFuture *
+ptyxis_window_close (gpointer data)
+{
+  CloseWindow *close = data;
+  g_autoptr(PtyxisWindow) self = g_weak_ref_get (&close->window);
+  g_autoptr(GPtrArray) tabs = g_ptr_array_new_with_free_func (g_object_unref);
+  g_autoptr(GPtrArray) possibly_running = g_ptr_array_new_with_free_func (g_object_unref);
+  g_autoptr(DexFuture) confirmation = NULL;
+  gboolean confirmed = TRUE;
+
+  if (self == NULL || self->disposed)
+    return dex_future_new_false ();
+
+  for (guint i = 0; i < adw_tab_view_get_n_pages (self->tab_view); i++)
+    {
+      AdwTabPage *page = adw_tab_view_get_nth_page (self->tab_view, i);
+
+      g_ptr_array_add (tabs, g_object_ref (adw_tab_page_get_child (page)));
+    }
+
+  g_clear_object (&self);
+
+  for (guint i = 0; i < tabs->len; i++)
+    {
+      PtyxisTab *tab = g_ptr_array_index (tabs, i);
+
+      if (ptyxis_window_tab_may_be_running (tab))
+        g_ptr_array_add (possibly_running, g_object_ref (tab));
+    }
+
+  self = g_weak_ref_get (&close->window);
+  if (self == NULL || self->disposed)
+    return dex_future_new_false ();
+
+  if (possibly_running->len > 0 &&
+      ptyxis_settings_get_prompt_on_close (ptyxis_application_get_settings (PTYXIS_APPLICATION_DEFAULT)))
+    {
+      confirmation = _ptyxis_close_dialog_run (GTK_WINDOW (self), possibly_running);
+      g_clear_object (&self);
+      confirmed = dex_await_boolean (g_steal_pointer (&confirmation), NULL);
+      self = g_weak_ref_get (&close->window);
+    }
+
+  if (self == NULL || self->disposed)
+    return dex_future_new_false ();
+
+  if (!ptyxis_window_contains_tabs (self, tabs))
+    confirmed = FALSE;
+
+  self->in_close_request = FALSE;
+
+  if (confirmed)
+    {
+      if (!self->single_terminal_mode && is_last_window (self))
+        ptyxis_application_save_session (PTYXIS_APPLICATION_DEFAULT);
+
+      gtk_window_destroy (GTK_WINDOW (self));
+    }
+
+  return dex_future_new_for_boolean (confirmed);
+}
+
+static gboolean
 ptyxis_window_close_request (GtkWindow *window)
 {
-  PtyxisWindow *self = (PtyxisWindow *)window;
-  g_autoptr(GPtrArray) tabs = NULL;
-  PtyxisSettings *settings;
-  guint n_pages;
+  PtyxisWindow *self = PTYXIS_WINDOW (window);
+  CloseWindow *close;
 
   g_assert (PTYXIS_IS_WINDOW (self));
 
-  ptyxis_window_save_size (self);
-
-  if (!self->single_terminal_mode && is_last_window (self))
-    ptyxis_application_save_session (PTYXIS_APPLICATION_DEFAULT);
-
-  /* Short-circuit if user dismissed guard rails */
-  settings = ptyxis_application_get_settings (PTYXIS_APPLICATION_DEFAULT);
-  if (!ptyxis_settings_get_prompt_on_close (settings))
+  if (self->disposed)
     return GDK_EVENT_PROPAGATE;
 
-  tabs = g_ptr_array_new_with_free_func (g_object_unref);
-  n_pages = adw_tab_view_get_n_pages (self->tab_view);
+  if (self->in_close_request)
+    return GDK_EVENT_STOP;
 
+  ptyxis_window_save_size (self);
   self->in_close_request = TRUE;
 
-  for (guint i = n_pages; i > 0; i--)
-    {
-      AdwTabPage *page = adw_tab_view_get_nth_page (self->tab_view, i - 1);
-      PtyxisTab *tab = PTYXIS_TAB (adw_tab_page_get_child (page));
+  close = close_window_new ();
+  g_weak_ref_init (&close->window, self);
 
-      if (ptyxis_tab_is_running (tab, NULL))
-        g_ptr_array_add (tabs, g_object_ref (tab));
-      else
-        adw_tab_view_close_page (self->tab_view, page);
-    }
-
-  if (tabs->len > 0)
-    _ptyxis_close_dialog_run_async (GTK_WINDOW (self),
-                                    tabs,
-                                    NULL,
-                                    ptyxis_window_close_request_cb,
-                                    g_object_ref (self));
-  else
-    self->in_close_request = FALSE;
-
-  return tabs->len > 0;
+  dex_clear (&self->close_operation);
+  self->close_operation = dex_scheduler_spawn (NULL,
+                                               8 * 1024 * 1024,
+                                               ptyxis_window_close,
+                                               close,
+                                               (GDestroyNotify)close_window_free);
+  return GDK_EVENT_STOP;
 }
 
 static void
@@ -2201,6 +2295,8 @@ ptyxis_window_dispose (GObject *object)
   PtyxisWindow *self = (PtyxisWindow *)object;
 
   self->disposed = TRUE;
+  dex_clear (&self->close_operation);
+  g_clear_pointer (&self->closing_pages, g_hash_table_unref);
 
   g_clear_object (&self->overview_transition_animation);
   G_GNUC_BEGIN_IGNORE_DEPRECATIONS
@@ -2412,6 +2508,10 @@ ptyxis_window_init (PtyxisWindow *self)
   g_autoptr(GIcon) default_icon = NULL;
   GtkGestureClick *click;
 
+  self->closing_pages = g_hash_table_new_full (g_direct_hash,
+                                               g_direct_equal,
+                                               NULL,
+                                               dex_unref);
   self->active_tab_bindings = g_binding_group_new ();
   self->profile_bindings = g_binding_group_new ();
 

@@ -24,8 +24,16 @@
 
 G_BEGIN_DECLS
 
-DexFuture *ptyxis_dbus_connection_new_server (GIOStream  *stream,
-                                              const char *guid,
-                                              guint       timeout_seconds) G_GNUC_WARN_UNUSED_RESULT;
+typedef void (*PtyxisDBusPortalProxyCallback)    (gpointer    owner,
+                                                  GDBusProxy *proxy);
+typedef void (*PtyxisDBusPortalSettingsCallback) (gpointer    owner,
+                                                  GVariant   *settings);
+
+DexFuture *ptyxis_dbus_connection_new_server (GIOStream                        *stream,
+                                              const char                       *guid,
+                                              guint                             timeout_seconds) G_GNUC_WARN_UNUSED_RESULT;
+DexFuture *ptyxis_dbus_initialize_portal     (GObject                          *owner,
+                                              PtyxisDBusPortalProxyCallback     proxy_callback,
+                                              PtyxisDBusPortalSettingsCallback  settings_callback) G_GNUC_WARN_UNUSED_RESULT;
 
 G_END_DECLS

@@ -27,69 +27,10 @@
 #include "ptyxis-util.h"
 #include "ptyxis-window.h"
 
-typedef struct
-{
-  PtyxisTab       *tab;
-  AdwAlertDialog *dialog;
-} SaveRequest;
-
-static void
-save_request_clear (gpointer data)
-{
-  SaveRequest *sr = data;
-
-  g_clear_object (&sr->tab);
-  g_clear_object (&sr->dialog);
-}
-
-static void
-ptyxis_close_dialog_confirm (AdwAlertDialog *dialog,
-                             GArray           *requests,
-                             gboolean          confirm)
-{
-  g_assert (ADW_IS_ALERT_DIALOG (dialog));
-  g_assert (requests != NULL);
-  g_assert (requests->len > 0);
-
-  gtk_widget_set_sensitive (GTK_WIDGET (dialog), FALSE);
-
-  for (guint i = 0; i < requests->len; i++)
-    {
-      const SaveRequest *sr = &g_array_index (requests, SaveRequest , i);
-
-      ptyxis_tab_force_quit (sr->tab);
-    }
-}
-
-static void
-ptyxis_close_dialog_response (AdwAlertDialog *dialog,
-                              const char       *response,
-                              GArray           *requests)
-{
-  GTask *task;
-  g_assert (ADW_IS_ALERT_DIALOG (dialog));
-
-  task = g_object_get_data (G_OBJECT (dialog), "G_TASK");
-
-  if (!g_strcmp0 (response, "discard"))
-    {
-      ptyxis_close_dialog_confirm (dialog, requests, TRUE);
-      g_task_return_boolean (task, TRUE);
-    }
-  else
-    {
-      g_task_return_new_error (task,
-                               G_IO_ERROR,
-                               G_IO_ERROR_CANCELLED,
-                               "The user cancelled the request");
-    }
-}
-
 static AdwDialog *
 _ptyxis_close_dialog_new (GtkWindow *parent,
                           GPtrArray *tabs)
 {
-  g_autoptr(GArray) requests = NULL;
   const char *discard_label;
   PangoAttrList *smaller;
   AdwDialog *dialog;
@@ -103,14 +44,10 @@ _ptyxis_close_dialog_new (GtkWindow *parent,
   if (tabs->len == 1)
     ptyxis_tab_raise (g_ptr_array_index (tabs, 0));
 
-  requests = g_array_new (FALSE, FALSE, sizeof (SaveRequest));
-  g_array_set_clear_func (requests, save_request_clear);
-
   discard_label = g_dngettext (GETTEXT_PACKAGE, _("_Close"), _("_Close All"), tabs->len);
 
   dialog = adw_alert_dialog_new (_("Close Window?"),
                                    _("Some processes are still running."));
-  //gtk_widget_set_size_request (GTK_WIDGET (dialog), 400, -1);
 
   adw_alert_dialog_add_responses (ADW_ALERT_DIALOG (dialog),
                                     "cancel", _("_Cancel"),
@@ -132,13 +69,11 @@ _ptyxis_close_dialog_new (GtkWindow *parent,
       g_autofree char *title = NULL;
       g_autofree char *subtitle = NULL;
       GtkWidget *row;
-      SaveRequest sr;
       GPid pid;
 
       if (ptyxis_tab_has_foreground_process (tab, &pid, &cmdline))
         {
-          g_utf8_make_valid (cmdline, -1);
-          title = g_steal_pointer (&cmdline);
+          title = g_utf8_make_valid (cmdline ? cmdline : "", -1);
           subtitle = g_strdup_printf (_("Process %d"), pid);
         }
       else
@@ -156,59 +91,118 @@ _ptyxis_close_dialog_new (GtkWindow *parent,
       adw_action_row_set_subtitle (ADW_ACTION_ROW (row), subtitle);
       adw_preferences_group_add (ADW_PREFERENCES_GROUP (group), row);
 
-      sr.tab = g_object_ref (tab);
-      sr.dialog = g_object_ref (ADW_ALERT_DIALOG (dialog));
 
-      g_array_append_val (requests, sr);
     }
 
   pango_attr_list_unref (smaller);
 
-  g_signal_connect_data (dialog,
-                         "response",
-                         G_CALLBACK (ptyxis_close_dialog_response),
-                         g_steal_pointer (&requests),
-                         (GClosureNotify) g_array_unref,
-                         0);
-
   return dialog;
 }
 
-void
-_ptyxis_close_dialog_run_async (GtkWindow           *parent,
-                                GPtrArray           *tabs,
-                                GCancellable        *cancellable,
-                                GAsyncReadyCallback  callback,
-                                gpointer             user_data)
+typedef struct
 {
-  g_autoptr(GTask) task = NULL;
-  AdwDialog *dialog;
+  GWeakRef    dialog;
+  GWeakRef    parent;
+  DexPromise *promise;
+  gulong      response_handler;
+  gulong      destroy_handler;
+  gboolean    parent_destroyed;
+  gboolean    responded;
+} CloseDialog;
 
-  g_return_if_fail (!parent || GTK_IS_WINDOW (parent));
-  g_return_if_fail (!cancellable || G_IS_CANCELLABLE (cancellable));
+static void
+close_dialog_free (gpointer data)
+{
+  CloseDialog *close = data;
+  g_autoptr(AdwDialog) dialog = g_weak_ref_get (&close->dialog);
+  g_autoptr(GtkWindow) parent = g_weak_ref_get (&close->parent);
 
-  dialog = _ptyxis_close_dialog_new (parent, tabs);
-  task = g_task_new (dialog, cancellable, callback, user_data);
-  g_task_set_source_tag (task, _ptyxis_close_dialog_run_async);
+  if (parent != NULL)
+    g_clear_signal_handler (&close->destroy_handler, parent);
 
-  if (tabs == NULL || tabs->len == 0)
+  if (dialog != NULL)
     {
-      g_task_return_boolean (task, TRUE);
-      return;
+      g_clear_signal_handler (&close->response_handler, dialog);
+
+      if (!close->responded &&
+          !close->parent_destroyed &&
+          gtk_widget_get_root (GTK_WIDGET (dialog)) != NULL)
+        adw_dialog_force_close (dialog);
     }
 
-  g_object_set_data_full (G_OBJECT (dialog),
-                          "G_TASK",
-                          g_steal_pointer (&task),
-                          g_object_unref);
-  adw_dialog_present (dialog, GTK_WIDGET (parent));
+  g_weak_ref_clear (&close->dialog);
+  g_weak_ref_clear (&close->parent);
+  dex_clear (&close->promise);
+  g_free (close);
 }
 
-gboolean
-_ptyxis_close_dialog_run_finish (GAsyncResult  *result,
-                                 GError       **error)
+static void
+ptyxis_close_dialog_response (AdwAlertDialog *dialog,
+                              const char     *response,
+                              CloseDialog    *close)
 {
-  g_return_val_if_fail (G_IS_TASK (result), FALSE);
+  g_assert (ADW_IS_ALERT_DIALOG (dialog));
+  g_assert (close != NULL);
 
-  return g_task_propagate_boolean (G_TASK (result), error);
+  close->responded = TRUE;
+
+  if (dex_future_is_pending (DEX_FUTURE (close->promise)))
+    dex_promise_resolve_boolean (close->promise,
+                                 g_strcmp0 (response, "discard") == 0);
+}
+
+static void
+ptyxis_close_dialog_parent_destroyed (GtkWindow   *parent,
+                                      CloseDialog *close)
+{
+  close->parent_destroyed = TRUE;
+  if (dex_future_is_pending (DEX_FUTURE (close->promise)))
+    dex_promise_resolve_boolean (close->promise, FALSE);
+}
+
+static DexFuture *
+ptyxis_close_dialog_completed (DexFuture *future,
+                               gpointer   data)
+{
+  return NULL;
+}
+
+DexFuture *
+_ptyxis_close_dialog_run (GtkWindow *parent,
+                          GPtrArray *tabs)
+{
+  CloseDialog *close;
+  AdwDialog *dialog;
+  DexFuture *future;
+
+  g_return_val_if_fail (GTK_IS_WINDOW (parent), NULL);
+  g_return_val_if_fail (tabs != NULL, NULL);
+
+  if (tabs->len == 0)
+    return dex_future_new_true ();
+
+  dialog = _ptyxis_close_dialog_new (parent, tabs);
+
+  close = g_new0 (CloseDialog, 1);
+  close->promise = dex_promise_new ();
+  g_weak_ref_init (&close->dialog, dialog);
+  g_weak_ref_init (&close->parent, parent);
+
+  close->response_handler = g_signal_connect (dialog,
+                                              "response",
+                                              G_CALLBACK (ptyxis_close_dialog_response),
+                                              close);
+  close->destroy_handler = g_signal_connect (parent,
+                                             "destroy",
+                                             G_CALLBACK (ptyxis_close_dialog_parent_destroyed),
+                                             close);
+
+  future = dex_future_finally (dex_ref (close->promise),
+                               ptyxis_close_dialog_completed,
+                               close,
+                               close_dialog_free);
+
+  adw_dialog_present (dialog, GTK_WIDGET (parent));
+
+  return future;
 }

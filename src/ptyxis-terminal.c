@@ -32,9 +32,11 @@
 
 #include "ptyxis-application.h"
 #include "ptyxis-custom-link.h"
+#include "ptyxis-gtk.h"
 #include "ptyxis-shortcuts.h"
 #include "ptyxis-tab.h"
 #include "ptyxis-terminal.h"
+#include "ptyxis-terminal-private.h"
 #include "ptyxis-util.h"
 #include "ptyxis-window.h"
 
@@ -71,7 +73,8 @@ struct _PtyxisTerminal
 
   GdkRGBA             background;
 
-  guint               size_dismiss_source;
+  DexFuture          *size_dismiss_source;
+  DexFuture          *drop_operation;
   guint               n_columns;
   guint               n_rows;
 
@@ -237,7 +240,9 @@ ptyxis_terminal_update_url_actions (PtyxisTerminal *self,
   pattern = vte_terminal_check_match_at (VTE_TERMINAL (self), x, y, &tag);
 
   if (hyperlink != NULL)
-    url = g_steal_pointer (&hyperlink);
+    {
+      url = g_steal_pointer (&hyperlink);
+    }
   else if (pattern != NULL)
     {
       PtyxisCustomLink *custom_link = g_hash_table_lookup (self->custom_links, GINT_TO_POINTER (tag));
@@ -394,7 +399,6 @@ ptyxis_terminal_capture_key_pressed_cb (PtyxisTerminal     *self,
 
   g_assert (PTYXIS_IS_TERMINAL (self));
   g_assert (GTK_IS_EVENT_CONTROLLER_KEY (controller));
-
 
   /* HACK:
    *
@@ -593,25 +597,6 @@ ptyxis_terminal_motion_leave_cb (PtyxisTerminal           *self,
     gtk_widget_queue_allocate (GTK_WIDGET (self));
 }
 
-typedef struct {
-  PtyxisTerminal *terminal;
-  GdkDrop *drop;
-  GList *files;
-  const char *mime_type;
-} TextUriList;
-
-static void
-text_uri_list_free (TextUriList *uri_list)
-{
-  g_clear_object (&uri_list->terminal);
-  g_clear_object (&uri_list->drop);
-  g_clear_list (&uri_list->files, g_object_unref);
-  uri_list->mime_type = NULL;
-  g_free (uri_list);
-}
-
-G_DEFINE_AUTOPTR_CLEANUP_FUNC (TextUriList, text_uri_list_free)
-
 static gboolean
 file_is_from_document_portal (GFile *file)
 {
@@ -640,10 +625,10 @@ ptyxis_terminal_get_portal_host_path (GFile *file)
 
   g_return_val_if_fail (G_IS_FILE (file), NULL);
 
-  if ((info = g_file_query_info (file,
-                                 FILE_ATTRIBUTE_HOST_PATH,
-                                 G_FILE_QUERY_INFO_NONE,
-                                 NULL, NULL)))
+  if ((info = dex_await_object (dex_file_query_info (file,
+                                                     FILE_ATTRIBUTE_HOST_PATH,
+                                                     G_FILE_QUERY_INFO_NONE,
+                                                     G_PRIORITY_DEFAULT), NULL)))
     {
       const char *host_path;
 
@@ -665,18 +650,16 @@ ptyxis_terminal_get_portal_host_path (GFile *file)
   return NULL;
 }
 
-static void
-ptyxis_terminal_drop_file_list (PtyxisTerminal *self,
-                                const GList    *files)
+static char *
+ptyxis_terminal_quote_files (const GSList *files)
 {
   g_autoptr(GString) string = NULL;
 
-  g_assert (PTYXIS_IS_TERMINAL (self));
   g_assert (files == NULL || G_IS_FILE (files->data));
 
   string = g_string_new (NULL);
 
-  for (const GList *iter = files; iter; iter = iter->next)
+  for (const GSList *iter = files; iter; iter = iter->next)
     {
       g_autofree char *host_path = NULL;
       GFile *file = G_FILE (iter->data);
@@ -706,233 +689,165 @@ ptyxis_terminal_drop_file_list (PtyxisTerminal *self,
         }
     }
 
-  if (string->len > 0)
-    vte_terminal_paste_text (VTE_TERMINAL (self), string->str);
+  return g_string_free (g_steal_pointer (&string), FALSE);
 }
 
-static void
-ptyxis_terminal_drop_uri_list_line_cb (GObject      *object,
-                                       GAsyncResult *result,
-                                       gpointer      user_data)
+DEX_DEFINE_CLOSURE_TYPE (DropRead, drop_read,
+                         DEX_DEFINE_CLOSURE_OBJECT (GInputStream, stream),
+                         DEX_DEFINE_CLOSURE_VALUE (gboolean, mozilla))
+
+static DexFuture *
+ptyxis_terminal_read_drop_fiber (gpointer data)
 {
-  GDataInputStream *line_reader = G_DATA_INPUT_STREAM (object);
-  g_autoptr(TextUriList) state = (TextUriList*)user_data;
+  DropRead *read = data;
+  g_autoptr(GInputStream) stream = g_object_ref (read->stream);
+  g_autoptr(GDataInputStream) reader = NULL;
   g_autoptr(GError) error = NULL;
-  g_autofree char *line = NULL;
-  gsize len = 0;
+  g_autoslist(GFile) files = NULL;
+  char *text;
 
-  g_assert (G_IS_ASYNC_RESULT (result));
-  g_assert (state != NULL);
-  g_assert (PTYXIS_IS_TERMINAL (state->terminal));
-  g_assert (GDK_IS_DROP (state->drop));
+  if (read->mozilla)
+    {
+      g_autoptr(GCharsetConverter) converter = g_charset_converter_new ("UTF-8", "UCS-2", &error);
+      g_autoptr(GInputStream) converted = NULL;
 
-  line = g_data_input_stream_read_line_finish_utf8 (line_reader, result, &len, &error);
+      if (converter == NULL)
+        return dex_future_new_for_error (g_steal_pointer (&error));
+
+      converted = g_converter_input_stream_new (stream, G_CONVERTER (converter));
+      g_set_object (&stream, converted);
+    }
+
+  reader = g_data_input_stream_new (stream);
+  g_data_input_stream_set_newline_type (reader, G_DATA_STREAM_NEWLINE_TYPE_ANY);
+
+  for (;;)
+    {
+      g_autofree char *line = dex_await_string (dex_data_input_stream_read_line_utf8 (reader,
+                                                                                      DROP_REQUEST_PRIORITY),
+                                                &error);
+
+      if (line == NULL)
+        break;
+
+      if (line[0] != 0 && line[0] != '#')
+        files = g_slist_prepend (files, g_file_new_for_uri (line));
+
+      if (read->mozilla)
+        break;
+    }
 
   if (error != NULL)
-    {
-      g_debug ("Failed to receive '%s': %s", state->mime_type, error->message);
-      gdk_drop_finish (state->drop, 0);
-      return;
-    }
+    return dex_future_new_for_error (g_steal_pointer (&error));
 
-  if (line != NULL && line[0] != 0 && line[0] != '#')
-    {
-      GFile *file = g_file_new_for_uri (line);
+  files = g_slist_reverse (files);
+  text = ptyxis_terminal_quote_files (files);
 
-      if (file != NULL)
-        state->files = g_list_append (state->files, file);
-    }
+  return dex_future_new_take_string (text);
+}
 
-  if (line == NULL || g_strcmp0 (state->mime_type, TEXT_X_MOZ_URL) == 0)
-    {
-      ptyxis_terminal_drop_file_list (state->terminal, state->files);
-      gdk_drop_finish (state->drop, ptyxis_terminal_get_drop_action (state->drop));
-      return;
-    }
+/**
+ * _ptyxis_terminal_read_drop:
+ * @stream: a URI list or Mozilla URL stream
+ * @mozilla: whether to decode the first UCS-2 line as a Mozilla URL
+ *
+ * Returns: (transfer full): a future resolving to shell-quoted paths and URIs
+ */
+DexFuture *
+_ptyxis_terminal_read_drop (GInputStream *stream,
+                            gboolean      mozilla)
+{
+  DropRead *read;
 
-  g_data_input_stream_read_line_async (line_reader,
-                                       DROP_REQUEST_PRIORITY,
-                                       NULL,
-                                       ptyxis_terminal_drop_uri_list_line_cb,
-                                       g_steal_pointer (&state));
+  g_return_val_if_fail (G_IS_INPUT_STREAM (stream), NULL);
+
+  read = drop_read_new ();
+  read->stream = g_object_ref (stream);
+  read->mozilla = mozilla;
+
+  return dex_scheduler_spawn (NULL,
+                              0,
+                              ptyxis_terminal_read_drop_fiber,
+                              read,
+                              (GDestroyNotify)drop_read_free);
 }
 
 static void
-ptyxis_terminal_drop_uri_list_cb (GObject      *object,
-                                  GAsyncResult *result,
-                                  gpointer      user_data)
+terminal_drop_cancel (GdkDrop *drop)
 {
-  GdkDrop *drop = (GdkDrop *)object;
-  g_autoptr(PtyxisTerminal) self = user_data;
-  g_autoptr(GError) error = NULL;
-  g_autoptr(GInputStream) stream = NULL;
-  g_autoptr(GDataInputStream) line_reader = NULL;
-  g_autoptr(TextUriList) state = NULL;
-  const char *mime_type = NULL;
-
-  g_assert (GDK_IS_DROP (drop));
-  g_assert (G_IS_ASYNC_RESULT (result));
-  g_assert (PTYXIS_IS_TERMINAL (self));
-
-  if (!(stream = gdk_drop_read_finish (drop, result, &mime_type, &error)))
-    {
-      g_debug ("Failed to receive text/uri-list offer: %s", error->message);
-      gdk_drop_finish (drop, 0);
-      return;
-    }
-
-  g_assert (g_strcmp0 (mime_type, TEXT_URI_LIST) == 0);
-  g_assert (G_IS_INPUT_STREAM (stream));
-
-  line_reader = g_data_input_stream_new (stream);
-  g_data_input_stream_set_newline_type (line_reader,
-                                        G_DATA_STREAM_NEWLINE_TYPE_CR_LF);
-
-  state = g_new0 (TextUriList, 1);
-  state->terminal = g_object_ref (self);
-  state->drop = g_object_ref (drop);
-  state->mime_type = g_intern_string (mime_type);
-
-  g_data_input_stream_read_line_async (line_reader,
-                                       DROP_REQUEST_PRIORITY,
-                                       NULL,
-                                       ptyxis_terminal_drop_uri_list_line_cb,
-                                       g_steal_pointer (&state));
+  gdk_drop_finish (drop, 0);
+  g_object_unref (drop);
 }
 
-static void
-ptyxis_terminal_drop_file_list_cb (GObject      *object,
-                                   GAsyncResult *result,
-                                   gpointer      user_data)
+DEX_DEFINE_CLOSURE_TYPE (TerminalDrop, terminal_drop,
+                         DEX_DEFINE_CLOSURE_VALUE_WITH_CLEAR (GWeakRef, terminal, g_weak_ref_clear),
+                         DEX_DEFINE_CLOSURE_POINTER (GdkDrop *, drop, terminal_drop_cancel),
+                         DEX_DEFINE_CLOSURE_VALUE (GType, type),
+                         DEX_DEFINE_CLOSURE_VALUE (gboolean, mozilla))
+
+static DexFuture *
+ptyxis_terminal_drop_fiber (gpointer data)
 {
-  GdkDrop *drop = (GdkDrop *)object;
-  g_autoptr(PtyxisTerminal) self = user_data;
+  TerminalDrop *drop = data;
+  g_autoptr(PtyxisTerminal) self = NULL;
   g_autoptr(GError) error = NULL;
-  const GValue *value;
-  const GList *file_list;
+  g_autofree char *text = NULL;
+  GdkDragAction action = 0;
 
-  g_assert (GDK_IS_DROP (drop));
-  g_assert (G_IS_ASYNC_RESULT (result));
-  g_assert (PTYXIS_IS_TERMINAL (self));
-
-  if (!(value = gdk_drop_read_value_finish (drop, result, &error)))
+  if (drop->type != G_TYPE_INVALID)
     {
-      g_debug ("Failed to receive file-list offer: %s", error->message);
+      g_autoptr(DexFuture) value_future = ptyxis_gdk_drop_read_value (drop->drop,
+                                                                      drop->type,
+                                                                      DROP_REQUEST_PRIORITY);
 
-      /* If the user dragged a directory from Nautilus or another
-       * new-style application, a portal request would be made. But
-       * GTK won't be able to open the directory so the request for
-       * APPLICATION_VND_PORTAL_FILETRANSFER will fail. Fallback to
-       * opening the request via TEXT_URI_LIST gracefully.
-       */
-      if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_NOT_FOUND) ||
-          g_error_matches (error, G_IO_ERROR, G_DBUS_ERROR_ACCESS_DENIED))
-        gdk_drop_read_async (drop,
-                             (const char **)(const char * const[]){TEXT_URI_LIST, NULL},
-                             DROP_REQUEST_PRIORITY,
-                             NULL,
-                             ptyxis_terminal_drop_uri_list_cb,
-                             g_object_ref (self));
+      if (dex_await (dex_ref (value_future), &error))
+        {
+          const GValue *value = dex_future_get_value (value_future, NULL);
+
+          if (drop->type == G_TYPE_STRING)
+            text = g_value_dup_string (value);
+          else
+            text = ptyxis_terminal_quote_files (gdk_file_list_get_files (g_value_get_boxed (value)));
+        }
+      else if (drop->type != GDK_TYPE_FILE_LIST ||
+               (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_NOT_FOUND) &&
+                !g_error_matches (error, G_IO_ERROR, G_IO_ERROR_PERMISSION_DENIED) &&
+                !g_error_matches (error, G_DBUS_ERROR, G_DBUS_ERROR_ACCESS_DENIED)))
+        {
+          goto finish;
+        }
       else
-        gdk_drop_finish (drop, 0);
-
-      return;
+        {
+          g_clear_error (&error);
+        }
     }
 
-  g_assert (value != NULL);
-  g_assert (G_VALUE_HOLDS (value, GDK_TYPE_FILE_LIST));
-
-  file_list = (const GList *)g_value_get_boxed (value);
-  ptyxis_terminal_drop_file_list (self, file_list);
-  gdk_drop_finish (drop, ptyxis_terminal_get_drop_action (drop));
-}
-
-static void
-ptyxis_terminal_drop_string_cb (GObject      *object,
-                                GAsyncResult *result,
-                                gpointer      user_data)
-{
-  GdkDrop *drop = (GdkDrop *)object;
-  g_autoptr(PtyxisTerminal) self = user_data;
-  g_autoptr(GError) error = NULL;
-  const GValue *value;
-  const char *string;
-
-  g_assert (GDK_IS_DROP (drop));
-  g_assert (G_IS_ASYNC_RESULT (result));
-  g_assert (PTYXIS_IS_TERMINAL (self));
-
-  if (!(value = gdk_drop_read_value_finish (drop, result, &error)))
+  if (text == NULL)
     {
-      gdk_drop_finish (drop, 0);
-      return;
+      const char *mime_types[] = { drop->mozilla ? TEXT_X_MOZ_URL : TEXT_URI_LIST, NULL };
+      g_autoptr(GInputStream) stream = NULL;
+
+      if (!(stream = dex_await_object (ptyxis_gdk_drop_read (drop->drop,
+                                                             mime_types,
+                                                             DROP_REQUEST_PRIORITY), &error)))
+        goto finish;
+
+      text = dex_await_string (_ptyxis_terminal_read_drop (stream, drop->mozilla), &error);
     }
 
-  g_assert (value != NULL);
-  g_assert (G_VALUE_HOLDS_STRING (value));
+  if ((self = g_weak_ref_get (&drop->terminal)) &&
+      error == NULL &&
+      text != NULL)
+    {
+      if (text[0] != 0)
+        vte_terminal_paste_text (VTE_TERMINAL (self), text);
+      action = ptyxis_terminal_get_drop_action (drop->drop);
+    }
 
-  string = g_value_get_string (value);
-
-  if (string != NULL && string[0] != 0)
-    vte_terminal_paste_text (VTE_TERMINAL (self), string);
-
-  gdk_drop_finish (drop, ptyxis_terminal_get_drop_action (drop));
-}
-
-static void
-ptyxis_terminal_drop_moz_url_cb (GObject      *object,
-                                 GAsyncResult *result,
-                                 gpointer      user_data)
-{
-  GdkDrop *drop = (GdkDrop *)object;
-  g_autoptr(PtyxisTerminal) self = user_data;
-  g_autoptr(GCharsetConverter) converter = NULL;
-  g_autoptr(GDataInputStream) line_reader = NULL;
-  g_autoptr(GInputStream) converter_stream = NULL;
-  g_autoptr(GInputStream) stream = NULL;
-  g_autoptr(GError) error = NULL;
-  const char *mime_type = NULL;
-  TextUriList *state;
-
-  g_assert (GDK_IS_DROP (drop));
-  g_assert (G_IS_ASYNC_RESULT (result));
-  g_assert (PTYXIS_IS_TERMINAL (self));
-
-  if (!(stream = gdk_drop_read_finish (drop, result, &mime_type, &error))) {
-    gdk_drop_finish (drop, 0);
-    return;
-  }
-
-  g_assert (G_IS_INPUT_STREAM (stream));
-
-  if (!(converter = g_charset_converter_new ("UTF-8", "UCS-2", &error))) {
-    g_debug ("Failed to create UTF-8 decoder: %s", error->message);
-    gdk_drop_finish (drop, 0);
-    return;
-  }
-
-  /* TEXT_X_MOZ_URL is in UCS-2 so convert it to UTF-8.
-   *
-   * The data is expected to be URL, a \n, then the title of the web page.
-   *
-   * However, some applications (e.g. dolphin) delimit with a \r\n (see
-   * issue#293) so handle that generically with the line reader.
-   */
-  converter_stream = g_converter_input_stream_new (stream, G_CONVERTER (converter));
-  line_reader = g_data_input_stream_new (converter_stream);
-  g_data_input_stream_set_newline_type (line_reader,
-                                        G_DATA_STREAM_NEWLINE_TYPE_ANY);
-
-  state = g_new0 (TextUriList, 1);
-  state->terminal = g_object_ref (self);
-  state->drop = g_object_ref (drop);
-  state->mime_type = g_intern_string (TEXT_X_MOZ_URL);
-
-  g_data_input_stream_read_line_async (line_reader,
-                                       DROP_REQUEST_PRIORITY,
-                                       NULL,
-                                       ptyxis_terminal_drop_uri_list_line_cb,
-                                       g_steal_pointer (&state));
+finish:
+  gdk_drop_finish (drop->drop, action);
+  g_clear_object (&drop->drop);
+  return dex_future_new_true ();
 }
 
 static gboolean
@@ -940,47 +855,39 @@ ptyxis_terminal_drop_target_drop (PtyxisTerminal     *self,
                                   GdkDrop            *drop,
                                   double              x,
                                   double              y,
-                                  GtkDropTargetAsync *drop_target)
+                                  GtkDropTargetAsync *target)
 {
-  GdkContentFormats *formats;
-
-  g_assert (PTYXIS_IS_TERMINAL (self));
-  g_assert (GDK_IS_DROP (drop));
-  g_assert (GTK_IS_DROP_TARGET_ASYNC (drop_target));
-
-  formats = gdk_drop_get_formats (drop);
+  GdkContentFormats *formats = gdk_drop_get_formats (drop);
+  TerminalDrop *request;
+  GType type = G_TYPE_INVALID;
+  gboolean mozilla = FALSE;
 
   if (gdk_content_formats_contain_gtype (formats, GDK_TYPE_FILE_LIST) ||
       gdk_content_formats_contain_gtype (formats, G_TYPE_FILE) ||
       gdk_content_formats_contain_mime_type (formats, TEXT_URI_LIST) ||
       gdk_content_formats_contain_mime_type (formats, APPLICATION_VND_PORTAL_FILETRANSFER) ||
-      gdk_content_formats_contain_mime_type (formats, APPLICATION_VND_PORTAL_FILES)) {
-    gdk_drop_read_value_async (drop,
-                               GDK_TYPE_FILE_LIST,
-                               DROP_REQUEST_PRIORITY,
-                               NULL,
-                               ptyxis_terminal_drop_file_list_cb,
-                               g_object_ref (self));
-    return TRUE;
-  } else if (gdk_content_formats_contain_mime_type (formats, TEXT_X_MOZ_URL)) {
-    gdk_drop_read_async (drop,
-                         (const char **)(const char * const []){TEXT_X_MOZ_URL, NULL},
-                         DROP_REQUEST_PRIORITY,
-                         NULL,
-                         ptyxis_terminal_drop_moz_url_cb,
-                         g_object_ref (self));
-    return TRUE;
-  } else if (gdk_content_formats_contain_gtype (formats, G_TYPE_STRING)) {
-    gdk_drop_read_value_async (drop,
-                               G_TYPE_STRING,
-                               DROP_REQUEST_PRIORITY,
-                               NULL,
-                               ptyxis_terminal_drop_string_cb,
-                               g_object_ref (self));
-    return TRUE;
-  }
+      gdk_content_formats_contain_mime_type (formats, APPLICATION_VND_PORTAL_FILES))
+    type = GDK_TYPE_FILE_LIST;
+  else if (gdk_content_formats_contain_mime_type (formats, TEXT_X_MOZ_URL))
+    mozilla = TRUE;
+  else if (gdk_content_formats_contain_gtype (formats, G_TYPE_STRING))
+    type = G_TYPE_STRING;
+  else
+    return FALSE;
 
-  return FALSE;
+  request = terminal_drop_new ();
+  g_weak_ref_init (&request->terminal, self);
+  request->drop = g_object_ref (drop);
+  request->type = type;
+  request->mozilla = mozilla;
+  dex_clear (&self->drop_operation);
+
+  self->drop_operation = dex_scheduler_spawn (NULL,
+                                              0,
+                                              ptyxis_terminal_drop_fiber,
+                                              request,
+                                              (GDestroyNotify)terminal_drop_free);
+  return TRUE;
 }
 
 static GdkDragAction
@@ -1043,15 +950,17 @@ ptyxis_terminal_measure (GtkWidget      *widget,
   *natural = MAX (*natural, MAX (nat_revealer, nat_hover_revealer));
 }
 
-static gboolean
-dismiss_size_label_cb (gpointer user_data)
+static DexFuture *
+dismiss_size_label_cb (DexFuture *future,
+                       gpointer   data)
 {
-  PtyxisTerminal *self = user_data;
+  PtyxisTerminal *self = data;
+  g_autoptr(GError) error = NULL;
 
-  gtk_revealer_set_reveal_child (self->size_revealer, FALSE);
-  self->size_dismiss_source = 0;
-
-  return G_SOURCE_REMOVE;
+  dex_future_get_value (future, &error);
+  if (g_error_matches (error, DEX_ERROR, DEX_ERROR_TIMED_OUT))
+    gtk_revealer_set_reveal_child (self->size_revealer, FALSE);
+  return NULL;
 }
 
 static void
@@ -1065,6 +974,7 @@ ptyxis_terminal_size_allocate (GtkWidget *widget,
   GtkRequisition nat;
   GtkAllocation revealer_alloc, hover_uri_alloc, dnd_alloc;
   GtkBorder padding, margin;
+
   GtkRoot *root;
   PtyxisSettings *settings;
   gboolean emit_size_changed = FALSE;
@@ -1104,15 +1014,16 @@ ptyxis_terminal_size_allocate (GtkWidget *widget,
 
       gtk_revealer_set_reveal_child (self->size_revealer, TRUE);
 
-      g_clear_handle_id (&self->size_dismiss_source, g_source_remove);
-      self->size_dismiss_source = g_timeout_add (SIZE_DISMISS_TIMEOUT_MSEC,
-                                                 dismiss_size_label_cb,
-                                                 self);
+      dex_clear (&self->size_dismiss_source);
+      self->size_dismiss_source = dex_future_catch (dex_timeout_new_msec (SIZE_DISMISS_TIMEOUT_MSEC),
+                                                    dismiss_size_label_cb,
+                                                    self,
+                                                    NULL);
     }
   else if (gtk_window_is_maximized (GTK_WINDOW (root)) ||
            gtk_window_is_fullscreen (GTK_WINDOW (root)))
     {
-      g_clear_handle_id (&self->size_dismiss_source, g_source_remove);
+      dex_clear (&self->size_dismiss_source);
       gtk_revealer_set_reveal_child (self->size_revealer, FALSE);
     }
 
@@ -1367,7 +1278,8 @@ ptyxis_terminal_dispose (GObject *object)
 
   g_clear_object (&self->palette);
   g_clear_object (&self->shortcuts);
-  g_clear_handle_id (&self->size_dismiss_source, g_source_remove);
+  dex_clear (&self->drop_operation);
+  dex_clear (&self->size_dismiss_source);
   g_clear_pointer (&self->custom_links, g_hash_table_unref);
   g_clear_pointer (&self->url, g_free);
 

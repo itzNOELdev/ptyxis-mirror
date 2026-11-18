@@ -24,7 +24,7 @@
 #include <gio/gio.h>
 #include <vte/vte.h>
 
-#include "ptyxis-agent-ipc.h"
+#include "ptyxis-application-ipc.h"
 #include "ptyxis-profile.h"
 
 G_BEGIN_DECLS
@@ -33,45 +33,18 @@ G_BEGIN_DECLS
 
 G_DECLARE_FINAL_TYPE (PtyxisClient, ptyxis_client, PTYXIS, CLIENT, GObject)
 
-PtyxisClient       *ptyxis_client_new                        (gboolean              use_sandbox,
-                                                              GError              **error);
-const char         *ptyxis_client_get_user_data_dir          (PtyxisClient         *self);
-void                ptyxis_client_force_exit                 (PtyxisClient         *self);
-VtePty             *ptyxis_client_create_pty                 (PtyxisClient         *self,
-                                                              GError              **error);
-int                 ptyxis_client_create_pty_producer        (PtyxisClient         *self,
-                                                              VtePty               *pty,
-                                                              GError              **error);
-char              **ptyxis_client_discover_proxy_environment (PtyxisClient         *self,
-                                                              GCancellable         *cancellable,
-                                                              GError              **error);
-void                ptyxis_client_discover_shell_async       (PtyxisClient         *self,
-                                                              GCancellable         *cancellable,
-                                                              GAsyncReadyCallback   callback,
-                                                              gpointer              user_data);
-char               *ptyxis_client_discover_shell_finish      (PtyxisClient         *client,
-                                                              GAsyncResult         *result,
-                                                              GError              **error);
-void                ptyxis_client_spawn_async                (PtyxisClient         *self,
-                                                              PtyxisIpcContainer   *container,
-                                                              PtyxisProfile        *profile,
-                                                              const char           *tab_uuid,
-                                                              const char           *default_shell,
-                                                              const char           *last_working_directory_uri,
-                                                              VtePty               *pty,
-                                                              const char * const   *alt_argv,
-                                                              const char * const   *alt_env,
-                                                              GCancellable         *cancellable,
-                                                              GAsyncReadyCallback   callback,
-                                                              gpointer              user_data);
-PtyxisIpcProcess   *ptyxis_client_spawn_finish               (PtyxisClient         *self,
-                                                              GAsyncResult         *result,
-                                                              GError              **error);
-PtyxisIpcContainer *ptyxis_client_discover_current_container (PtyxisClient         *self,
-                                                              VtePty               *pty);
-const char         *ptyxis_client_get_os_name                (PtyxisClient         *self);
-gboolean            ptyxis_client_ping                       (PtyxisClient         *self,
-                                                              int                   timeout_msec,
-                                                              GError              **error);
+DexFuture  *ptyxis_client_create_pty        (PtyxisClient       *self) G_GNUC_WARN_UNUSED_RESULT;
+void        ptyxis_client_force_exit        (PtyxisClient       *self);
+const char *ptyxis_client_get_os_name       (PtyxisClient       *self);
+const char *ptyxis_client_get_user_data_dir (PtyxisClient       *self);
+DexFuture  *ptyxis_client_new               (gboolean            use_sandbox) G_GNUC_WARN_UNUSED_RESULT;
+DexFuture  *ptyxis_client_spawn             (PtyxisClient       *self,
+                                             PtyxisIpcContainer *container,
+                                             PtyxisProfile      *profile,
+                                             const char         *tab_uuid,
+                                             const char         *directory,
+                                             VtePty             *pty,
+                                             const char * const *argv,
+                                             const char * const *env) G_GNUC_WARN_UNUSED_RESULT;
 
 G_END_DECLS

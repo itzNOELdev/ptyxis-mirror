@@ -48,6 +48,7 @@ ptyxis_sources = [
   'ptyxis-profiles-menu.c',
   'ptyxis-profile-row.c',
   'ptyxis-profile.c',
+  'ptyxis-process.c',
   'ptyxis-session.c',
   'ptyxis-settings.c',
   'ptyxis-shortcut-accel-dialog.c',

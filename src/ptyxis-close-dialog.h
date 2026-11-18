@@ -22,15 +22,11 @@
 #pragma once
 
 #include <adwaita.h>
+#include <libdex.h>
 
 G_BEGIN_DECLS
 
-void     _ptyxis_close_dialog_run_async  (GtkWindow            *parent,
-                                          GPtrArray            *tabs,
-                                          GCancellable         *cancellable,
-                                          GAsyncReadyCallback   callback,
-                                          gpointer              user_data);
-gboolean _ptyxis_close_dialog_run_finish (GAsyncResult         *result,
-                                          GError              **error);
+DexFuture *_ptyxis_close_dialog_run (GtkWindow *parent,
+                                     GPtrArray *tabs) G_GNUC_WARN_UNUSED_RESULT;
 
 G_END_DECLS

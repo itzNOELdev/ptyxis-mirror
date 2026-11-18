@@ -23,7 +23,7 @@
 
 #include <glib/gi18n.h>
 
-#include "ptyxis-agent-ipc.h"
+#include "ptyxis-application-ipc.h"
 #include "ptyxis-menu-row.h"
 #include "ptyxis-profile.h"
 

@@ -25,6 +25,7 @@
 
 G_BEGIN_DECLS
 
-void _ptyxis_tab_ignore_snapshot (PtyxisTab *self);
+void _ptyxis_tab_ignore_snapshot         (PtyxisTab *self);
+void _ptyxis_tab_invalidate_process_info (PtyxisTab *self);
 
 G_END_DECLS

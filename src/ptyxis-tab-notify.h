@@ -30,6 +30,7 @@
 #include <glib/gi18n.h>
 
 #include "ptyxis-window.h"
+#include "ptyxis-tab-private.h"
 
 #define TIME_WATERMARK_MSEC 250
 
@@ -41,8 +42,7 @@ typedef struct _PtyxisTabNotify
 
   char *current_cmdline;
 
-  guint contents_changed_source;
-  guint shell_preexec_source;
+  DexFuture *refresh;
 
   gulong shell_precmd_handler;
   gulong shell_preexec_handler;
@@ -115,9 +115,9 @@ ptyxis_tab_notify_shell_precmd_cb (PtyxisTerminal  *terminal,
   g_assert (PTYXIS_IS_TAB (notify->tab));
 
   notify->between_preexec_and_precmd = FALSE;
+  _ptyxis_tab_invalidate_process_info (notify->tab);
 
-  g_clear_handle_id (&notify->contents_changed_source, g_source_remove);
-  g_clear_handle_id (&notify->shell_preexec_source, g_source_remove);
+  dex_clear (&notify->refresh);
 
   if (notify->current_cmdline != NULL)
     {
@@ -130,22 +130,42 @@ ptyxis_tab_notify_shell_precmd_cb (PtyxisTerminal  *terminal,
     }
 }
 
-static void
-ptyxis_tab_notify_shell_preexec_poll_cb (GObject      *object,
-                                         GAsyncResult *result,
-                                         gpointer      user_data)
+DEX_DEFINE_CLOSURE_TYPE (NotifyRefresh, notify_refresh,
+                         DEX_DEFINE_CLOSURE_VALUE_WITH_CLEAR (GWeakRef, tab, g_weak_ref_clear),
+                         DEX_DEFINE_CLOSURE_VALUE (PtyxisTabNotify *, notify))
+
+static DexFuture *
+ptyxis_tab_notify_refresh (DexFuture *future,
+                           gpointer   data)
 {
-  PtyxisTab *tab = (PtyxisTab *)object;
-  PtyxisTabNotify *notify = user_data;
+  NotifyRefresh *refresh = data;
+  g_autoptr(PtyxisTab) tab = g_weak_ref_get (&refresh->tab);
 
-  g_assert (PTYXIS_IS_TAB (tab));
-  g_assert (G_IS_ASYNC_RESULT (result));
-  g_assert (notify != NULL);
+  if (tab != NULL &&
+      refresh->notify->refresh == future &&
+      refresh->notify->between_preexec_and_precmd)
+    g_set_str (&refresh->notify->current_cmdline, ptyxis_tab_get_command_line (tab));
 
-  ptyxis_tab_poll_agent_finish (tab, result, NULL);
+  return dex_future_new_true ();
+}
 
-  g_set_str (&notify->current_cmdline,
-             ptyxis_tab_get_command_line (tab));
+static void
+ptyxis_tab_notify_refresh_command_line (PtyxisTabNotify *notify)
+{
+  NotifyRefresh *refresh;
+
+  _ptyxis_tab_invalidate_process_info (notify->tab);
+  dex_clear (&notify->refresh);
+
+  refresh = notify_refresh_new ();
+  g_weak_ref_init (&refresh->tab, notify->tab);
+  refresh->notify = notify;
+
+  notify->refresh = ptyxis_tab_poll_agent (notify->tab);
+  dex_future_disown (dex_future_then (dex_ref (notify->refresh),
+                                      ptyxis_tab_notify_refresh,
+                                      refresh,
+                                      (GDestroyNotify)notify_refresh_free));
 }
 
 static inline void
@@ -159,16 +179,7 @@ ptyxis_tab_notify_shell_preexec_cb (PtyxisTerminal  *terminal,
   notify->command_start_time = g_get_monotonic_time ();
 
   g_set_str (&notify->current_cmdline, NULL);
-
-  /* We will poll the agent for the updated command line. If we get
-   * precmd back in before this completes, we will ignore showing
-   * any notification as it's so quick it shouldn't matter. We
-   * can pass a borrowed notify as it's owned by @tab.
-   */
-  ptyxis_tab_poll_agent_async (notify->tab,
-                               NULL,
-                               ptyxis_tab_notify_shell_preexec_poll_cb,
-                               notify);
+  ptyxis_tab_notify_refresh_command_line (notify);
 }
 
 static inline void
@@ -179,8 +190,7 @@ ptyxis_tab_notify_init (PtyxisTabNotify *notify,
 
   notify->tab = tab;
 
-  notify->contents_changed_source = 0;
-  notify->shell_preexec_source = 0;
+  notify->refresh = NULL;
   notify->between_preexec_and_precmd = FALSE;
   notify->current_cmdline = NULL;
   notify->command_start_time = 0;
@@ -206,8 +216,7 @@ ptyxis_tab_notify_destroy (PtyxisTabNotify *notify)
   if (notify->tab == NULL)
     return;
 
-  g_clear_handle_id (&notify->contents_changed_source, g_source_remove);
-  g_clear_handle_id (&notify->shell_preexec_source, g_source_remove);
+  dex_clear (&notify->refresh);
 
   g_clear_signal_handler (&notify->shell_precmd_handler, terminal);
   g_clear_signal_handler (&notify->shell_preexec_handler, terminal);

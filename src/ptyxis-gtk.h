@@ -26,6 +26,84 @@
 G_BEGIN_DECLS
 
 static inline void
+ptyxis_gdk_drop_read_value_cb (GObject      *object,
+                               GAsyncResult *result,
+                               gpointer      user_data)
+{
+  g_autoptr(DexPromise) promise = user_data;
+  g_autoptr(GError) error = NULL;
+  const GValue *value;
+
+  value = gdk_drop_read_value_finish (GDK_DROP (object), result, &error);
+
+  if (value != NULL)
+    dex_promise_resolve (promise, value);
+  else
+    dex_promise_reject (promise, g_steal_pointer (&error));
+}
+
+static inline DexFuture *
+ptyxis_gdk_drop_read_value (GdkDrop *drop,
+                            GType    type,
+                            int      io_priority)
+{
+  g_autoptr(DexPromise) promise = NULL;
+
+  dex_return_error_if_fail (GDK_IS_DROP (drop));
+  dex_return_error_if_fail (type != G_TYPE_INVALID);
+
+  promise = dex_promise_new_cancellable ();
+
+  gdk_drop_read_value_async (drop,
+                             type,
+                             io_priority,
+                             dex_promise_get_cancellable (promise),
+                             ptyxis_gdk_drop_read_value_cb,
+                             dex_ref (promise));
+
+  return DEX_FUTURE (g_steal_pointer (&promise));
+}
+
+static inline void
+ptyxis_gdk_drop_read_cb (GObject      *object,
+                         GAsyncResult *result,
+                         gpointer      user_data)
+{
+  g_autoptr(DexPromise) promise = user_data;
+  g_autoptr(GError) error = NULL;
+  GInputStream *stream;
+
+  stream = gdk_drop_read_finish (GDK_DROP (object), result, NULL, &error);
+
+  if (stream != NULL)
+    dex_promise_resolve_object (promise, stream);
+  else
+    dex_promise_reject (promise, g_steal_pointer (&error));
+}
+
+static inline DexFuture *
+ptyxis_gdk_drop_read (GdkDrop     *drop,
+                      const char **mime_types,
+                      int          io_priority)
+{
+  g_autoptr(DexPromise) promise = NULL;
+
+  dex_return_error_if_fail (GDK_IS_DROP (drop));
+  dex_return_error_if_fail (mime_types != NULL && mime_types[0] != NULL);
+
+  promise = dex_promise_new_cancellable ();
+
+  gdk_drop_read_async (drop,
+                       mime_types,
+                       io_priority,
+                       dex_promise_get_cancellable (promise),
+                       ptyxis_gdk_drop_read_cb,
+                       dex_ref (promise));
+
+  return DEX_FUTURE (g_steal_pointer (&promise));
+}
+
+static inline void
 ptyxis_gtk_font_dialog_choose_font_cb (GObject      *object,
                                        GAsyncResult *result,
                                        gpointer      user_data)

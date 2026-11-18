@@ -27,8 +27,89 @@
 #include "ptyxis-util.h"
 #include "ptyxis-window.h"
 
-GVariant *
-ptyxis_session_save (PtyxisApplication *app)
+struct _PtyxisSession
+{
+  GObject     parent_instance;
+  GFile      *file;
+  GVariant   *state;
+  GBytes     *pending_bytes;
+  DexPromise *write_done;
+};
+
+G_DEFINE_FINAL_TYPE (PtyxisSession, ptyxis_session, G_TYPE_OBJECT)
+
+DEX_DEFINE_CLOSURE_TYPE (SessionWrite, session_write,
+                         DEX_DEFINE_CLOSURE_OBJECT (PtyxisApplication, application),
+                         DEX_DEFINE_CLOSURE_OBJECT (PtyxisSession, session))
+
+static gboolean  ptyxis_session_deserialize (PtyxisApplication *app,
+                                             GVariant          *state);
+static GVariant *ptyxis_session_serialize   (PtyxisApplication *app);
+
+static void
+ptyxis_session_finalize (GObject *object)
+{
+  PtyxisSession *self = PTYXIS_SESSION (object);
+
+  g_clear_object (&self->file);
+  g_clear_pointer (&self->state, g_variant_unref);
+  g_clear_pointer (&self->pending_bytes, g_bytes_unref);
+  dex_clear (&self->write_done);
+
+  G_OBJECT_CLASS (ptyxis_session_parent_class)->finalize (object);
+}
+
+static void
+ptyxis_session_class_init (PtyxisSessionClass *klass)
+{
+  G_OBJECT_CLASS (klass)->finalize = ptyxis_session_finalize;
+}
+
+static void
+ptyxis_session_init (PtyxisSession *self)
+{
+  self->file = g_file_new_build_filename (g_get_user_config_dir (),
+                                          APP_ID,
+                                          "session.gvariant",
+                                          NULL);
+}
+
+PtyxisSession *
+ptyxis_session_new (void)
+{
+  return g_object_new (PTYXIS_TYPE_SESSION, NULL);
+}
+
+gboolean
+ptyxis_session_has_state (PtyxisSession *self)
+{
+  g_return_val_if_fail (PTYXIS_IS_SESSION (self), FALSE);
+
+  return self->state != NULL;
+}
+
+void
+ptyxis_session_take_state (PtyxisSession *self,
+                           GVariant      *state)
+{
+  g_return_if_fail (PTYXIS_IS_SESSION (self));
+
+  g_clear_pointer (&self->state, g_variant_unref);
+  self->state = state;
+}
+
+gboolean
+ptyxis_session_restore (PtyxisSession     *self,
+                        PtyxisApplication *application)
+{
+  g_return_val_if_fail (PTYXIS_IS_SESSION (self), FALSE);
+  g_return_val_if_fail (PTYXIS_IS_APPLICATION (application), FALSE);
+
+  return self->state != NULL && ptyxis_session_deserialize (application, self->state);
+}
+
+static GVariant *
+ptyxis_session_serialize (PtyxisApplication *app)
 {
   PtyxisSettings *settings;
   GVariantBuilder builder;
@@ -129,8 +210,10 @@ ptyxis_session_save (PtyxisApplication *app)
                   g_variant_builder_add_parsed (&builder, "{'active', <%b>}", is_active);
                   if (!ptyxis_str_empty0 (window_title))
                     g_variant_builder_add_parsed (&builder, "{'window-title', <%s>}", window_title);
+
                   if (!ptyxis_str_empty0 (cwd))
                     g_variant_builder_add_parsed (&builder, "{'cwd', <%s>}", cwd);
+
                   if (container_id != NULL &&
                       g_strcmp0 (default_container, container_id) != 0)
                     g_variant_builder_add_parsed (&builder, "{'container', <%s>}", container_id);
@@ -152,9 +235,9 @@ ptyxis_session_save (PtyxisApplication *app)
   return g_variant_take_ref (g_variant_builder_end (&builder));
 }
 
-gboolean
-ptyxis_session_restore (PtyxisApplication *app,
-                        GVariant          *state)
+static gboolean
+ptyxis_session_deserialize (PtyxisApplication *app,
+                            GVariant          *state)
 {
   g_autoptr(GVariant) windows = NULL;
   PtyxisSettings *settings;
@@ -169,7 +252,7 @@ ptyxis_session_restore (PtyxisApplication *app,
   g_return_val_if_fail (state != NULL, FALSE);
   g_return_val_if_fail (g_variant_is_of_type (state, G_VARIANT_TYPE ("a{sv}")), FALSE);
 
-  if (!g_variant_lookup (state, "version", "u", &version))
+  if (!g_variant_lookup (state, "version", "u", &version) || version != 1)
     return FALSE;
 
   if (!(windows = g_variant_lookup_value (state, "windows", G_VARIANT_TYPE ("aa{sv}"))))
@@ -226,7 +309,9 @@ ptyxis_session_restore (PtyxisApplication *app,
             continue;
 
           if (!restore_window_size ||
-              !g_variant_lookup (tab, "size", "(uu)", &columns, &rows))
+              !g_variant_lookup (tab, "size", "(uu)", &columns, &rows) ||
+              columns == 0 ||
+              rows == 0)
             ptyxis_settings_get_default_size (settings, &columns, &rows);
 
           if (!g_variant_lookup (tab, "cwd", "&s", &cwd))
@@ -314,4 +399,117 @@ ptyxis_session_restore (PtyxisApplication *app,
     }
 
   return added_window;
+}
+
+static DexFuture *
+ptyxis_session_write_fiber (gpointer data)
+{
+  SessionWrite *write = data;
+  PtyxisSession *self = write->session;
+  g_autoptr(GFile) directory = g_file_get_parent (self->file);
+  DexPromise *done;
+  gboolean reported_error = FALSE;
+
+  dex_await (dex_file_make_directory_with_parents (directory), NULL);
+
+  while (self->pending_bytes != NULL)
+    {
+      g_autoptr(GBytes) bytes = g_steal_pointer (&self->pending_bytes);
+      g_autoptr(GError) error = NULL;
+
+      if (!dex_await (dex_file_replace_contents_bytes (self->file,
+                                                       bytes,
+                                                       NULL,
+                                                       FALSE,
+                                                       G_FILE_CREATE_REPLACE_DESTINATION),
+                      &error) &&
+          !reported_error)
+        {
+          g_warning ("Failed to save session state: %s", error->message);
+          reported_error = TRUE;
+        }
+    }
+
+  done = g_steal_pointer (&self->write_done);
+  dex_promise_resolve_boolean (done, !reported_error);
+  dex_clear (&done);
+  g_application_release (G_APPLICATION (write->application));
+
+  return dex_future_new_true ();
+}
+
+DexFuture *
+ptyxis_session_save (PtyxisSession     *self,
+                     PtyxisApplication *application)
+{
+  g_autoptr(GVariant) state = NULL;
+  g_autoptr(GBytes) bytes = NULL;
+  SessionWrite *write;
+
+  g_return_val_if_fail (PTYXIS_IS_SESSION (self), NULL);
+  g_return_val_if_fail (PTYXIS_IS_APPLICATION (application), NULL);
+
+  if (!(state = ptyxis_session_serialize (application)))
+    return dex_future_new_false ();
+
+  bytes = g_variant_get_data_as_bytes (state);
+
+  g_clear_pointer (&self->pending_bytes, g_bytes_unref);
+  self->pending_bytes = g_steal_pointer (&bytes);
+
+  if (self->write_done != NULL)
+    return dex_ref (self->write_done);
+
+  self->write_done = dex_promise_new ();
+
+  write = session_write_new ();
+  write->application = g_object_ref (application);
+  write->session = g_object_ref (self);
+
+  g_application_hold (G_APPLICATION (application));
+
+  dex_future_disown (dex_scheduler_spawn (NULL,
+                                          0,
+                                          ptyxis_session_write_fiber,
+                                          write,
+                                          (GDestroyNotify)session_write_free));
+
+  return dex_ref (self->write_done);
+}
+
+DexFuture *
+ptyxis_session_flush (PtyxisSession *self)
+{
+  g_return_val_if_fail (PTYXIS_IS_SESSION (self), NULL);
+
+  return self->write_done != NULL ? dex_ref (self->write_done) : dex_future_new_true ();
+}
+
+static DexFuture *
+ptyxis_session_parse (DexFuture *future,
+                      gpointer   data)
+{
+  GBytes *bytes = g_value_get_boxed (dex_future_get_value (future, NULL));
+  g_autoptr(GVariant) state = g_variant_ref_sink (g_variant_new_from_bytes (G_VARIANT_TYPE_VARDICT,
+                                                                            bytes,
+                                                                            FALSE));
+  guint32 version;
+
+  if (!g_variant_is_normal_form (state) ||
+      !g_variant_lookup (state, "version", "u", &version) ||
+      version != 1)
+    return dex_future_new_reject (G_IO_ERROR, G_IO_ERROR_INVALID_DATA, "Invalid session state");
+
+  return dex_future_new_take_variant (g_steal_pointer (&state));
+}
+
+DexFuture *
+ptyxis_session_load (PtyxisSession *self)
+{
+  g_return_val_if_fail (PTYXIS_IS_SESSION (self), NULL);
+
+  return dex_future_then (dex_file_load_contents_bytes (self->file),
+                          ptyxis_session_parse,
+                          NULL,
+                          NULL);
 }

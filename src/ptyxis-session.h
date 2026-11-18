@@ -25,8 +25,18 @@
 
 G_BEGIN_DECLS
 
-GVariant *ptyxis_session_save    (PtyxisApplication *app);
-gboolean  ptyxis_session_restore (PtyxisApplication *app,
-                                  GVariant          *state);
+#define PTYXIS_TYPE_SESSION (ptyxis_session_get_type())
 
+G_DECLARE_FINAL_TYPE (PtyxisSession, ptyxis_session, PTYXIS, SESSION, GObject)
+
+PtyxisSession *ptyxis_session_new        (void);
+gboolean       ptyxis_session_has_state  (PtyxisSession     *self);
+void           ptyxis_session_take_state (PtyxisSession     *self,
+                                          GVariant          *state);
+gboolean       ptyxis_session_restore    (PtyxisSession     *self,
+                                          PtyxisApplication *application);
+DexFuture     *ptyxis_session_load       (PtyxisSession     *self) G_GNUC_WARN_UNUSED_RESULT;
+DexFuture     *ptyxis_session_save       (PtyxisSession     *self,
+                                          PtyxisApplication *application) G_GNUC_WARN_UNUSED_RESULT;
+DexFuture     *ptyxis_session_flush      (PtyxisSession     *self) G_GNUC_WARN_UNUSED_RESULT;
 G_END_DECLS

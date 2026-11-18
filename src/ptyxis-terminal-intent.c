@@ -23,9 +23,10 @@
 
 #include "gio/gdesktopappinfo.h"
 
-#include "ptyxis-agent-ipc.h"
+#include "ptyxis-application-ipc.h"
 
 #include "ptyxis-application.h"
+#include "ptyxis-application-private.h"
 #include "ptyxis-profile.h"
 #include "ptyxis-tab.h"
 #include "ptyxis-terminal-intent.h"
@@ -180,12 +181,12 @@ activate_cb (GObject      *source_object,
              void         *data);
 
 static gboolean
-ptyxis_terminal_intent_handle_launch_command (FdoTerminal1          *intent,
-                                              GDBusMethodInvocation *invocation,
-                                              GVariant              *commands,
-                                              const char            *desktop_entry_path,
-                                              GVariant              *options,
-                                              GVariant              *platform_data)
+ptyxis_terminal_intent_launch_command (FdoTerminal1          *intent,
+                                       GDBusMethodInvocation *invocation,
+                                       GVariant              *commands,
+                                       const char            *desktop_entry_path,
+                                       GVariant              *options,
+                                       GVariant              *platform_data)
 {
   g_autoptr(PtyxisProfile) profile = NULL;
   g_autoptr(PtyxisIpcContainer) container = NULL;
@@ -216,10 +217,9 @@ ptyxis_terminal_intent_handle_launch_command (FdoTerminal1          *intent,
 
   if (container == NULL)
     {
-      g_dbus_method_invocation_return_gerror (g_steal_pointer (&invocation),
-                                              g_error_new_literal (G_DBUS_ERROR,
-                                                                   G_DBUS_ERROR_INVALID_ARGS,
-                                                                   "Failed to locate session container"));
+      g_dbus_method_invocation_return_error_literal (g_steal_pointer (&invocation),
+                                                     G_DBUS_ERROR, G_DBUS_ERROR_INVALID_ARGS,
+                                                     "Failed to locate session container");
       return G_DBUS_METHOD_INVOCATION_HANDLED;
     }
 
@@ -230,14 +230,14 @@ ptyxis_terminal_intent_handle_launch_command (FdoTerminal1          *intent,
   if (!unpack_commands (commands, argvs, envs, cwd_uris, &error))
     {
       g_dbus_method_invocation_return_gerror (g_steal_pointer (&invocation),
-                                              g_steal_pointer (&error));
+                                              error);
       return G_DBUS_METHOD_INVOCATION_HANDLED;
     }
 
   if (!unpack_desktop_entry (desktop_entry_path, &name, &path, &error))
     {
       g_dbus_method_invocation_return_gerror (g_steal_pointer (&invocation),
-                                              g_steal_pointer (&error));
+                                              error);
       return G_DBUS_METHOD_INVOCATION_HANDLED;
     }
 
@@ -325,6 +325,53 @@ ptyxis_terminal_intent_handle_launch_command (FdoTerminal1          *intent,
                           NULL);
 
   fdo_terminal1_complete_launch_command (intent, g_steal_pointer (&invocation));
+
+  return G_DBUS_METHOD_INVOCATION_HANDLED;
+}
+
+DEX_DEFINE_CLOSURE_TYPE (TerminalRequest, terminal_request,
+                         DEX_DEFINE_CLOSURE_OBJECT (FdoTerminal1, intent),
+                         DEX_DEFINE_CLOSURE_OBJECT (GDBusMethodInvocation, invocation),
+                         DEX_DEFINE_CLOSURE_POINTER (GVariant *, commands, g_variant_unref),
+                         DEX_DEFINE_CLOSURE_POINTER (char *, desktop_entry_path, g_free),
+                         DEX_DEFINE_CLOSURE_POINTER (GVariant *, options, g_variant_unref),
+                         DEX_DEFINE_CLOSURE_POINTER (GVariant *, platform_data, g_variant_unref))
+
+static void
+ptyxis_terminal_intent_dispatch (PtyxisApplication *app,
+                                 gpointer           data)
+{
+  TerminalRequest *request = data;
+
+  ptyxis_terminal_intent_launch_command (request->intent,
+                                         g_steal_pointer (&request->invocation),
+                                         request->commands,
+                                         request->desktop_entry_path,
+                                         request->options,
+                                         request->platform_data);
+}
+
+static gboolean
+ptyxis_terminal_intent_handle_launch_command (FdoTerminal1          *intent,
+                                              GDBusMethodInvocation *invocation,
+                                              GVariant              *commands,
+                                              const char            *desktop_entry_path,
+                                              GVariant              *options,
+                                              GVariant              *platform_data)
+{
+  TerminalRequest *request = terminal_request_new ();
+
+  request->intent = g_object_ref (intent);
+  request->invocation = invocation;
+  request->commands = g_variant_ref (commands);
+  request->desktop_entry_path = g_strdup (desktop_entry_path);
+  request->options = g_variant_ref (options);
+  request->platform_data = g_variant_ref (platform_data);
+
+  _ptyxis_application_queue_request (PTYXIS_APPLICATION_DEFAULT,
+                                     ptyxis_terminal_intent_dispatch,
+                                     request,
+                                     (GDestroyNotify)terminal_request_free);
 
   return G_DBUS_METHOD_INVOCATION_HANDLED;
 }
