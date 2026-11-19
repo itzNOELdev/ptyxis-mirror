@@ -35,22 +35,21 @@
 static gint64 default_rlimit_nofile;
 
 static gboolean
-check_early_opts (int        *argc,
-                  char     ***argv,
-                  gboolean   *standalone)
+check_early_opts (int                  argc,
+                  char               **argv,
+                  PtyxisEarlyOptions  *options,
+                  int                 *exit_status)
 {
-  g_auto(PtyxisEarlyOptions) options = { 0 };
   g_autoptr(GError) error = NULL;
 
-  if (!_ptyxis_early_options_parse (argc, argv, &options, &error))
+  if (!_ptyxis_early_options_parse (argc, (const char * const *)argv, options, &error))
     {
       g_printerr ("%s\n", error->message);
+      *exit_status = EXIT_FAILURE;
       return FALSE;
     }
 
-  *standalone = options.standalone;
-
-  if (options.version)
+  if (options->version)
     {
       g_print ("%s %s\n", PACKAGE_NAME, PACKAGE_VERSION);
       g_print ("\n");
@@ -73,17 +72,19 @@ check_early_opts (int        *argc,
       g_print ("This is free software; see the source for copying conditions. There is NO\n");
       g_print ("warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n");
       g_print ("\n");
-      exit (EXIT_SUCCESS);
+      *exit_status = EXIT_SUCCESS;
+      return FALSE;
     }
 
-  if (options.palette != NULL)
+  if (options->palette != NULL)
     {
-      g_autoptr(DexFuture) future = ptyxis_palette_import (options.palette);
+      g_autoptr(DexFuture) future = ptyxis_palette_import (options->palette);
 
       while (dex_future_is_pending (future))
         g_main_context_iteration (NULL, TRUE);
 
-      exit (dex_await_boolean (g_steal_pointer (&future), NULL) ? EXIT_SUCCESS : EXIT_FAILURE);
+      *exit_status = dex_await_boolean (g_steal_pointer (&future), NULL) ? EXIT_SUCCESS : EXIT_FAILURE;
+      return FALSE;
     }
 
   return TRUE;
@@ -128,9 +129,9 @@ int
 main (int   argc,
       char *argv[])
 {
+  g_auto(PtyxisEarlyOptions) options = { 0 };
   g_autoptr(PtyxisApplication) app = NULL;
   GApplicationFlags flags = G_APPLICATION_HANDLES_COMMAND_LINE | G_APPLICATION_HANDLES_OPEN;
-  gboolean standalone = FALSE;
   int ret;
 
   bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
@@ -141,10 +142,10 @@ main (int   argc,
   g_set_application_name (ptyxis_app_name ());
 
   dex_init ();
-  if (!check_early_opts (&argc, &argv, &standalone))
-    return EXIT_FAILURE;
+  if (!check_early_opts (argc, argv, &options, &ret))
+    return ret;
 
-  if (standalone)
+  if (options.standalone)
     flags |= G_APPLICATION_NON_UNIQUE | G_APPLICATION_CAN_OVERRIDE_APP_ID;
 
   default_rlimit_nofile = get_current_fd_limit ();
@@ -153,7 +154,7 @@ main (int   argc,
   gtk_init ();
 
   app = ptyxis_application_new (APP_ID, flags);
-  ret = g_application_run (G_APPLICATION (app), argc, argv);
+  ret = g_application_run (G_APPLICATION (app), options.argc, options.argv);
 
   return ret;
 }

@@ -26,113 +26,82 @@ static void
 test_option_values (void)
 {
   const char *args[] = { "ptyxis", "--title", "--tab", "-x", "printf --new-window", NULL };
-  g_auto(GStrv) argv = g_strdupv ((char **)args);
-  PtyxisEarlyOptions options = { 0 };
-  char **argv_ptr = argv;
-  int argc = g_strv_length (argv);
+  g_auto(PtyxisEarlyOptions) options = { 0 };
 
-  g_assert_true (_ptyxis_early_options_parse (&argc, &argv_ptr, &options, NULL));
+  g_assert_true (_ptyxis_early_options_parse (G_N_ELEMENTS (args) - 1, args, &options, NULL));
   g_assert_true (options.standalone);
   g_assert_false (options.version);
-  g_assert_cmpint (argc, ==, 5);
-
-  _ptyxis_early_options_clear (&options);
+  g_assert_cmpint (options.argc, ==, 5);
 }
 
 static void
 test_shared_command (void)
 {
   const char *args[] = { "ptyxis", "--tab", "--", "printf", "%s", "--new-window", NULL };
-  g_auto(GStrv) argv = g_strdupv ((char **)args);
-  PtyxisEarlyOptions options = { 0 };
-  char **argv_ptr = argv;
-  int argc = g_strv_length (argv);
+  g_auto(PtyxisEarlyOptions) options = { 0 };
 
-  g_assert_true (_ptyxis_early_options_parse (&argc, &argv_ptr, &options, NULL));
+  g_assert_true (_ptyxis_early_options_parse (G_N_ELEMENTS (args) - 1, args, &options, NULL));
   g_assert_false (options.standalone);
-  g_assert_cmpint (argc, ==, 4);
-  g_assert_cmpstr (argv[2], ==, "-x");
-  g_assert_cmpstr (argv[3], ==, "'printf' '%s' '--new-window'");
-
-  _ptyxis_early_options_clear (&options);
+  g_assert_cmpint (options.argc, ==, 4);
+  g_assert_cmpstr (options.argv[2], ==, "-x");
+  g_assert_cmpstr (options.argv[3], ==, "'printf' '%s' '--new-window'");
 }
 
 static void
 test_command_arguments (void)
 {
   const char *args[] = { "ptyxis", "-x", "--tab", NULL };
-  g_auto(GStrv) argv = g_strdupv ((char **)args);
-  PtyxisEarlyOptions options = { 0 };
-  char **argv_ptr = argv;
-  int argc = g_strv_length (argv);
+  g_auto(PtyxisEarlyOptions) options = { 0 };
 
-  g_assert_true (_ptyxis_early_options_parse (&argc, &argv_ptr, &options, NULL));
+  g_assert_true (_ptyxis_early_options_parse (G_N_ELEMENTS (args) - 1, args, &options, NULL));
   g_assert_true (options.standalone);
-
-  _ptyxis_early_options_clear (&options);
 }
 
 static void
 test_grouped_short_options (void)
 {
   const char *args[] = { "ptyxis", "-sx", "printf --tab", NULL };
-  g_auto(GStrv) argv = g_strdupv ((char **)args);
-  PtyxisEarlyOptions options = { 0 };
-  char **argv_ptr = argv;
-  int argc = g_strv_length (argv);
+  g_auto(PtyxisEarlyOptions) options = { 0 };
 
-  g_assert_true (_ptyxis_early_options_parse (&argc, &argv_ptr, &options, NULL));
+  g_assert_true (_ptyxis_early_options_parse (G_N_ELEMENTS (args) - 1, args, &options, NULL));
   g_assert_true (options.standalone);
-
-  _ptyxis_early_options_clear (&options);
 }
 
 static void
 test_legacy_execute (void)
 {
   const char *args[] = { "ptyxis", "-e", "echo", "--tab", NULL };
-  g_auto(GStrv) argv = g_strdupv ((char **)args);
   g_auto(PtyxisEarlyOptions) options = { 0 };
-  char **argv_ptr = argv;
-  int argc = g_strv_length (argv);
 
-  g_assert_true (_ptyxis_early_options_parse (&argc, &argv_ptr, &options, NULL));
+  g_assert_true (_ptyxis_early_options_parse (G_N_ELEMENTS (args) - 1, args, &options, NULL));
   g_assert_true (options.standalone);
-  g_assert_cmpint (argc, ==, 3);
-  g_assert_cmpstr (argv[1], ==, "-x");
-  g_assert_cmpstr (argv[2], ==, "'echo' '--tab'");
+  g_assert_cmpint (options.argc, ==, 3);
+  g_assert_cmpstr (options.argv[1], ==, "-x");
+  g_assert_cmpstr (options.argv[2], ==, "'echo' '--tab'");
+  g_assert_cmpstr (args[1], ==, "-e");
 }
 
 static void
 test_early_values (void)
 {
   const char *args[] = { "ptyxis", "--import-palette", "--version", NULL };
-  g_auto(GStrv) argv = g_strdupv ((char **)args);
-  PtyxisEarlyOptions options = { 0 };
-  char **argv_ptr = argv;
-  int argc = g_strv_length (argv);
+  g_auto(PtyxisEarlyOptions) options = { 0 };
 
-  g_assert_true (_ptyxis_early_options_parse (&argc, &argv_ptr, &options, NULL));
+  g_assert_true (_ptyxis_early_options_parse (G_N_ELEMENTS (args) - 1, args, &options, NULL));
   g_assert_false (options.version);
   g_assert_cmpstr (options.palette, ==, "--version");
-
-  _ptyxis_early_options_clear (&options);
 }
 
 static void
 test_missing_command (void)
 {
   const char *args[] = { "ptyxis", "-x", NULL };
-  g_auto(GStrv) argv = g_strdupv ((char **)args);
-  PtyxisEarlyOptions options = { 0 };
+  g_auto(PtyxisEarlyOptions) options = { 0 };
   g_autoptr(GError) error = NULL;
-  char **argv_ptr = argv;
-  int argc = g_strv_length (argv);
 
-  g_assert_false (_ptyxis_early_options_parse (&argc, &argv_ptr, &options, &error));
+  g_assert_false (_ptyxis_early_options_parse (G_N_ELEMENTS (args) - 1, args, &options, &error));
   g_assert_error (error, G_IO_ERROR, G_IO_ERROR_INVALID_ARGUMENT);
-
-  _ptyxis_early_options_clear (&options);
+  g_assert_null (options.argv);
 }
 
 int

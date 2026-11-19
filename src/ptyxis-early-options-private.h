@@ -27,12 +27,14 @@ G_BEGIN_DECLS
 typedef struct _PtyxisEarlyOptions
 {
   char     *palette;
+  char    **argv;
+  int       argc;
   gboolean  standalone;
   gboolean  version;
 } PtyxisEarlyOptions;
 
-gboolean _ptyxis_early_options_parse (int                  *argc,
-                                      char               ***argv,
+gboolean _ptyxis_early_options_parse (int                   argc,
+                                      const char * const   *argv,
                                       PtyxisEarlyOptions   *options,
                                       GError              **error);
 void     _ptyxis_early_options_clear (PtyxisEarlyOptions   *options);

@@ -40,49 +40,55 @@ option_has_value (const char *arg)
 }
 
 gboolean
-_ptyxis_early_options_parse (int                  *argc,
-                             char               ***argv,
+_ptyxis_early_options_parse (int                   argc,
+                             const char * const   *argv,
                              PtyxisEarlyOptions   *options,
                              GError              **error)
 {
+  g_auto(GStrv) parsed_argv = NULL;
+  int parsed_argc = argc;
   gboolean shared_target = FALSE;
   gboolean command = FALSE;
   gboolean explicit_standalone = FALSE;
 
-  g_return_val_if_fail (argc != NULL, FALSE);
-  g_return_val_if_fail (argv != NULL && *argv != NULL, FALSE);
+  g_return_val_if_fail (argc > 0, FALSE);
+  g_return_val_if_fail (argv != NULL, FALSE);
   g_return_val_if_fail (options != NULL, FALSE);
+  g_return_val_if_fail (options->argv == NULL, FALSE);
   g_return_val_if_fail (error == NULL || *error == NULL, FALSE);
 
-  for (int i = 1; i < *argc; i++)
+  parsed_argv = g_strdupv ((char **)argv);
+
+  for (int i = 1; i < parsed_argc; i++)
     {
-      const char *arg = (*argv)[i];
+      const char *arg = parsed_argv[i];
 
       if (g_str_equal (arg, "-e"))
         {
-          (*argv)[i][1] = '-';
-          arg = (*argv)[i];
+          parsed_argv[i][1] = '-';
+          arg = parsed_argv[i];
         }
 
       if (g_str_equal (arg, "--"))
         {
-          if (i + 1 < *argc)
+          if (i + 1 < parsed_argc)
             {
               GString *quoted_command = g_string_new (NULL);
 
-              for (int j = i + 1; j < *argc; j++)
+              for (int j = i + 1; j < parsed_argc; j++)
                 {
-                  g_autofree char *quoted = g_shell_quote ((*argv)[j]);
+                  g_autofree char *quoted = g_shell_quote (parsed_argv[j]);
 
                   if (j > i + 1)
                     g_string_append_c (quoted_command, ' ');
                   g_string_append (quoted_command, quoted);
-                  (*argv)[j] = NULL;
+                  g_clear_pointer (&parsed_argv[j], g_free);
                 }
 
-              (*argv)[i] = g_strdup ("-x");
-              (*argv)[i + 1] = g_string_free (quoted_command, FALSE);
-              *argc = i + 2;
+              g_free (parsed_argv[i]);
+              parsed_argv[i] = g_strdup ("-x");
+              parsed_argv[i + 1] = g_string_free (quoted_command, FALSE);
+              parsed_argc = i + 2;
               command = TRUE;
             }
 
@@ -100,7 +106,7 @@ _ptyxis_early_options_parse (int                  *argc,
                   if (arg[j] == 'x')
                     command = TRUE;
 
-                  if (arg[j + 1] == 0 && ++i >= *argc)
+                  if (arg[j + 1] == 0 && ++i >= parsed_argc)
                     {
                       g_set_error (error,
                                    G_IO_ERROR,
@@ -133,7 +139,7 @@ _ptyxis_early_options_parse (int                  *argc,
         g_set_str (&options->palette, arg + strlen ("--import-palette="));
       else if (g_str_equal (arg, "--import-palette"))
         {
-          if (++i >= *argc)
+          if (++i >= parsed_argc)
             {
               g_set_error_literal (error,
                                    G_IO_ERROR,
@@ -142,7 +148,7 @@ _ptyxis_early_options_parse (int                  *argc,
               return FALSE;
             }
 
-          g_set_str (&options->palette, (*argv)[i]);
+          g_set_str (&options->palette, parsed_argv[i]);
           continue;
         }
 
@@ -150,7 +156,7 @@ _ptyxis_early_options_parse (int                  *argc,
         {
           command = TRUE;
 
-          if (++i >= *argc)
+          if (++i >= parsed_argc)
             {
               g_set_error_literal (error,
                                    G_IO_ERROR,
@@ -167,7 +173,7 @@ _ptyxis_early_options_parse (int                  *argc,
 
       if (option_has_value (arg))
         {
-          if (++i >= *argc)
+          if (++i >= parsed_argc)
             {
               g_set_error (error,
                            G_IO_ERROR,
@@ -180,6 +186,8 @@ _ptyxis_early_options_parse (int                  *argc,
     }
 
   options->standalone = explicit_standalone || (command && !shared_target);
+  options->argc = parsed_argc;
+  options->argv = g_steal_pointer (&parsed_argv);
 
   return TRUE;
 }
@@ -190,6 +198,8 @@ _ptyxis_early_options_clear (PtyxisEarlyOptions *options)
   g_return_if_fail (options != NULL);
 
   g_clear_pointer (&options->palette, g_free);
+  g_clear_pointer (&options->argv, g_strfreev);
+  options->argc = 0;
   options->standalone = FALSE;
   options->version = FALSE;
 }
