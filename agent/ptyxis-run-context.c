@@ -1074,11 +1074,11 @@ ptyxis_run_context_create_stdio_stream (PtyxisRunContext  *self,
                                            error);
 }
 
-static gboolean
-has_systemd (void)
+static int
+get_systemd_version (void)
 {
   static gboolean initialized;
-  static gboolean has_systemd;
+  static int version = 0;
 
   if (!initialized)
     {
@@ -1099,20 +1099,21 @@ has_systemd (void)
                         NULL) &&
           stdout_str != NULL &&
           g_str_has_prefix (stdout_str, "systemd "))
-        {
-          const char *str = stdout_str + strlen ("systemd ");
-          int systemd_version = atoi (str);
-
-          /* We require systemd-run 240 for --same-dir/--working-directory but also
-           * because it doesn't seem to work at all on CentOS 7 which is 219.
-           */
-          has_systemd = systemd_version >= 240;
-        }
+        version = atoi (stdout_str + strlen ("systemd "));
 
       initialized = TRUE;
     }
 
-  return has_systemd;
+  return version;
+}
+
+static gboolean
+has_systemd (void)
+{
+  /* We require systemd-run 240 for --same-dir/--working-directory but also
+   * because it doesn't seem to work at all on CentOS 7 which is 219.
+   */
+  return get_systemd_version () >= 240;
 }
 
 static gboolean
@@ -1143,6 +1144,12 @@ ptyxis_run_context_push_scope_cb (PtyxisRunContext    *self,
       ptyxis_run_context_append_argv (self, "--collect");
       ptyxis_run_context_append_argv (self, "--quiet");
       ptyxis_run_context_append_argv (self, "--same-dir");
+      /* --expand-environment was added in 254. Since 258 it defaults to yes
+       * for scopes, expanding "$" in argv before exec and corrupting commands
+       * that contain it. Older systemd-run rejects the unknown option.
+       */
+      if (get_systemd_version () >= 254)
+        ptyxis_run_context_append_argv (self, "--expand-environment=no");
       ptyxis_run_context_append_formatted (self, "--unit=ptyxis-spawn-%s.scope", uuid);
     }
 
